@@ -227,7 +227,7 @@
         }
 
         textarea {
-            height: 70px;
+            height: 80px;
             resize: vertical;
         }
 
@@ -415,7 +415,7 @@
             <ul class="guide-list">
                 <li><strong>기능 탭 안내:</strong> 
                     <strong>세계관 영감</strong>(기초 구상), 
-                    <strong>설정 체크리스트</strong>(설정 점검), 
+                    <strong>창작 주제 추천</strong>(맞춤형 글감 주제 제시), 
                     <strong>소재 스파크</strong>(장면/분위기 힌트), 
                     <strong>대사 스파크</strong>(캐릭터 어조/대사 힌트) 탭을 선택해 사용하세요.
                 </li>
@@ -431,11 +431,12 @@
 
     <div class="tab-menu">
         <button class="tab-btn active" onclick="openTab('worldTab', this)">🌐 세계관 영감</button>
-        <button class="tab-btn" onclick="openTab('checklistTab', this)">📋 설정 체크리스트</button>
+        <button class="tab-btn" onclick="openTab('topicTab', this)">🎯 창작 주제 추천</button>
         <button class="tab-btn" onclick="openTab('sparkTab', this)">💡 소재 & 영감 스파크</button>
         <button class="tab-btn" onclick="openTab('dialogueTab', this)">💬 대사 스파크</button>
     </div>
 
+    <!-- 탭 1: 세계관 영감 -->
     <div id="worldTab" class="tab-content active">
         <div class="form-card">
             <div class="form-title">세계관 영감 도우미</div>
@@ -477,32 +478,43 @@
         </div>
     </div>
 
-    <div id="checklistTab" class="tab-content">
+    <!-- 탭 2: 창작 주제 추천 (신규) -->
+    <div id="topicTab" class="tab-content">
         <div class="form-card">
-            <div class="form-title">세계관 설정 체크리스트</div>
-            <div class="form-desc">비어있는 설정을 채울 수 있도록 질문을 던져드립니다.</div>
+            <div class="form-title">창작 주제 추천</div>
+            <div class="form-desc">제출하신 세계관과 상황을 기반으로 어울리는 창작 주제를 내드립니다.</div>
+            
             <div class="section">
-                <label>1. 핵심 테마 / 배경</label>
-                <input type="text" id="chkCore" placeholder="예: 중세 스팀펑크, 디스토피아 등">
-            </div>
-            <div class="section">
-                <label>2. 절대 규칙 / 시스템</label>
-                <input type="text" id="chkRule" placeholder="예: 마법 사용 시 대가 지불 등">
-            </div>
-            <button type="button" class="submit-btn" onclick="generateChecklistSummary()">점검 질문 받기</button>
-        </div>
-
-        <div class="article-card" id="checklistResultCard">
-            <div class="article-header">
-                <span class="article-meta">SETTING CHECKLIST</span>
-                <div class="btn-group">
-                    <button class="copy-btn" onclick="copyResult('checklistOutput', this)">복사하기</button>
+                <label>AI 관여도 선택</label>
+                <div class="btn-group-select">
+                    <button type="button" class="select-btn active" data-level="low" onclick="selectLevel('topicLevel', this)">낮음 (단어 / 핵심 테마 위주)</button>
+                    <button type="button" class="select-btn" data-level="high" onclick="selectLevel('topicLevel', this)">높음 (문장 / 구체적 사건 주제)</button>
                 </div>
             </div>
-            <div class="article-body" id="checklistOutput"></div>
+
+            <div class="section">
+                <label>1. 제출할 세계관 / 설정</label>
+                <textarea id="topicWorld" placeholder="예: 마법과 과학이 공존하는 디스토피아 도시, 감정을 느끼지 못하는 기사단 등..."></textarea>
+            </div>
+            <div class="section">
+                <label>2. 원하는 상황 / 연출</label>
+                <textarea id="topicSituation" placeholder="예: 비밀 임무 중 옛 동료와 마주친 상황, 금지된 구역에서 발견한 유물 등..."></textarea>
+            </div>
+            <button type="button" class="submit-btn" onclick="generateTopic()">어울리는 주제 추천받기</button>
+        </div>
+
+        <div class="article-card" id="topicResultCard">
+            <div class="article-header">
+                <span class="article-meta">CREATIVE TOPIC RECOMMENDATION</span>
+                <div class="btn-group">
+                    <button class="copy-btn" onclick="copyResult('topicOutput', this)">복사하기</button>
+                </div>
+            </div>
+            <div class="article-body" id="topicOutput"></div>
         </div>
     </div>
 
+    <!-- 탭 3: 소재 & 영감 스파크 -->
     <div id="sparkTab" class="tab-content">
         <div class="form-card">
             <div class="form-title">소재 & 영감 스파크</div>
@@ -538,6 +550,7 @@
         </div>
     </div>
 
+    <!-- 탭 4: 대사 스파크 -->
     <div id="dialogueTab" class="tab-content">
         <div class="form-card">
             <div class="form-title">대사 스파크</div>
@@ -578,6 +591,7 @@
     let memoCount = 0;
     const selectedLevels = {
         worldLevel: 'low',
+        topicLevel: 'low',
         sparkLevel: 'low',
         dialogueLevel: 'low'
     };
@@ -714,16 +728,22 @@
         }
     }
 
-    async function generateChecklistSummary() {
-        const core = document.getElementById('chkCore').value;
-        const rule = document.getElementById('chkRule').value;
-        const card = document.getElementById('checklistResultCard');
-        const output = document.getElementById('checklistOutput');
+    async function generateTopic() {
+        const world = document.getElementById('topicWorld').value;
+        const situation = document.getElementById('topicSituation').value;
+        const card = document.getElementById('topicResultCard');
+        const output = document.getElementById('topicOutput');
+        const level = selectedLevels.topicLevel;
 
-        output.innerText = "질문을 생성 중입니다...";
+        output.innerText = "어울리는 창작 주제를 생각하는 중입니다...";
         card.style.display = "block";
 
-        const promptText = "작성된 내용을 바탕으로 세계관의 허점을 채울 수 있는 정곡을 찌르는 질문 3개만 제시해줘. - 테마: " + core + " / 규칙: " + rule;
+        let promptText = "";
+        if (level === 'low') {
+            promptText = "제출된 세계관과 상황에 어울리는 창작 주제 3가지를 추천해줘. 구체적인 줄거리 대신 작가가 다양하게 해석할 수 있는 '핵심 키워드 주제'와 '딜레마 중심 테마' 위주로 짧고 명확하게 제시해줘. [세계관]: " + world + " / [상황]: " + situation;
+        } else {
+            promptText = "제출된 세계관과 상황에 딱 맞는 매력적인 창작 주제 3가지를 제시해줘. 각 주제별로 (1) 주제 제목, (2) 이 주제로 다룰 수 있는 주요 대립 및 갈등 요소(1~2문장), (3) 던질 수 있는 핵심 질문 1개를 구체적으로 작성해줘. [세계관]: " + world + " / [상황]: " + situation;
+        }
 
         try {
             output.innerText = await callGemini(promptText);
