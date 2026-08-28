@@ -102,11 +102,35 @@
             margin-bottom: 24px;
         }
 
+        .guide-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
         .guide-title {
             font-size: 15px;
             font-weight: 700;
             color: var(--text-main);
-            margin-bottom: 8px;
+        }
+
+        .guide-toggle-btn {
+            background: none;
+            border: 1px solid var(--guide-border);
+            color: var(--text-main);
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .guide-body {
+            margin-top: 12px;
+        }
+
+        .guide-body.hidden {
+            display: none;
         }
 
         .guide-text {
@@ -380,20 +404,25 @@
     </div>
 
     <div class="guide-card">
-        <div class="guide-title">📖 이용 안내 및 튜토리얼</div>
-        <p class="guide-text">
-            이 사이트는 스토리 구상과 설정 정리에 어려움을 겪는 작가님들을 위한 핀포인트 창작 도우미입니다.
-        </p>
-        <ul class="guide-list">
-            <li><strong>기능 탭 안내:</strong> 
-                <strong>세계관 영감</strong>(기초 구상), 
-                <strong>설정 체크리스트</strong>(설정 점검), 
-                <strong>소재 스파크</strong>(장면/분위기 힌트), 
-                <strong>대사 스파크</strong>(캐릭터 어조/대사 힌트) 탭을 선택해 사용하세요.
-            </li>
-            <li><strong>관여도 선택:</strong> AI의 개입 수준을 조절할 수 있습니다. <b>'낮음'</b>을 선택하면 창작 주도권을 지킬 수 있는 연상 단어와 핵심 질문 위주로 제공됩니다.</li>
-            <li><strong>메모장 활용:</strong> 우측 상단의 <code>📝 메모장 만들기</code> 버튼으로 언제든 아이디어를 받아적고 정리해 보세요.</li>
-        </ul>
+        <div class="guide-header">
+            <div class="guide-title">📖 이용 안내 및 튜토리얼</div>
+            <button class="guide-toggle-btn" id="guideToggleBtn" onclick="toggleGuide()">접기 ▲</button>
+        </div>
+        <div class="guide-body" id="guideBody">
+            <p class="guide-text">
+                이 사이트는 스토리 구상과 설정 정리에 어려움을 겪는 작가님들을 위한 핀포인트 창작 도우미입니다.
+            </p>
+            <ul class="guide-list">
+                <li><strong>기능 탭 안내:</strong> 
+                    <strong>세계관 영감</strong>(기초 구상), 
+                    <strong>설정 체크리스트</strong>(설정 점검), 
+                    <strong>소재 스파크</strong>(장면/분위기 힌트), 
+                    <strong>대사 스파크</strong>(캐릭터 어조/대사 힌트) 탭을 선택해 사용하세요.
+                </li>
+                <li><strong>관여도 선택:</strong> AI의 개입 수준을 조절할 수 있습니다. <b>'낮음'</b>을 선택하면 창작 주도권을 지킬 수 있는 연상 단어와 핵심 질문 위주로 제공됩니다.</li>
+                <li><strong>메모장 활용:</strong> 우측 상단의 <code>📝 메모장 만들기</code> 버튼으로 언제든 아이디어를 받아적고 정리해 보세요.</li>
+            </ul>
+        </div>
     </div>
 
     <div id="memoContainer" class="memo-container"></div>
@@ -550,6 +579,18 @@
         sparkLevel: 'low',
         dialogueLevel: 'low'
     };
+
+    function toggleGuide() {
+        const guideBody = document.getElementById('guideBody');
+        const toggleBtn = document.getElementById('guideToggleBtn');
+        if (guideBody.classList.contains('hidden')) {
+            guideBody.classList.remove('hidden');
+            toggleBtn.innerText = '접기 ▲';
+        } else {
+            guideBody.classList.add('hidden');
+            toggleBtn.innerText = '더 보기 ▼';
+        }
+    }
 
     function selectLevel(group, btn) {
         const parent = btn.parentElement;
