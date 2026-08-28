@@ -127,6 +127,7 @@
             display: flex;
             gap: 12px;
             margin-bottom: 28px;
+            flex-wrap: wrap;
         }
 
         .tab-btn {
@@ -384,8 +385,8 @@
             이 사이트는 개인 작품 구상이나 스토리의 주제를 찾기 어려워하는 작가님들을 위해 제작된 아이디어 도우미입니다.
         </p>
         <ul class="guide-list">
-            <li><strong>이용 팁:</strong> 하단의 탭을 통해 <strong>세계관 영감</strong>, <strong>설정 체크리스트</strong>, <strong>소재 스파크</strong> 기능을 자유롭게 이용해 보세요.</li>
-            <li><strong>관여도 선택:</strong> AI의 개입 정도를 선택하여 최소한의 단어만 추천받거나 완성도 높은 문장을 제공받을 수 있습니다.</li>
+            <li><strong>이용 팁:</strong> 탭을 통해 <strong>세계관 영감</strong>, <strong>설정 체크리스트</strong>, <strong>소재 스파크</strong>, <strong>대사 스파크</strong> 기능을 이용해 보세요.</li>
+            <li><strong>관여도 선택:</strong> AI의 개입 정도를 선택하여 최소한의 단어만 추천받거나 연출 중심 힌트를 제공받을 수 있습니다.</li>
             <li><strong>메모장 활용:</strong> 상단의 <code>📝 메모장 만들기</code> 버튼을 눌러 아이디어를 즉시 임시 저장하고 복사할 수 있습니다.</li>
         </ul>
     </div>
@@ -396,6 +397,7 @@
         <button class="tab-btn active" onclick="openTab('worldTab', this)">🌐 세계관 영감</button>
         <button class="tab-btn" onclick="openTab('checklistTab', this)">📋 설정 체크리스트</button>
         <button class="tab-btn" onclick="openTab('sparkTab', this)">💡 소재 & 영감 스파크</button>
+        <button class="tab-btn" onclick="openTab('dialogueTab', this)">💬 대사 스파크</button>
     </div>
 
     <div id="worldTab" class="tab-content active">
@@ -468,7 +470,7 @@
     <div id="sparkTab" class="tab-content">
         <div class="form-card">
             <div class="form-title">소재 & 영감 스파크</div>
-            <div class="form-desc">분위기, 장소, 대사 힌트가 담긴 글감을 구성해 드립니다.</div>
+            <div class="form-desc">분위기와 장소, 감정 중심의 연출 글감을 구성해 드립니다.</div>
             
             <div class="section">
                 <label>AI 관여도 선택</label>
@@ -499,13 +501,49 @@
             <div class="article-body" id="sparkOutput"></div>
         </div>
     </div>
+
+    <div id="dialogueTab" class="tab-content">
+        <div class="form-card">
+            <div class="form-title">대사 스파크</div>
+            <div class="form-desc">캐릭터의 성격과 상황에 어울리는 영감용 대사를 생성합니다.</div>
+            
+            <div class="section">
+                <label>AI 관여도 선택</label>
+                <div class="btn-group-select">
+                    <button type="button" class="select-btn active" data-level="low" onclick="selectLevel('dialogueLevel', this)">낮음 (핵심 키워드/상황 힌트)</button>
+                    <button type="button" class="select-btn" data-level="high" onclick="selectLevel('dialogueLevel', this)">높음 (예시 대사 추천)</button>
+                </div>
+            </div>
+
+            <div class="section">
+                <label>1. 캐릭터 성격 / 말투</label>
+                <input type="text" id="dialChar" placeholder="예: 차가운 반말, 까칠하지만 속은 따뜻함, 엉뚱한 어조 등">
+            </div>
+            <div class="section">
+                <label>2. 장소 / 상황</label>
+                <input type="text" id="dialSituation" placeholder="예: 비 내리는 편의점 앞, 오해가 풀어지는 순간 등">
+            </div>
+            <button type="button" class="submit-btn" onclick="generateDialogue()">대사 스파크 당기기</button>
+        </div>
+
+        <div class="article-card" id="dialogueResultCard">
+            <div class="article-header">
+                <span class="article-meta">DIALOGUE SPARK POST</span>
+                <div class="btn-group">
+                    <button class="copy-btn" onclick="copyResult('dialogueOutput', this)">복사하기</button>
+                </div>
+            </div>
+            <div class="article-body" id="dialogueOutput"></div>
+        </div>
+    </div>
 </div>
 
 <script>
     let memoCount = 0;
     const selectedLevels = {
         worldLevel: 'low',
-        sparkLevel: 'low'
+        sparkLevel: 'low',
+        dialogueLevel: 'low'
     };
 
     function selectLevel(group, btn) {
@@ -637,7 +675,7 @@
         output.innerText = "질문을 생성 중입니다...";
         card.style.display = "block";
 
-        const promptText = "작성된 내용을 바탕으로 세계관의 허점을 채울 수 있는 정곡을찌르는 질문 3개만 제시해줘. - 테마: " + core + " / 규칙: " + rule;
+        const promptText = "작성된 내용을 바탕으로 세계관의 허점을 채울 수 있는 정곡을 찌르는 질문 3개만 제시해줘. - 테마: " + core + " / 규칙: " + rule;
 
         try {
             output.innerText = await callGemini(promptText);
@@ -658,9 +696,33 @@
 
         let promptText = "";
         if (level === 'low') {
-            promptText = "장면이나 대사를 완성하지 마. 창작자가 직접 집필할 수 있도록 1. 연상 키워드 3개, 2. 인물의 감정 상태 단어 2개, 3. 연출을 고민해볼 질문 2개만 리스트로 적어줘. [조건]: " + condition + " / [장소]: " + place;
+            promptText = "대사는 절대 포함하지 마. 1. 연상 키워드 3개, 2. 인물의 감정 및 분위기 단어 2개, 3. 연출 질문 2개만 리스트로 적어줘. [조건]: " + condition + " / [장소/상황]: " + place;
         } else {
-            promptText = "창작용 소재 글감을 추천해줘. 1. 키워드 연상 (2개), 2. 장면 연출 힌트 (2문장), 3. 대사 힌트 (2개), 4. 연출 질문 (1개). [조건]: " + condition + " / [장소/상황]: " + place;
+            promptText = "대사는 포함하지 말고 장면과 분위기 위주로 추천해줘. 1. 키워드 연상 (2개), 2. 장면 연출 힌트 (2문장), 3. 분위기 연출 질문 (1개). [조건]: " + condition + " / [장소/상황]: " + place;
+        }
+
+        try {
+            output.innerText = await callGemini(promptText);
+        } catch (err) {
+            output.innerText = "오류 발생: " + err.message;
+        }
+    }
+
+    async function generateDialogue() {
+        const character = document.getElementById('dialChar').value;
+        const situation = document.getElementById('dialSituation').value;
+        const card = document.getElementById('dialogueResultCard');
+        const output = document.getElementById('dialogueOutput');
+        const level = selectedLevels.dialogueLevel;
+
+        output.innerText = "대사 포스트를 생성하는 중입니다...";
+        card.style.display = "block";
+
+        let promptText = "";
+        if (level === 'low') {
+            promptText = "완성된 대사를 길게 적지 말고, 대사의 '방향성 힌트' 2개와 이 캐릭터가 할 법한 '핵심 어휘/단어' 3개만 적어줘. [캐릭터 성격/말투]: " + character + " / [장소/상황]: " + situation;
+        } else {
+            promptText = "이 상황에서 캐릭터의 성격과 말투가 잘 드러나는 특징적인 대사 힌트 3개만 추천해줘. [캐릭터 성격/말투]: " + character + " / [장소/상황]: " + situation;
         }
 
         try {
@@ -673,3 +735,4 @@
 
 </body>
 </html>
+
