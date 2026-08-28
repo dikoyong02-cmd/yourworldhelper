@@ -305,27 +305,6 @@
             white-space: pre-line;
         }
 
-        .blog-quote-box {
-            background: var(--quote-bg);
-            border-left: 4px solid var(--quote-border);
-            padding: 16px 20px;
-            margin: 20px 0;
-            border-radius: 0 8px 8px 0;
-        }
-
-        .quote-title {
-            font-size: 12px;
-            font-weight: 700;
-            color: var(--primary-color);
-            margin-bottom: 8px;
-        }
-
-        .quote-line {
-            font-style: italic;
-            font-size: 15px;
-            margin-bottom: 6px;
-        }
-
         .memo-container {
             margin-bottom: 20px;
             display: flex;
@@ -385,7 +364,6 @@
             <li><strong>이용 팁:</strong> 하단의 탭을 통해 <strong>세계관 영감</strong>, <strong>설정 체크리스트</strong>, <strong>소재 스파크</strong> 기능을 자유롭게 이용해 보세요.</li>
             <li><strong>메모장 활용:</strong> 상단의 <code>📝 메모장 만들기</code> 버튼을 눌러 아이디어를 즉시 임시 저장하고 복사할 수 있습니다.</li>
             <li><strong>사용 규칙:</strong> 본 사이트는 AI를 기반으로 제작되었습니다. 생성된 글감을 바탕으로 공개 작품을 만드실 때에는 <strong>AI 활용 사실을 밝혀주시거나, 일부 내용을 수정하여 사용</strong>해 주시기를 권장합니다.</li>
-            <li><strong>참고사항:</strong> 개인 프로젝트로 제작되어 추가적인 버그 수정이나 아이디어 제안은 아쉽게도 따로 반영해 드리기 어렵습니다. 모쪼록 즐겁게 사용해 주세요!</li>
         </ul>
     </div>
 
@@ -400,7 +378,7 @@
     <div id="worldTab" class="tab-content active">
         <div class="form-card">
             <div class="form-title">세계관 영감 도우미</div>
-            <div class="form-desc">상상력을 자극할 수 있는 단어와 상황 힌트를 포스트 형태로 제공합니다.</div>
+            <div class="form-desc">상상력을 자극할 수 있는 단어와 상황 힌트를 제공합니다.</div>
             <div class="section">
                 <label>생각 중인 키워드 / 메모</label>
                 <textarea id="world-setting" placeholder="아이디어 메모를 적어주세요..."></textarea>
@@ -566,7 +544,8 @@
         });
 
         if (!response.ok) {
-            throw new Error("서버 요청 실패");
+            const errData = await response.json().catch(() => ({}));
+            throw new Error(errData.error || "서버 요청 실패");
         }
 
         const data = await response.json();
@@ -586,8 +565,8 @@
 
         try {
             output.innerText = await callGemini(promptText);
-        } catch {
-            output.innerText = "오류가 발생했습니다.";
+        } catch (err) {
+            output.innerText = "오류 발생: " + err.message;
         }
     }
 
@@ -604,8 +583,8 @@
 
         try {
             output.innerText = await callGemini(promptText);
-        } catch {
-            output.innerText = "오류가 발생했습니다.";
+        } catch (err) {
+            output.innerText = "오류 발생: " + err.message;
         }
     }
 
@@ -618,29 +597,12 @@
         output.innerText = "스파크 포스트를 생성하는 중입니다...";
         card.style.display = "block";
 
-        const promptText = "조건과 장소에 맞춰 단어, 장면, 대사 힌트, 질문을 아래 JSON 양식으로 출력해줘:\n{\n  \"words\": [\"단어1\", \"단어2\"],\n  \"scenes\": [\"장면1\", \"장면2\"],\n  \"dialogues\": [\"대사1\", \"대사2\"],\n  \"question\": \"질문\"\n}\n[조건]: " + condition + " / [장소]: " + place;
+        const promptText = "창작용 소재 글감을 추천해줘. 1. 키워드 연상 (2개), 2. 장면 연출 힌트 (2문장), 3. 대사 힌트 (2개), 4. 연출 질문 (1개). [조건]: " + condition + " / [장소/상황]: " + place;
 
         try {
-            const raw = await callGemini(promptText);
-            const clean = raw.replace(/```json|```/g, "").trim();
-            const data = JSON.parse(clean);
-
-            let html = "<strong>1. 키워드 연상</strong>\n";
-            data.words.forEach(w => html += "• " + w + "\n");
-
-            html += "\n<strong>2. 장면 연출</strong>\n";
-            data.scenes.forEach(s => html += "• " + s + "\n");
-
-            html += '<div class="blog-quote-box">' +
-                '<div class="quote-title">💬 대사 힌트 (Inspiration Quotes)</div>' +
-                '<div class="quote-line">"' + data.dialogues[0] + '"</div>' +
-                '<div class="quote-line">"' + data.dialogues[1] + '"</div>' +
-                '</div>';
-
-            html += "<strong>3. 창작 연출 질문</strong>\n• " + data.question;
-            output.innerHTML = html;
-        } catch {
-            output.innerText = "오류가 발생했습니다.";
+            output.innerText = await callGemini(promptText);
+        } catch (err) {
+            output.innerText = "오류 발생: " + err.message;
         }
     }
 </script>
