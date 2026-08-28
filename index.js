@@ -16,8 +16,8 @@ app.post('/api/generate', async (req, res) => {
         }
 
         const genAI = new GoogleGenerativeAI(apiKey);
-        // gemini-1.5-flash 모델 사용
-        const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+        // 최신 Flash 모델 명칭 적용
+        const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
 
         const prompt = req.body.prompt;
         const result = await model.generateContent(prompt);
