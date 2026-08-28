@@ -38,13 +38,12 @@ app.post('/api/generate', async (req, res) => {
 
 // 메인 화면 제공 (프론트엔드 HTML/CSS/JS)
 app.get('/', (req, res) => {
-    res.send(`
-<!DOCTYPE html>
+    const html = `<!DOCTYPE html>
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>yourworldhelper - 블로그 에디터 스타일</title>
+    <title>yourworldhelper - 창작 영감 도우미</title>
     <style>
         :root {
             --bg-color: #f8f9fa;
@@ -552,22 +551,19 @@ app.get('/', (req, res) => {
     function addGlobalMemo() {
         memoCount++;
         const container = document.getElementById('memoContainer');
-        const memoId = `memoText_${memoCount}`;
+        const memoId = "memoText_" + memoCount;
 
         const memoCard = document.createElement('div');
         memoCard.className = 'memo-card';
-        memoCard.id = `memoCard_${memoCount}`;
+        memoCard.id = "memoCard_" + memoCount;
 
-        memoCard.innerHTML = `
-            <div class="memo-card-header">
-                <span class="memo-card-title">📌 아이디어 메모 #${memoCount}</span>
-                <div class="btn-group">
-                    <button class="copy-btn" onclick="copyMemo('${memoId}', this)">메모 복사</button>
-                    <button class="copy-btn" style="background:#ffc9c9; color:#c92a2a;" onclick="deleteMemo('memoCard_${memoCount}')">삭제</button>
-                </div>
-            </div>
-            <textarea id="${memoId}" placeholder="떠오르는 아이디어를 즉시 기록하세요..."></textarea>
-        `;
+        memoCard.innerHTML = '<div class="memo-card-header">' +
+            '<span class="memo-card-title">📌 아이디어 메모 #' + memoCount + '</span>' +
+            '<div class="btn-group">' +
+            '<button class="copy-btn" onclick="copyMemo(\'' + memoId + '\', this)">메모 복사</button>' +
+            '<button class="copy-btn" style="background:#ffc9c9; color:#c92a2a;" onclick="deleteMemo(\'memoCard_' + memoCount + '\')">삭제</button>' +
+            '</div></div>' +
+            '<textarea id="' + memoId + '" placeholder="떠오르는 아이디어를 즉시 기록하세요..."></textarea>';
 
         container.appendChild(memoCard);
     }
@@ -626,7 +622,7 @@ app.get('/', (req, res) => {
         output.innerText = "영감 포스트를 작성하는 중입니다...";
         card.style.display = "block";
 
-        const promptText = `창작자에게 영감을 줄 단어 3개, 상황 묘사 2문장, 질문 1개를 작성해줘. [장르]: ${genres.join(', ')} / [메모]: ${setting}`;
+        const promptText = "창작자에게 영감을 줄 단어 3개, 상황 묘사 2문장, 질문 1개를 작성해줘. [장르]: " + genres.join(', ') + " / [메모]: " + setting;
 
         try {
             output.innerText = await callGemini(promptText);
@@ -644,7 +640,7 @@ app.get('/', (req, res) => {
         output.innerText = "질문을 생성 중입니다...";
         card.style.display = "block";
 
-        const promptText = `작성된 내용을 바탕으로 질문 2~3개를 던져줘. - 테마: ${core} / 규칙: ${rule}`;
+        const promptText = "작성된 내용을 바탕으로 질문 2~3개를 던져줘. - 테마: " + core + " / 규칙: " + rule;
 
         try {
             output.innerText = await callGemini(promptText);
@@ -662,35 +658,26 @@ app.get('/', (req, res) => {
         output.innerText = "스파크 포스트를 생성하는 중입니다...";
         card.style.display = "block";
 
-        const promptText = `
-조건과 장소에 맞춰 단어, 장면, 대사 힌트, 질문을 아래 JSON 양식으로 출력해줘:
-{
-  "words": ["단어1", "단어2"],
-  "scenes": ["장면1", "장면2"],
-  "dialogues": ["대사1", "대사2"],
-  "question": "질문"
-}
-[조건]: ${condition} / [장소]: ${place}`;
+        const promptText = "조건과 장소에 맞춰 단어, 장면, 대사 힌트, 질문을 아래 JSON 양식으로 출력해줘:\n{\n  \"words\": [\"단어1\", \"단어2\"],\n  \"scenes\": [\"장면1\", \"장면2\"],\n  \"dialogues\": [\"대사1\", \"대사2\"],\n  \"question\": \"질문\"\n}\n[조건]: " + condition + " / [장소]: " + place;
 
         try {
             const raw = await callGemini(promptText);
             const clean = raw.replace(/```json|```/g, "").trim();
             const data = JSON.parse(clean);
 
-            let html = `<strong>1. 키워드 연상</strong>\n`;
-            data.words.forEach(w => html += `• ${w}\n`);
+            let html = "<strong>1. 키워드 연상</strong>\n";
+            data.words.forEach(w => html += "• " + w + "\n");
 
-            html += `\n<strong>2. 장면 연출</strong>\n`;
-            data.scenes.forEach(s => html += `• ${s}\n`);
+            html += "\n<strong>2. 장면 연출</strong>\n";
+            data.scenes.forEach(s => html += "• " + s + "\n");
 
-            html += `
-<div class="blog-quote-box">
-    <div class="quote-title">💬 대사 힌트 (Inspiration Quotes)</div>
-    <div class="quote-line">"${data.dialogues[0]}"</div>
-    <div class="quote-line">"${data.dialogues[1]}"</div>
-</div>`;
+            html += '\n<div class="blog-quote-box">' +
+                '<div class="quote-title">💬 대사 힌트 (Inspiration Quotes)</div>' +
+                '<div class="quote-line">"' + data.dialogues[0] + '"</div>' +
+                '<div class="quote-line">"' + data.dialogues[1] + '"</div>' +
+                '</div>';
 
-            html += `<strong>3. 창작 연출 질문</strong>\n• ${data.question}`;
+            html += "<strong>3. 창작 연출 질문</strong>\n• " + data.question;
             output.innerHTML = html;
         } catch {
             output.innerText = "오류가 발생했습니다.";
@@ -699,8 +686,8 @@ app.get('/', (req, res) => {
 </script>
 
 </body>
-</html>
-    `);
+</html>`;
+    res.send(html);
 });
 
 app.listen(PORT, () => {
