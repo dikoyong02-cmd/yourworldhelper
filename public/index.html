@@ -478,7 +478,7 @@
         </div>
     </div>
 
-    <!-- 탭 2: 창작 주제 추천 (신규) -->
+    <!-- 탭 2: 창작 주제 추천 -->
     <div id="topicTab" class="tab-content">
         <div class="form-card">
             <div class="form-title">창작 주제 추천</div>
@@ -497,8 +497,8 @@
                 <textarea id="topicWorld" placeholder="예: 마법과 과학이 공존하는 디스토피아 도시, 감정을 느끼지 못하는 기사단 등..."></textarea>
             </div>
             <div class="section">
-                <label>2. 원하는 상황 / 연출</label>
-                <textarea id="topicSituation" placeholder="예: 비밀 임무 중 옛 동료와 마주친 상황, 금지된 구역에서 발견한 유물 등..."></textarea>
+                <label>2. 원하는 상황 / 연출 (미입력/아무거나/없음 입력 시 세계관 기반 자동 연출)</label>
+                <textarea id="topicSituation" placeholder="예: 비밀 임무 중 옛 동료와 마주친 상황 (작성을 하지 않거나 '아무거나', '없음' 입력 시 대표 연출을 자동 생성합니다)"></textarea>
             </div>
             <button type="button" class="submit-btn" onclick="generateTopic()">어울리는 주제 추천받기</button>
         </div>
@@ -534,7 +534,7 @@
             </div>
             <div class="section">
                 <label>2. 장소 / 상황</label>
-                <input type="text" id="sparkPlace" placeholder="예: 비 내리는 정류장, 오래된 서점 등">
+                <input type="text" id="sparkPlace" placeholder="예: 비 내리는 정류장, 오래된 서점 등 ('없음' 시 자동 제안)">
             </div>
             <button type="button" class="submit-btn" onclick="generateSpark()">영감 스파크 당기기</button>
         </div>
@@ -570,7 +570,7 @@
             </div>
             <div class="section">
                 <label>2. 장소 / 상황</label>
-                <input type="text" id="dialSituation" placeholder="예: 비 내리는 편의점 앞, 오해가 풀어지는 순간 등">
+                <input type="text" id="dialSituation" placeholder="예: 비 내리는 편의점 앞, 오해가 풀어지는 순간 등 ('없음' 시 자동 제안)">
             </div>
             <button type="button" class="submit-btn" onclick="generateDialogue()">대사 스파크 당기기</button>
         </div>
@@ -595,6 +595,8 @@
         sparkLevel: 'low',
         dialogueLevel: 'low'
     };
+
+    const nullKeywords = ['아무거나', '없음', '랜덤', '상관없음', '무관', '없어', ''];
 
     function toggleGuide() {
         const guideBody = document.getElementById('guideBody');
@@ -730,17 +732,21 @@
 
     async function generateTopic() {
         const world = document.getElementById('topicWorld').value;
-        const situation = document.getElementById('topicSituation').value;
+        let situation = document.getElementById('topicSituation').value.trim();
         const card = document.getElementById('topicResultCard');
         const output = document.getElementById('topicOutput');
         const level = selectedLevels.topicLevel;
+
+        if (nullKeywords.includes(situation)) {
+            situation = "지정된 입력이 없거나 '아무거나' 상태입니다. 위 제출된 세계관 설정을 바탕으로 가장 잘 어울리고 극적인 갈등을 자극할 수 있는 대표적인 상황 및 연출을 직접 임의로 만들어 활용해주세요.";
+        }
 
         output.innerText = "어울리는 창작 주제를 생각하는 중입니다...";
         card.style.display = "block";
 
         let promptText = "";
         if (level === 'low') {
-            promptText = "제출된 세계관과 상황에 어울리는 창작 주제 3가지를 추천해줘. 구체적인 줄거리 대신 작가가 다양하게 해석할 수 있는 '핵심 키워드 주제'와 '딜레마 중심 테마' 위주로 짧고 명확하게 제시해줘. [세계관]: " + world + " / [상황]: " + situation;
+            promptText = "제출된 세계관과 상황을 바탕으로 어울리는 창작 주제 3가지를 추천해줘. 구체적인 줄거리 대신 작가가 다양하게 해석할 수 있는 '핵심 키워드 주제'와 '딜레마 중심 테마' 위주로 짧고 명확하게 제시해줘. [세계관]: " + world + " / [상황]: " + situation;
         } else {
             promptText = "제출된 세계관과 상황에 딱 맞는 매력적인 창작 주제 3가지를 제시해줘. 각 주제별로 (1) 주제 제목, (2) 이 주제로 다룰 수 있는 주요 대립 및 갈등 요소(1~2문장), (3) 던질 수 있는 핵심 질문 1개를 구체적으로 작성해줘. [세계관]: " + world + " / [상황]: " + situation;
         }
@@ -754,10 +760,14 @@
 
     async function generateSpark() {
         const condition = document.getElementById('sparkCondition').value;
-        const place = document.getElementById('sparkPlace').value;
+        let place = document.getElementById('sparkPlace').value.trim();
         const card = document.getElementById('sparkResultCard');
         const output = document.getElementById('sparkOutput');
         const level = selectedLevels.sparkLevel;
+
+        if (nullKeywords.includes(place)) {
+            place = "조건에 가장 매력적으로 어울리는 창작 장소와 상황을 직접 하나 선정해서 활용해줘.";
+        }
 
         output.innerText = "스파크 포스트를 생성하는 중입니다...";
         card.style.display = "block";
@@ -778,10 +788,14 @@
 
     async function generateDialogue() {
         const character = document.getElementById('dialChar').value;
-        const situation = document.getElementById('dialSituation').value;
+        let situation = document.getElementById('dialSituation').value.trim();
         const card = document.getElementById('dialogueResultCard');
         const output = document.getElementById('dialogueOutput');
         const level = selectedLevels.dialogueLevel;
+
+        if (nullKeywords.includes(situation)) {
+            situation = "이 캐릭터의 성격과 말투가 가장 잘 드러날 수 있는 상징적인 상황과 장소를 직접 만들어서 연출해줘.";
+        }
 
         output.innerText = "대사 포스트를 생성하는 중입니다...";
         card.style.display = "block";
@@ -803,4 +817,3 @@
 
 </body>
 </html>
-
