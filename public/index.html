@@ -41,8 +41,15 @@
     body { background-color: var(--bg-color); color: var(--text-color); padding: 15px; touch-action: manipulation; }
     .container { max-width: 1000px; margin: 0 auto; background: var(--card-bg); border: 2px solid var(--border-color); padding: 10px; box-shadow: 4px 4px 0px #000000; }
     
-    /* 상단 안내 바 */
-    .token-notice { background: #fff; border: 1px solid var(--border-color); padding: 8px; margin-bottom: 10px; font-size: 11px; text-align: center; }
+    .token-notice {
+      background: var(--card-sub-bg);
+      border: 1px solid var(--border-color);
+      padding: 8px 12px;
+      margin-bottom: 10px;
+      font-size: 11px;
+      color: var(--text-color);
+      text-align: center;
+    }
 
     header { background: var(--window-title-bg); padding: 6px 10px; margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center; border: 1px solid var(--border-color); }
     header h1 { font-size: 14px; font-weight: bold; color: #ffffff; }
@@ -68,5 +75,708 @@
 
     .form-group { margin-bottom: 10px; }
     .form-group label { display: block; font-size: 11px; font-weight: bold; margin-bottom: 4px; }
-    textarea { width: 100%; height: 75px; resize: vertical; border: 1px solid var(--border-color); padding: 6px; font-size: 12px; background: var(--input-bg); color: var(--text-color); outline: none; }
-    input[type="text"], input[type="password"], select { width:
+    .slider-header { display: flex; justify-content: space-between; align-items: center; }
+    .slider-desc { font-size: 11px; color: var(--accent-color); font-weight: bold; }
+    input[type="range"] { width: 100%; height: 6px; background: var(--input-bg); border: 1px solid var(--border-color); accent-color: var(--accent-color); cursor: pointer; }
+    input[type="text"], input[type="password"], select, textarea { width: 100%; border: 1px solid var(--border-color); padding: 6px; font-size: 12px; background: var(--input-bg); color: var(--text-color); outline: none; }
+    textarea { height: 75px; resize: vertical; }
+
+    .result-box { min-height: 180px; background: var(--input-bg); border: 1px solid var(--border-color); padding: 12px; font-size: 12px; line-height: 1.6; }
+    .markdown-body h1, .markdown-body h2, .markdown-body h3 { margin-top: 10px; margin-bottom: 6px; color: var(--accent-color); border-bottom: 1px dashed var(--border-color); padding-bottom: 4px; }
+    .markdown-body p { margin-bottom: 8px; }
+    .markdown-body ul, .markdown-body ol { margin-left: 20px; margin-bottom: 8px; }
+    .markdown-body blockquote { border-left: 3px solid var(--accent-color); padding-left: 8px; margin: 8px 0; color: #666; font-style: italic; }
+
+    .board-container { position: relative; width: 100%; height: 450px; background-color: var(--canvas-bg); border: 2px solid var(--canvas-frame); overflow: hidden; touch-action: none; }
+    .board-viewport { position: absolute; width: 100%; height: 100%; background-image: linear-gradient(var(--canvas-grid) 1px, transparent 1px), linear-gradient(90deg, var(--canvas-grid) 1px, transparent 1px); background-size: 20px 20px; transform-origin: 0 0; }
+    .board-toolbar { display: flex; flex-wrap: wrap; gap: 4px; margin-bottom: 8px; align-items: center; justify-content: space-between; background: var(--card-bg); padding: 6px; border: 1px solid var(--border-color); }
+    .board-tool-group { display: flex; gap: 4px; align-items: center; flex-wrap: wrap; }
+
+    .canvas-node { position: absolute; background: var(--input-bg); border: 1px solid var(--border-color); padding: 6px; font-size: 11px; box-shadow: 2px 2px 0px rgba(0,0,0,0.2); cursor: move; user-select: none; min-width: 80px; min-height: 40px; }
+    .canvas-node img { width: 100%; height: 100%; object-fit: contain; display: block; pointer-events: none; }
+    .resize-handle { position: absolute; right: 0; bottom: 0; width: 10px; height: 10px; background: var(--border-color); cursor: se-resize; }
+
+    sidebar { display: flex; flex-direction: column; gap: 12px; }
+    .profile-card { border: 1px solid var(--border-color); padding: 12px; background: var(--card-sub-bg); text-align: center; }
+    .profile-img-box { width: 90px; height: 90px; border: 1px solid var(--border-color); margin: 0 auto 8px; display: flex; align-items: center; justify-content: center; background: var(--input-bg); overflow: hidden; }
+    .profile-img-box img { width: 100%; height: 100%; object-fit: cover; display: none; }
+    .collapsible-content.collapsed { display: none; }
+
+    footer { margin-top: 15px; border-top: 1px solid var(--border-color); padding-top: 8px; text-align: center; font-size: 11px; color: var(--footer-text); }
+    @media (max-width: 768px) { main { grid-template-columns: 1fr; } }
+  </style>
+</head>
+<body data-theme="bubblegum">
+
+<div class="container">
+  <div class="token-notice">
+    💡 <strong>안내:</strong> 본 서비스 이용을 위해서는 <strong>Hugging Face API 토큰</strong>이 필요합니다. 우측 [SETTINGS] 탭에 토큰을 입력해 주세요. (입력한 토큰은 브라우저에 자동 저장됩니다.)
+  </div>
+
+  <header>
+    <h1>YOUR WORLD HELPER (v2.0)</h1>
+    <div class="theme-selector-box">
+      <label for="themeSelect">COLOR THEME:</label>
+      <select id="themeSelect" onchange="changeTheme(this.value)">
+        <option value="bubblegum">Y2K Bubblegum</option>
+        <option value="classic">Classic Teal</option>
+      </select>
+    </div>
+  </header>
+
+  <div class="tab-container">
+    <button class="tab-btn active" id="tab-myWorld" onclick="selectMainTab('myWorld', this)">나만의 세상 만들기</button>
+    <button class="tab-btn" id="tab-topic" onclick="selectMainTab('topic', this)">주제 선정</button>
+    <button class="tab-btn" id="tab-dialogue" onclick="selectMainTab('dialogue', this)">대사 생성</button>
+    <button class="tab-btn" id="tab-guide" onclick="selectMainTab('guide', this)">사용 가이드</button>
+  </div>
+
+  <div class="sub-tab-container" id="subTabContainer">
+    <button class="sub-tab-btn active" id="subTab-world" onclick="selectSubTab('world', this)">세계관 생성</button>
+    <button class="sub-tab-btn" id="subTab-character" onclick="selectSubTab('character', this)">캐릭터 설정</button>
+    <button class="sub-tab-btn" id="subTab-plot" onclick="selectSubTab('plot', this)">플롯 / 스토리</button>
+  </div>
+
+  <main>
+    <div class="content-area">
+      <section class="card" id="inputSection">
+        <div class="card-title" id="formTitle">세계관 설정 입력</div>
+        
+        <div class="form-group" id="genreGroup">
+          <label>장르 / 테마</label>
+          <select id="genreSelect">
+            <option value="판타지">판타지</option>
+            <option value="SF/사이버펑크">SF / 사이버펑크</option>
+            <option value="현대 로맨스">현대 로맨스</option>
+            <option value="미스터리/스릴러">미스터리 / 스릴러</option>
+            <option value="무협/시대극">무협 / 시대극</option>
+          </select>
+        </div>
+
+        <div class="form-group" id="mainPromptGroup">
+          <label id="promptLabel">상세 요구사항 / 프롬프트</label>
+          <textarea id="promptInput" placeholder="원하는 분위기나 핵심 소재를 입력해보세요..."></textarea>
+        </div>
+
+        <div class="form-group" id="dialogueExtraGroup" style="display: none;">
+          <label>상황 및 장소 설정</label>
+          <textarea id="dialogueContextInput" placeholder="예: 비 내리는 조용한 골목길, 대립 중인 상황"></textarea>
+        </div>
+
+        <div class="form-group" id="aiLevelGroup">
+          <div class="slider-header">
+            <label for="aiLevelInput">AI 관여도 (창의성 Level)</label>
+            <span id="aiLevelDesc" class="slider-desc">Lv.3 보통 (적절한 디테일 추가)</span>
+          </div>
+          <input type="range" id="aiLevelInput" min="1" max="5" value="3" oninput="updateAiLevelDesc(this.value)">
+        </div>
+
+        <div class="form-group" id="keywordGroup">
+          <label id="keywordLabel">핵심 키워드 (선택)</label>
+          <input type="text" id="keywordInput" placeholder="예: 시계탑, 비밀, 안개">
+        </div>
+
+        <button type="button" class="primary-btn" onclick="generateContent()">[ 생성 실행 ]</button>
+      </section>
+
+      <!-- 캔버스 영역 -->
+      <section class="card" id="boardSection" style="display: none;">
+        <div class="card-title">RELATIONSHIP & STORY CANVAS</div>
+        <div class="board-toolbar">
+          <div class="board-tool-group">
+            <button class="board-tool-btn" id="tool-select" onclick="setBoardTool('select')">선택/이동</button>
+            <button class="board-tool-btn active" id="tool-draw" onclick="setBoardTool('draw')">펜 드로잉</button>
+            <button class="board-tool-btn" id="tool-arrow" onclick="setBoardTool('arrow')">화살표</button>
+            <select id="arrowWidthSelect" style="width: 70px; height: 28px; font-size: 11px;" onchange="updateLineWidth(this.value)">
+              <option value="1">1px</option>
+              <option value="2" selected>2px</option>
+              <option value="4">4px</option>
+              <option value="6">6px</option>
+            </select>
+            <button class="board-tool-btn" id="tool-erase" onclick="setBoardTool('erase')">지우개</button>
+          </div>
+          <div class="board-tool-group">
+            <button class="small-btn" onclick="zoomCanvas(0.1)" title="확대">+</button>
+            <button class="small-btn" id="zoomResetBtn" onclick="resetZoom()" title="원래 크기">100%</button>
+            <button class="small-btn" onclick="zoomCanvas(-0.1)" title="축소">-</button>
+            <button class="small-btn" onclick="addTextCard()">+ 카드</button>
+            <button class="small-btn" onclick="document.getElementById('canvasImageInput').click()">+ 이미지</button>
+            <input type="file" id="canvasImageInput" accept="image/*" style="display:none;" onchange="addCanvasImage(event)">
+            <button class="small-btn" onclick="undoCanvas()" title="되돌리기">↩</button>
+            <button class="small-btn" onclick="redoCanvas()" title="다시실행">↪</button>
+            <button class="small-btn" onclick="clearCanvasDrawing()">초기화</button>
+          </div>
+        </div>
+        <div class="board-container" id="boardContainer">
+          <div class="board-viewport" id="boardViewport">
+            <canvas id="drawingCanvas"></canvas>
+          </div>
+        </div>
+        <div class="form-group" style="margin-top: 10px;">
+          <label>통합 스토리 서술 노트</label>
+          <textarea id="boardStoryText" placeholder="아이디어나 전체 스토리 흐름을 자유롭게 정리하세요..."></textarea>
+        </div>
+      </section>
+
+      <article class="card" id="resultSection">
+        <div class="card-title">생성 결과</div>
+        <div id="resultOutput" class="result-box markdown-body">결과가 여기에 표시됩니다.</div>
+      </article>
+
+      <section class="card" id="guideSection" style="display: none;">
+        <div class="card-title">SYSTEM MANUAL & USER GUIDE</div>
+        <div class="result-box markdown-body" style="border: none;">
+          <h3>1. 서비스 개요</h3>
+          <p>Your World Helper는 작가, 기획자, 크리에이터를 위한 Y2K 픽셀 스타일의 스토리보딩 및 세계관 생성 헬퍼 시스템입니다.</p>
+          
+          <h3>2. 주요 기능 활용법</h3>
+          <ul>
+            <li><strong>세계관 / 캐릭터 / 플롯 생성:</strong> 원하는 키워드와 AI 관여도를 설정하여 서사를 확장하세요.</li>
+            <li><strong>관계도 & 스토리 캔버스:</strong> 펜 드로잉, 메모 카드, 이미지를 캔버스 위에 자유롭게 자유 배치하고 구도를 스케치하세요.</li>
+            <li><strong>AI 관여도 (Level 1~5):</strong> 설정값이 높을수록 AI가 창의적이고 새로운 아이디어를 다양하게 제안합니다.</li>
+          </ul>
+
+          <h3>3. 저작권 및 공모전 이용 안내</h3>
+          <blockquote style="border-left: 3px solid var(--accent-color); padding-left: 8px; margin: 8px 0; color: var(--text-color);">
+            <strong>Q. AI가 생성한 텍스트나 아이디어를 공모전/상업용 작품에 바로 사용해도 되나요?</strong><br>
+            A. 생성된 텍스트는 <u>창작 아이디어를 돕는 보조 도구</u>로 활용하시는 것을 적극 권장합니다. 공모전에 제출할 경우 각 공모전의 'AI 활용 가이드라인'을 반드시 확인하시고, 생성 결과를 사용자의 독창적인 문체로 다듬고 발전시켜 완성도를 높이세요.
+          </blockquote>
+        </div>
+      </section>
+    </div>
+
+    <sidebar>
+      <div class="profile-card">
+        <div class="card-title">USER PROFILE</div>
+        <div class="profile-img-box">
+          <img id="profilePreview" src="" alt="프로필">
+          <div id="profilePlaceholder" style="font-size: 11px;">NO IMAGE</div>
+        </div>
+        <div style="font-weight: bold; font-size: 12px; margin-bottom: 6px;">User_01</div>
+        <button type="button" class="profile-btn" onclick="document.getElementById('profileInput').click()">파일 선택</button>
+        <input type="file" id="profileInput" accept="image/*" style="display: none;" onchange="loadProfileImageFromFile(event)">
+      </div>
+
+      <div class="card">
+        <div class="card-title">
+          <span>SETTINGS (명령어 설정)</span>
+          <button type="button" class="card-title-btn" id="settingsToggleBtn" onclick="toggleSettingsCard()">▲ 열기</button>
+        </div>
+        <div id="settingsContent" class="collapsible-content collapsed">
+          <div class="form-group" style="margin-top: 8px;">
+            <label>Hugging Face Token (HF_token)</label>
+            <input type="password" id="hfTokenInput" placeholder="hf_xxxxxxxxxxxxxxxxxxxx" oninput="saveToken(this.value)">
+          </div>
+          <div class="form-group">
+            <label>AI 시스템 명령어 (System Prompt)</label>
+            <textarea id="systemPromptInput" style="height: 70px; font-size: 10px;" placeholder="AI 서법 및 말투 지침을 입력하세요...">당신은 스토리 기획 전문 AI 작가입니다. 마크다운 형식을 활용해 풍부한 텍스트를 작성하세요.</textarea>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">MEMO PAD</div>
+        <textarea id="memoInput" placeholder="간단한 메모를 기록하세요..." style="height: 90px; font-size: 11px;"></textarea>
+      </div>
+
+      <button class="side-nav-btn" id="relationSideBtn" onclick="selectMainTab('relation', this)">
+        관계도 & 스토리 캔버스
+      </button>
+    </sidebar>
+  </main>
+
+  <footer>
+    <p>Copyright (c) 2026 yourworldhelper. All rights reserved.</p>
+  </footer>
+</div>
+
+<script>
+  let currentMainTab = 'myWorld';
+  let currentSubTab = 'world';
+  let boardTool = 'draw';
+  let currentLineWidth = 2;
+  let canvasScale = 1.0;
+
+  let isDrawing = false;
+  let lastX = 0, lastY = 0;
+  let startX = 0, startY = 0;
+
+  let undoStack = [];
+  let redoStack = [];
+  const MAX_HISTORY = 20;
+
+  const canvas = document.getElementById('drawingCanvas');
+  const ctx = canvas.getContext('2d');
+  let canvasSnapshot = null;
+
+  const aiLevelDescriptions = {
+    "1": "Lv.1 최소 (원문 충실)",
+    "2": "Lv.2 절제 (약간의 서술 보완)",
+    "3": "Lv.3 보통 (밸런스 있는 디테일 서술)",
+    "4": "Lv.4 높음 (창의적 설정 확장)",
+    "5": "Lv.5 최대 (자율적 아이디어 파생)"
+  };
+
+  window.addEventListener('DOMContentLoaded', () => {
+    initCanvas();
+    loadToken();
+  });
+
+  function saveToken(val) {
+    localStorage.setItem('hf_token', val.trim());
+  }
+
+  function loadToken() {
+    const savedToken = localStorage.getItem('hf_token');
+    if (savedToken) {
+      document.getElementById('hfTokenInput').value = savedToken;
+    }
+  }
+
+  function changeTheme(themeName) {
+    document.body.setAttribute('data-theme', themeName);
+  }
+
+  function updateAiLevelDesc(val) {
+    document.getElementById('aiLevelDesc').innerText = aiLevelDescriptions[val];
+  }
+
+  function updateLineWidth(val) {
+    currentLineWidth = parseInt(val);
+  }
+
+  function zoomCanvas(delta) {
+    canvasScale = Math.min(Math.max(0.5, canvasScale + delta), 2.0);
+    applyCanvasScale();
+  }
+
+  function resetZoom() {
+    canvasScale = 1.0;
+    applyCanvasScale();
+  }
+
+  function applyCanvasScale() {
+    const viewport = document.getElementById('boardViewport');
+    viewport.style.transform = `scale(${canvasScale})`;
+    const zoomBtn = document.getElementById('zoomResetBtn');
+    if (zoomBtn) {
+      zoomBtn.innerText = Math.round(canvasScale * 100) + '%';
+    }
+  }
+
+  function selectMainTab(tabType, element) {
+    currentMainTab = tabType;
+    document.querySelectorAll('.tab-btn, .side-nav-btn').forEach(btn => btn.classList.remove('active'));
+    if (element) element.classList.add('active');
+
+    const subTabContainer = document.getElementById('subTabContainer');
+    const inputSection = document.getElementById('inputSection');
+    const boardSection = document.getElementById('boardSection');
+    const resultSection = document.getElementById('resultSection');
+    const guideSection = document.getElementById('guideSection');
+
+    const genreGroup = document.getElementById('genreGroup');
+    const dialogueExtraGroup = document.getElementById('dialogueExtraGroup');
+    const promptLabel = document.getElementById('promptLabel');
+    const promptInput = document.getElementById('promptInput');
+
+    if (tabType === 'myWorld') {
+      subTabContainer.style.display = 'flex';
+      inputSection.style.display = 'block';
+      boardSection.style.display = 'none';
+      resultSection.style.display = 'block';
+      guideSection.style.display = 'none';
+      
+      updateSubTabUI();
+    } else if (tabType === 'dialogue') {
+      subTabContainer.style.display = 'none';
+      inputSection.style.display = 'block';
+      boardSection.style.display = 'none';
+      resultSection.style.display = 'block';
+      guideSection.style.display = 'none';
+      genreGroup.style.display = 'none';
+      dialogueExtraGroup.style.display = 'block';
+      promptLabel.innerText = '캐릭터 성격 및 말투 입력';
+      promptInput.placeholder = '예: 냉정하고 차분한 어조, 단정한 말투';
+      document.getElementById('formTitle').innerText = '대사 생성 입력';
+    } else if (tabType === 'topic') {
+      subTabContainer.style.display = 'none';
+      inputSection.style.display = 'block';
+      boardSection.style.display = 'none';
+      resultSection.style.display = 'block';
+      guideSection.style.display = 'none';
+      genreGroup.style.display = 'none';
+      dialogueExtraGroup.style.display = 'none';
+      promptLabel.innerText = '원하는 분위기 / 배경 설정 힌트';
+      promptInput.placeholder = '예: 차가운 새벽 공기, 시간 멈춤';
+      document.getElementById('formTitle').innerText = '주제 선정 (장소/설정 문장 & 단어 추천)';
+    } else if (tabType === 'relation') {
+      subTabContainer.style.display = 'none';
+      inputSection.style.display = 'none';
+      boardSection.style.display = 'block';
+      resultSection.style.display = 'none';
+      guideSection.style.display = 'none';
+      resizeCanvas();
+    } else if (tabType === 'guide') {
+      subTabContainer.style.display = 'none';
+      inputSection.style.display = 'none';
+      boardSection.style.display = 'none';
+      resultSection.style.display = 'none';
+      guideSection.style.display = 'block';
+    }
+  }
+
+  function selectSubTab(subType, element) {
+    currentSubTab = subType;
+    document.querySelectorAll('.sub-tab-btn').forEach(btn => btn.classList.remove('active'));
+    if (element) element.classList.add('active');
+    updateSubTabUI();
+  }
+
+  function updateSubTabUI() {
+    const genreGroup = document.getElementById('genreGroup');
+    const dialogueExtraGroup = document.getElementById('dialogueExtraGroup');
+    const promptLabel = document.getElementById('promptLabel');
+    const promptInput = document.getElementById('promptInput');
+
+    dialogueExtraGroup.style.display = 'none';
+
+    if (currentSubTab === 'world') {
+      genreGroup.style.display = 'block';
+      promptLabel.innerText = '세계관 상세 요구사항 / 프롬프트';
+      promptInput.placeholder = '원하는 분위기나 세계관 핵심 특징을 입력해보세요...';
+      document.getElementById('formTitle').innerText = '세계관 설정 입력';
+    } else if (currentSubTab === 'character') {
+      genreGroup.style.display = 'none';
+      promptLabel.innerText = '캐릭터 구상 프롬프트';
+      promptInput.placeholder = '인물의 외형, 성격, 배경 스토리를 입력해보세요...';
+      document.getElementById('formTitle').innerText = '캐릭터 설정 입력';
+    } else if (currentSubTab === 'plot') {
+      genreGroup.style.display = 'block';
+      promptLabel.innerText = '플롯/스토리 사건 프롬프트';
+      promptInput.placeholder = '스토리의 중심 갈등 사건이나 흐름을 입력해보세요...';
+      document.getElementById('formTitle').innerText = '플롯 / 스토리 입력';
+    }
+  }
+
+  function toggleSettingsCard() {
+    const content = document.getElementById('settingsContent');
+    const btn = document.getElementById('settingsToggleBtn');
+    content.classList.toggle('collapsed');
+    btn.innerText = content.classList.contains('collapsed') ? '▲ 열기' : '▼ 접기';
+  }
+
+  function saveState() {
+    if (undoStack.length >= MAX_HISTORY) undoStack.shift();
+    undoStack.push(ctx.getImageData(0, 0, canvas.width, canvas.height));
+    redoStack = [];
+  }
+
+  function undoCanvas() {
+    if (undoStack.length > 0) {
+      redoStack.push(ctx.getImageData(0, 0, canvas.width, canvas.height));
+      const previousState = undoStack.pop();
+      ctx.putImageData(previousState, 0, 0);
+    }
+  }
+
+  function redoCanvas() {
+    if (redoStack.length > 0) {
+      undoStack.push(ctx.getImageData(0, 0, canvas.width, canvas.height));
+      const nextState = redoStack.pop();
+      ctx.putImageData(nextState, 0, 0);
+    }
+  }
+
+  function getPos(e) {
+    const rect = canvas.getBoundingClientRect();
+    const clientX = e.touches && e.touches.length > 0 ? e.touches[0].clientX : e.clientX;
+    const clientY = e.touches && e.touches.length > 0 ? e.touches[0].clientY : e.clientY;
+    return { 
+      x: (clientX - rect.left) / canvasScale, 
+      y: (clientY - rect.top) / canvasScale 
+    };
+  }
+
+  function startDrawing(e) {
+    if (boardTool === 'select') return;
+    saveState();
+    isDrawing = true;
+    const pos = getPos(e);
+    startX = pos.x; startY = pos.y;
+    lastX = pos.x; lastY = pos.y;
+    if (boardTool === 'arrow') {
+      canvasSnapshot = ctx.getImageData(0, 0, canvas.width, canvas.height);
+    }
+  }
+
+  function draw(e) {
+    if (!isDrawing || boardTool === 'select') return;
+    e.preventDefault();
+    const pos = getPos(e);
+
+    if (boardTool === 'draw' || boardTool === 'erase') {
+      ctx.beginPath();
+      ctx.moveTo(lastX, lastY);
+      ctx.lineTo(pos.x, pos.y);
+      ctx.strokeStyle = boardTool === 'draw' ? '#8e5572' : '#ffffff';
+      ctx.lineWidth = boardTool === 'draw' ? currentLineWidth : 20;
+      ctx.lineCap = 'round';
+      ctx.stroke();
+      lastX = pos.x; lastY = pos.y;
+    } else if (boardTool === 'arrow') {
+      ctx.putImageData(canvasSnapshot, 0, 0);
+      drawArrow(startX, startY, pos.x, pos.y);
+    }
+  }
+
+  function drawArrow(fromx, fromy, tox, toy) {
+    const headlen = 8 + currentLineWidth * 2;
+    const angle = Math.atan2(toy - fromy, tox - fromx);
+    ctx.beginPath();
+    ctx.moveTo(fromx, fromy);
+    ctx.lineTo(tox, toy);
+    ctx.strokeStyle = '#8e5572';
+    ctx.lineWidth = currentLineWidth;
+    ctx.stroke();
+
+    ctx.beginPath();
+    ctx.moveTo(tox, toy);
+    ctx.lineTo(tox - headlen * Math.cos(angle - Math.PI / 6), toy - headlen * Math.sin(angle - Math.PI / 6));
+    ctx.lineTo(tox - headlen * Math.cos(angle + Math.PI / 6), toy - headlen * Math.sin(angle + Math.PI / 6));
+    ctx.lineTo(tox, toy);
+    ctx.fillStyle = '#8e5572';
+    ctx.fill();
+  }
+
+  function stopDrawing() { isDrawing = false; }
+
+  function initCanvas() {
+    resizeCanvas();
+    canvas.addEventListener('mousedown', startDrawing);
+    canvas.addEventListener('mousemove', draw);
+    canvas.addEventListener('mouseup', stopDrawing);
+    canvas.addEventListener('mouseleave', stopDrawing);
+    canvas.addEventListener('touchstart', startDrawing, { passive: false });
+    canvas.addEventListener('touchmove', draw, { passive: false });
+    canvas.addEventListener('touchend', stopDrawing);
+  }
+
+  function resizeCanvas() {
+    const container = document.getElementById('boardContainer');
+    if (container) {
+      canvas.width = container.clientWidth;
+      canvas.height = container.clientHeight;
+    }
+  }
+
+  function setBoardTool(tool) {
+    boardTool = tool;
+    document.querySelectorAll('.board-tool-btn').forEach(b => b.classList.remove('active'));
+    document.getElementById(`tool-${tool}`).classList.add('active');
+  }
+
+  function clearCanvasDrawing() {
+    saveState();
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    const viewport = document.getElementById('boardViewport');
+    document.querySelectorAll('.canvas-node').forEach(node => viewport.removeChild(node));
+  }
+
+  function addTextCard() {
+    const viewport = document.getElementById('boardViewport');
+    const card = document.createElement('div');
+    card.className = 'canvas-node';
+    card.style.left = '40px';
+    card.style.top = '40px';
+    card.style.width = '120px';
+    card.style.height = '60px';
+    card.innerHTML = `
+      <div contenteditable="true" style="outline:none; width:100%; height:100%; overflow:auto;">메모 입력</div>
+      <div class="resize-handle"></div>
+    `;
+    makeElementInteractive(card);
+    viewport.appendChild(card);
+  }
+
+  function addCanvasImage(event) {
+    const file = event.target.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        const viewport = document.getElementById('boardViewport');
+        const card = document.createElement('div');
+        card.className = 'canvas-node';
+        card.style.left = '60px';
+        card.style.top = '60px';
+        card.style.width = '130px';
+        card.style.height = '130px';
+        card.innerHTML = `
+          <img src="${e.target.result}" alt="카드 이미지">
+          <div class="resize-handle"></div>
+        `;
+        makeElementInteractive(card);
+        viewport.appendChild(card);
+      };
+      reader.readAsDataURL(file);
+    }
+  }
+
+  function makeElementInteractive(element) {
+    let posX = 0, posY = 0, initialX = 0, initialY = 0;
+    const resizeHandle = element.querySelector('.resize-handle');
+
+    element.onmousedown = dragMouseDown;
+    element.ontouchstart = dragMouseDown;
+
+    function dragMouseDown(e) {
+      if (boardTool !== 'select') return;
+      if (e.target === resizeHandle) return startResize(e);
+
+      e.stopPropagation();
+      const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+      const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+      initialX = clientX; initialY = clientY;
+
+      document.onmouseup = closeDragElement;
+      document.onmousemove = elementDrag;
+      document.ontouchend = closeDragElement;
+      document.ontouchmove = elementDrag;
+    }
+
+    function elementDrag(e) {
+      const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+      const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+      posX = (initialX - clientX) / canvasScale;
+      posY = (initialY - clientY) / canvasScale;
+      initialX = clientX; initialY = clientY;
+      element.style.top = (element.offsetTop - posY) + "px";
+      element.style.left = (element.offsetLeft - posX) + "px";
+    }
+
+    function closeDragElement() {
+      document.onmouseup = null; document.onmousemove = null;
+      document.ontouchend = null; document.ontouchmove = null;
+    }
+
+    function startResize(e) {
+      e.stopPropagation();
+      e.preventDefault();
+      const startW = element.offsetWidth;
+      const startH = element.offsetHeight;
+      const startX = e.touches ? e.touches[0].clientX : e.clientX;
+      const startY = e.touches ? e.touches[0].clientY : e.clientY;
+
+      function doResize(re) {
+        const currentX = re.touches ? re.touches[0].clientX : re.clientX;
+        const currentY = re.touches ? re.touches[0].clientY : re.clientY;
+        const newW = startW + (currentX - startX) / canvasScale;
+        const newH = startH + (currentY - startY) / canvasScale;
+        if (newW > 50) element.style.width = newW + 'px';
+        if (newH > 30) element.style.height = newH + 'px';
+      }
+
+      function stopResize() {
+        document.removeEventListener('mousemove', doResize);
+        document.removeEventListener('mouseup', stopResize);
+        document.removeEventListener('touchmove', doResize);
+        document.removeEventListener('touchend', stopResize);
+      }
+
+      document.addEventListener('mousemove', doResize);
+      document.addEventListener('mouseup', stopResize);
+      document.addEventListener('touchmove', doResize);
+      document.addEventListener('touchend', stopResize);
+    }
+  }
+
+  function loadProfileImageFromFile(event) {
+    const file = event.target.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        const preview = document.getElementById('profilePreview');
+        preview.src = e.target.result;
+        preview.style.display = 'block';
+        document.getElementById('profilePlaceholder').style.display = 'none';
+      };
+      reader.readAsDataURL(file);
+    }
+  }
+
+  async function generateContent() {
+    const hfToken = document.getElementById('hfTokenInput').value.trim();
+    const promptText = document.getElementById('promptInput').value.trim();
+    const dialogueContextText = document.getElementById('dialogueContextInput').value.trim();
+    const keywordText = document.getElementById('keywordInput').value.trim();
+    const aiLevel = parseInt(document.getElementById('aiLevelInput').value);
+    const genre = document.getElementById('genreSelect').value;
+    const systemPrompt = document.getElementById('systemPromptInput').value.trim();
+    const outputDiv = document.getElementById('resultOutput');
+
+    if (!hfToken) {
+      alert("SETTINGS(명령어 설정) 탭을 열어 Hugging Face Token (HF_token)을 입력해주세요!");
+      return;
+    }
+
+    if (!promptText && currentMainTab !== 'topic') {
+      alert("요구사항 또는 프롬프트를 입력해주세요.");
+      return;
+    }
+
+    outputDiv.innerHTML = '<p>AI가 답변을 생성하는 중입니다...</p>';
+
+    let userPromptMessage = "";
+    if (currentMainTab === 'topic') {
+      userPromptMessage = `[주제/분위기 장소 추천 요청]\n배경/힌트: ${promptText}\n키워드: ${keywordText}\n관여도 Level: ${aiLevel}\n장소 문장 및 공간 연출 단어를 다채롭게 추천해주세요.`;
+    } else if (currentMainTab === 'dialogue') {
+      userPromptMessage = `[대사 생성 요청]\n캐릭터 성격/말투: ${promptText}\n상황/장소: ${dialogueContextText}\n키워드: ${keywordText}\n생생한 캐릭터 대사 스크립트와 연출 지침을 작성해주세요.`;
+    } else if (currentMainTab === 'myWorld') {
+      if (currentSubTab === 'world') {
+        userPromptMessage = `[세계관 생성 요청]\n장르: ${genre}\n상세 요구사항: ${promptText}\n키워드: ${keywordText}\n세계관 배경, 환경적 특징, 지배적 규칙을 구성해주세요.`;
+      } else if (currentSubTab === 'character') {
+        userPromptMessage = `[캐릭터 구상 요청]\n요구사항: ${promptText}\n키워드: ${keywordText}\n인물의 외형, 내면 동기, 서사적 갈등을 작성해주세요.`;
+      } else if (currentSubTab === 'plot') {
+        userPromptMessage = `[플롯/스토리 생성 요청]\n장르: ${genre}\n사건/갈등 요구사항: ${promptText}\n키워드: ${keywordText}\n기승전결(발단-전개-절정-결말) 서사 구조를 자세히 설계해주세요.`;
+      }
+    }
+
+    const tempValue = 0.3 + (aiLevel - 1) * 0.15;
+
+    try {
+      const response = await fetch("https://api-inference.huggingface.co/models/Qwen/Qwen2.5-72B-Instruct/v1/chat/completions", {
+        method: "POST",
+        headers: {
+          "Authorization": `Bearer ${hfToken}`,
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          model: "Qwen/Qwen2.5-72B-Instruct",
+          messages: [
+            { role: "system", content: systemPrompt },
+            { role: "user", content: userPromptMessage }
+          ],
+          max_tokens: 1500,
+          temperature: tempValue
+        })
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || `통신 에러: HTTP ${response.status}`);
+      }
+
+      const data = await response.json();
+      const aiResponseText = data.choices[0].message.content;
+
+      outputDiv.innerHTML = marked.parse(aiResponseText);
+
+    } catch (error) {
+      console.error(error);
+      outputDiv.innerHTML = `<p style="color:red;"><strong>생성 실패:</strong> ${error.message}</p>`;
+    }
+  }
+</script>
+
+</body>
+</html>
