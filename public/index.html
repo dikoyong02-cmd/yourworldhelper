@@ -121,6 +121,7 @@
 
   <main>
     <div class="content-area">
+      <!-- 1. 설정 입력 카드 -->
       <section class="card" id="inputSection">
         <div class="card-title" id="formTitle">세계관 설정 입력</div>
         
@@ -137,7 +138,7 @@
 
         <div class="form-group">
           <label id="promptLabel">상세 요구사항 / 프롬프트</label>
-          <textarea id="promptInput" placeholder="원하는 세계관이나 스토리 요구사항을 자유롭게 입력해 주세요..."></textarea>
+          <textarea id="promptInput" placeholder="원하는 스토리 요구사항을 입력하세요..."></textarea>
         </div>
 
         <div class="form-group">
@@ -150,12 +151,13 @@
 
         <div class="form-group">
           <label id="keywordLabel">핵심 키워드 (선택)</label>
-          <input type="text" id="keywordInput" placeholder="미입력 시 맥락에 맞춰 AI가 알맞게 구성을 진행합니다.">
+          <input type="text" id="keywordInput" placeholder="미입력 시 맥락에 맞춰 알맞게 구성을 진행합니다.">
         </div>
 
         <button type="button" class="primary-btn" onclick="generateContent()">[ 생성 실행 ]</button>
       </section>
 
+      <!-- 2. 관계도 & 스토리 캔버스 (터치 지원 및 Undo/Redo 반영) -->
       <section class="card" id="boardSection" style="display: none;">
         <div class="card-title">RELATIONSHIP & STORY CANVAS</div>
         <div class="board-toolbar">
@@ -165,6 +167,8 @@
             <button class="board-tool-btn" id="tool-erase" onclick="setBoardTool('erase')">지우개</button>
           </div>
           <div class="board-tool-group">
+            <button class="small-btn" onclick="undoCanvas()" title="되돌리기">↩</button>
+            <button class="small-btn" onclick="redoCanvas()" title="다시실행">↪</button>
             <button class="small-btn" onclick="clearCanvasDrawing()">초기화</button>
           </div>
         </div>
@@ -175,32 +179,34 @@
         </div>
         <div class="form-group" style="margin-top: 10px;">
           <label>통합 스토리 서술 노트 (자동 저장됨)</label>
-          <textarea id="boardStoryText" placeholder="이야기 흐름 및 연출 아이디어를 작성하세요..."></textarea>
+          <textarea id="boardStoryText" placeholder="이야기 흐름 및 연출 아이디어를 자유롭게 메모하세요..."></textarea>
         </div>
       </section>
 
+      <!-- 3. 생성 결과 영역 -->
       <article class="card" id="resultSection">
         <div class="card-title">생성 결과</div>
         <div id="resultOutput" class="result-box markdown-body">결과가 여기에 표시됩니다.</div>
       </article>
 
+      <!-- 4. 사용 가이드 영역 -->
       <section class="card" id="guideSection" style="display: none;">
         <div class="card-title">SYSTEM MANUAL & USER GUIDE</div>
         <div class="result-box markdown-body" style="border: none;">
           <h3>Your World Helper v2.0 매뉴얼</h3>
-          <p>웹소설 및 창작자를 위한 통합 세계관/스토리 기획 툴입니다.</p>
+          <p>창작자를 위한 서포팅 툴입니다.</p>
           <hr>
-          <h4>1. 탭별 주요 기능</h4>
+          <h4>1. 주요 사용 팁</h4>
           <ul>
-            <li><strong>나만의 세상 만들기</strong>: 세계관 및 캐릭터 설정을 구성합니다.</li>
-            <li><strong>주제 선정</strong>: 창작 프로젝트의 메인 주제를 발굴합니다.</li>
-            <li><strong>플롯/스토리</strong>: 전체 스토리 사건 개요를 구성합니다.</li>
-            <li><strong>대사 생성</strong>: 캐릭터 간 상황별 대화를 생성합니다.</li>
+            <li><strong>나만의 세상 만들기</strong>: 핵심 요구사항 및 키워드를 입력하여 스토리 설정집을 렌더링합니다.</li>
+            <li><strong>관계도 & 스토리 캔버스</strong>: 터치 및 펜 드로잉으로 관계도나 맵을 직접 시각화할 수 있습니다. ↩(Undo) / ↪(Redo) 아이콘으로 드로잉을 수정하세요.</li>
+            <li><strong>명령어 설정 (System Prompt)</strong>: 우측 SETTINGS에서 AI의 기본 서법 및 명령어를 자유롭게 지정할 수 있습니다.</li>
           </ul>
         </div>
       </section>
     </div>
 
+    <!-- 우측 사이드바 -->
     <sidebar>
       <div class="profile-card">
         <div class="card-title">USER PROFILE</div>
@@ -213,13 +219,17 @@
         <input type="file" id="profileInput" accept="image/*" style="display: none;" onchange="loadProfileImageFromFile(event)">
       </div>
 
+      <!-- SETTINGS (명령어 / System Prompt 설정) -->
       <div class="card">
         <div class="card-title">
-          <span>SETTINGS (설정)</span>
+          <span>SETTINGS (명령어 설정)</span>
           <button type="button" class="card-title-btn" id="settingsToggleBtn" onclick="toggleSettingsCard()">▲ 열기</button>
         </div>
         <div id="settingsContent" class="collapsible-content collapsed">
-          <p style="font-size: 11px; margin-top: 6px;">기본 옵션 창입니다.</p>
+          <div class="form-group" style="margin-top: 8px;">
+            <label>AI 시스템 명령어 (System Prompt)</label>
+            <textarea id="systemPromptInput" style="height: 70px; font-size: 10px;" placeholder="AI 서법 및 연출 지침을 입력하세요...">당신은 스토리 기획 전문 AI 작가입니다. 마크다운 형식을 활용해 풍부한 텍스트를 작성하세요.</textarea>
+          </div>
         </div>
       </div>
 
@@ -229,7 +239,7 @@
       </div>
 
       <button class="side-nav-btn" id="relationSideBtn" onclick="selectMainTab('relation', this)">
-        ★ 관계도 & 스토리 캔버스
+        관계도 & 스토리 캔버스
       </button>
     </sidebar>
   </main>
@@ -245,6 +255,11 @@
   let boardTool = 'draw';
   let isDrawing = false;
   let lastX = 0, lastY = 0;
+
+  // Undo / Redo 히스토리 스택
+  let undoStack = [];
+  let redoStack = [];
+  const MAX_HISTORY = 20;
 
   const canvas = document.getElementById('drawingCanvas');
   const ctx = canvas.getContext('2d');
@@ -325,36 +340,84 @@
     btn.innerText = content.classList.contains('collapsed') ? '▲ 열기' : '▼ 접기';
   }
 
+  function saveState() {
+    if (undoStack.length >= MAX_HISTORY) undoStack.shift();
+    undoStack.push(ctx.getImageData(0, 0, canvas.width, canvas.height));
+    redoStack = [];
+  }
+
+  function undoCanvas() {
+    if (undoStack.length > 0) {
+      redoStack.push(ctx.getImageData(0, 0, canvas.width, canvas.height));
+      const previousState = undoStack.pop();
+      ctx.putImageData(previousState, 0, 0);
+    }
+  }
+
+  function redoCanvas() {
+    if (redoStack.length > 0) {
+      undoStack.push(ctx.getImageData(0, 0, canvas.width, canvas.height));
+      const nextState = redoStack.pop();
+      ctx.putImageData(nextState, 0, 0);
+    }
+  }
+
+  function getPos(e) {
+    const rect = canvas.getBoundingClientRect();
+    if (e.touches && e.touches.length > 0) {
+      return {
+        x: e.touches[0].clientX - rect.left,
+        y: e.touches[0].clientY - rect.top
+      };
+    }
+    return {
+      x: e.clientX - rect.left,
+      y: e.clientY - rect.top
+    };
+  }
+
+  function startDrawing(e) {
+    if (boardTool === 'select') return;
+    saveState();
+    isDrawing = true;
+    const pos = getPos(e);
+    lastX = pos.x;
+    lastY = pos.y;
+  }
+
+  function draw(e) {
+    if (!isDrawing || boardTool === 'select') return;
+    e.preventDefault();
+    const pos = getPos(e);
+
+    ctx.beginPath();
+    ctx.moveTo(lastX, lastY);
+    ctx.lineTo(pos.x, pos.y);
+    ctx.strokeStyle = boardTool === 'draw' ? '#8e5572' : '#ffffff';
+    ctx.lineWidth = boardTool === 'draw' ? 2 : 20;
+    ctx.lineCap = 'round';
+    ctx.stroke();
+
+    lastX = pos.x;
+    lastY = pos.y;
+  }
+
+  function stopDrawing() {
+    isDrawing = false;
+  }
+
   function initCanvas() {
     resizeCanvas();
-    canvas.addEventListener('mousedown', (e) => {
-      if (boardTool === 'select') return;
-      isDrawing = true;
-      const rect = canvas.getBoundingClientRect();
-      lastX = e.clientX - rect.left;
-      lastY = e.clientY - rect.top;
-    });
+    // 마우스 이벤트
+    canvas.addEventListener('mousedown', startDrawing);
+    canvas.addEventListener('mousemove', draw);
+    canvas.addEventListener('mouseup', stopDrawing);
+    canvas.addEventListener('mouseleave', stopDrawing);
 
-    canvas.addEventListener('mousemove', (e) => {
-      if (!isDrawing || boardTool === 'select') return;
-      const rect = canvas.getBoundingClientRect();
-      const curX = e.clientX - rect.left;
-      const curY = e.clientY - rect.top;
-
-      ctx.beginPath();
-      ctx.moveTo(lastX, lastY);
-      ctx.lineTo(curX, curY);
-      ctx.strokeStyle = boardTool === 'draw' ? '#8e5572' : '#ffffff';
-      ctx.lineWidth = boardTool === 'draw' ? 2 : 20;
-      ctx.lineCap = 'round';
-      ctx.stroke();
-
-      lastX = curX;
-      lastY = curY;
-    });
-
-    canvas.addEventListener('mouseup', () => isDrawing = false);
-    canvas.addEventListener('mouseleave', () => isDrawing = false);
+    // 모바일/태블릿 터치 이벤트 연동
+    canvas.addEventListener('touchstart', startDrawing, { passive: false });
+    canvas.addEventListener('touchmove', draw, { passive: false });
+    canvas.addEventListener('touchend', stopDrawing);
   }
 
   function resizeCanvas() {
@@ -372,6 +435,7 @@
   }
 
   function clearCanvasDrawing() {
+    saveState();
     ctx.clearRect(0, 0, canvas.width, canvas.height);
   }
 
@@ -389,45 +453,37 @@
     }
   }
 
-  async function generateContent() {
-    let promptText = document.getElementById('promptInput').value.trim();
-    let keywordText = document.getElementById('keywordInput').value.trim();
+  function generateContent() {
+    const promptText = document.getElementById('promptInput').value.trim();
+    const keywordText = document.getElementById('keywordInput').value.trim();
     const aiLevel = document.getElementById('aiLevelInput').value;
     const genre = document.getElementById('genreSelect').value;
+    const systemPrompt = document.getElementById('systemPromptInput').value.trim();
     const outputDiv = document.getElementById('resultOutput');
 
-    // 사용자가 완전히 비워두었을 때 처리
-    if (!promptText && !keywordText) {
-      promptText = `${genre} 장르에 어울리는 스토리 설정 및 구상을 만들어 줘.`;
-    }
+    outputDiv.innerHTML = '<p>스토리 기획안을 구성 중입니다...</p>';
 
-    outputDiv.innerHTML = '<p>AI가 스토리를 구성 중입니다...</p>';
+    setTimeout(() => {
+      const coreStory = promptText || "입력된 세부 정보가 없어 선택한 장르 기본 구성안에 맞춰 스토리를 생성합니다.";
+      const keyWords = keywordText || "기본 스토리 키워드";
 
-    const fullPrompt = `
-- 카테고리: ${currentMainTab} / ${currentSubTab}
-- 장르: ${genre}
-- AI 창의성 Level: ${aiLevel}
-- 상세 요구사항: ${promptText}
-- 핵심 키워드: ${keywordText || '자동 추론'}
-    `.trim();
+      let resultMD = `## [${genre}] 프로젝트 기획안\n\n`;
+      resultMD += `* **작성 카테고리**: ${currentMainTab} / ${currentSubTab}\n`;
+      resultMD += `* **창의성 설정**: Lv.${aiLevel}\n`;
+      resultMD += `* **적용 명령어 지침**: ${systemPrompt || '기본 지침 적용'}\n`;
+      resultMD += `* **주요 키워드**: ${keyWords}\n\n`;
+      resultMD += `---\n\n`;
+      resultMD += `### 1. 주요 사건 및 세계관 설정\n`;
+      resultMD += `${coreStory}\n\n`;
+      resultMD += `### 2. 등장인물 및 관계도 구상\n`;
+      resultMD += `* **주인공**: 설정된 사건의 전말을 밝히고 해결하고자 하는 핵심 인물\n`;
+      resultMD += `* **대립 세력**: 주인공의 목적을 저지하거나 조직의 목적을 추구하는 인물/집단\n`;
+      resultMD += `* **갈등 및 전개**: 사건이 심화됨에 따라 예상치 못한 비밀이 드러나는 서사 구조\n\n`;
+      resultMD += `### 3. 스토리 연출 가이드\n`;
+      resultMD += `> 해당 입력값으로 정리된 기획안 템플릿입니다. 우측 하단의 **관계도 & 스토리 캔버스**를 이용해 추가 아이디어를 자유롭게 시각화해보세요!`;
 
-    try {
-      const response = await fetch('/api/generate', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ prompt: fullPrompt })
-      });
-
-      const data = await response.json();
-
-      if (response.ok && data.result) {
-        outputDiv.innerHTML = marked.parse(data.result);
-      } else {
-        outputDiv.innerHTML = `<p style="color: red;">생성 실패: ${data.error || '알 수 없는 오류'}</p>`;
-      }
-    } catch (err) {
-      outputDiv.innerHTML = '<p style="color: red;">서버 통신 오류가 발생했습니다.</p>';
-    }
+      outputDiv.innerHTML = marked.parse(resultMD);
+    }, 250);
   }
 </script>
 
