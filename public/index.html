@@ -4,25 +4,10 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Your World Helper - Y2K Edition</title>
+  <!-- Marked.js (마크다운 파싱 라이브러리) -->
   <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
   <style>
     :root {
-      --bg-color: #008080;
-      --card-bg: #c0c0c0;
-      --card-sub-bg: #d4d0c8;
-      --text-color: #000000;
-      --border-color: #000000;
-      --accent-color: #000080;
-      --accent-text: #ffffff;
-      --input-bg: #ffffff;
-      --window-title-bg: #000080;
-      --footer-text: #404040;
-      --canvas-bg: #0b3c3c;
-      --canvas-grid: rgba(255, 255, 255, 0.12);
-      --canvas-frame: #000080;
-    }
-
-    [data-theme="bubblegum"] {
       --bg-color: #ffcbf2;
       --card-bg: #fde2e4;
       --card-sub-bg: #ffffff;
@@ -32,14 +17,31 @@
       --accent-text: #ffffff;
       --input-bg: #ffffff;
       --window-title-bg: #a3a3f5;
+      --footer-text: #404040;
       --canvas-bg: #fff5fa;
       --canvas-grid: rgba(142, 85, 114, 0.15);
       --canvas-frame: #a3a3f5;
     }
 
+    [data-theme="classic"] {
+      --bg-color: #008080;
+      --card-bg: #c0c0c0;
+      --card-sub-bg: #d4d0c8;
+      --text-color: #000000;
+      --border-color: #000000;
+      --accent-color: #000080;
+      --accent-text: #ffffff;
+      --input-bg: #ffffff;
+      --window-title-bg: #000080;
+      --canvas-bg: #0b3c3c;
+      --canvas-grid: rgba(255, 255, 255, 0.12);
+      --canvas-frame: #000080;
+    }
+
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Tahoma', 'Dotum', '굴림', sans-serif; }
     body { background-color: var(--bg-color); color: var(--text-color); padding: 15px; touch-action: manipulation; }
     .container { max-width: 1000px; margin: 0 auto; background: var(--card-bg); border: 2px solid var(--border-color); padding: 10px; box-shadow: 4px 4px 0px #000000; }
+    
     header { background: var(--window-title-bg); padding: 6px 10px; margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center; border: 1px solid var(--border-color); }
     header h1 { font-size: 14px; font-weight: bold; color: #ffffff; }
     .theme-selector-box { display: flex; align-items: center; gap: 6px; color: #ffffff; font-size: 11px; }
@@ -51,7 +53,7 @@
       font-size: 11px; font-weight: bold; cursor: pointer; outline: none; user-select: none;
     }
     .tab-btn.active, .sub-tab-btn.active, .board-tool-btn.active, .side-nav-btn.active { background: var(--accent-color); color: var(--accent-text); }
-    .side-nav-btn { width: 100%; height: 40px; font-size: 12px; border: 2px solid var(--border-color); }
+    .side-nav-btn { width: 100%; height: 36px; font-size: 11px; border: 1px solid var(--border-color); }
     button.primary-btn, .profile-btn { width: 100%; }
 
     .tab-container { display: flex; gap: 4px; margin-bottom: 8px; flex-wrap: wrap; }
@@ -60,6 +62,7 @@
     .content-area { display: flex; flex-direction: column; gap: 12px; }
     .card { border: 1px solid var(--border-color); background: var(--card-sub-bg); padding: 12px; }
     .card-title { font-size: 12px; font-weight: bold; margin-bottom: 10px; background: var(--accent-color); color: var(--accent-text); padding: 4px 8px; border: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center; }
+    .card-title-btn { background: var(--card-bg); color: var(--text-color); border: 1px solid var(--border-color); font-size: 10px; padding: 1px 6px; cursor: pointer; }
 
     .form-group { margin-bottom: 10px; }
     .form-group label { display: block; font-size: 11px; font-weight: bold; margin-bottom: 4px; }
@@ -67,18 +70,28 @@
     .slider-desc { font-size: 11px; color: var(--accent-color); }
     input[type="range"] { width: 100%; height: 6px; background: var(--input-bg); border: 1px solid var(--border-color); accent-color: var(--accent-color); cursor: pointer; }
     input[type="text"], select, textarea { width: 100%; border: 1px solid var(--border-color); padding: 6px; font-size: 12px; background: var(--input-bg); color: var(--text-color); outline: none; }
-    textarea { height: 80px; resize: vertical; }
+    textarea { height: 90px; resize: vertical; }
 
-    .result-box { min-height: 160px; background: var(--input-bg); border: 1px solid var(--border-color); padding: 10px; font-size: 12px; line-height: 1.5; }
-    .board-container { position: relative; width: 100%; height: 480px; background-color: var(--canvas-bg); border: 2px solid var(--canvas-frame); overflow: hidden; touch-action: none; }
-    .board-viewport { position: absolute; width: 100%; height: 100%; transform-origin: 0 0; background-image: linear-gradient(var(--canvas-grid) 1px, transparent 1px), linear-gradient(90deg, var(--canvas-grid) 1px, transparent 1px); background-size: 20px 20px; }
-    .board-toolbar { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 8px; align-items: center; justify-content: space-between; background: var(--card-bg); padding: 6px; border: 1px solid var(--border-color); }
-    
+    /* 결과 출력 영역 마크다운 렌더링 스타일 */
+    .result-box { min-height: 180px; background: var(--input-bg); border: 1px solid var(--border-color); padding: 12px; font-size: 12px; line-height: 1.6; }
+    .markdown-body h1, .markdown-body h2, .markdown-body h3 { margin-top: 10px; margin-bottom: 6px; color: var(--accent-color); border-bottom: 1px dashed var(--border-color); padding-bottom: 4px; }
+    .markdown-body p { margin-bottom: 8px; }
+    .markdown-body ul, .markdown-body ol { margin-left: 20px; margin-bottom: 8px; }
+    .markdown-body blockquote { border-left: 3px solid var(--accent-color); padding-left: 8px; margin: 8px 0; color: #666; font-style: italic; }
+    .markdown-body hr { border: none; border-top: 1px solid var(--border-color); margin: 12px 0; }
+
+    /* 관계도 & 스토리 캔버스 스타일 */
+    .board-container { position: relative; width: 100%; height: 420px; background-color: var(--canvas-bg); border: 2px solid var(--canvas-frame); overflow: hidden; touch-action: none; }
+    .board-viewport { position: absolute; width: 100%; height: 100%; background-image: linear-gradient(var(--canvas-grid) 1px, transparent 1px), linear-gradient(90deg, var(--canvas-grid) 1px, transparent 1px); background-size: 20px 20px; }
+    .board-toolbar { display: flex; flex-wrap: wrap; gap: 4px; margin-bottom: 8px; align-items: center; justify-content: space-between; background: var(--card-bg); padding: 6px; border: 1px solid var(--border-color); }
+    .board-tool-group { display: flex; gap: 4px; align-items: center; flex-wrap: wrap; }
+
     sidebar { display: flex; flex-direction: column; gap: 12px; }
     .profile-card { border: 1px solid var(--border-color); padding: 12px; background: var(--card-sub-bg); text-align: center; }
     .profile-img-box { width: 90px; height: 90px; border: 1px solid var(--border-color); margin: 0 auto 8px; display: flex; align-items: center; justify-content: center; background: var(--input-bg); overflow: hidden; }
     .profile-img-box img { width: 100%; height: 100%; object-fit: cover; display: none; }
-    
+    .collapsible-content.collapsed { display: none; }
+
     footer { margin-top: 15px; border-top: 1px solid var(--border-color); padding-top: 8px; text-align: center; font-size: 11px; color: var(--footer-text); }
     @media (max-width: 768px) { main { grid-template-columns: 1fr; } }
   </style>
@@ -86,6 +99,7 @@
 <body data-theme="bubblegum">
 
 <div class="container">
+  <!-- 헤더 영역 -->
   <header>
     <h1>YOUR WORLD HELPER (v2.0)</h1>
     <div class="theme-selector-box">
@@ -97,13 +111,16 @@
     </div>
   </header>
 
+  <!-- 상단 메인 탭 -->
   <div class="tab-container">
-    <button class="tab-btn active" onclick="selectMainTab('myWorld', this)">나만의 세상 만들기</button>
-    <button class="tab-btn" onclick="selectMainTab('topic', this)">주제 선정</button>
-    <button class="tab-btn" onclick="selectMainTab('plot', this)">플롯/스토리</button>
-    <button class="tab-btn" onclick="selectMainTab('dialogue', this)">대사 생성</button>
+    <button class="tab-btn active" id="tab-myWorld" onclick="selectMainTab('myWorld', this)">나만의 세상 만들기</button>
+    <button class="tab-btn" id="tab-topic" onclick="selectMainTab('topic', this)">주제 선정</button>
+    <button class="tab-btn" id="tab-plot" onclick="selectMainTab('plot', this)">플롯/스토리</button>
+    <button class="tab-btn" id="tab-dialogue" onclick="selectMainTab('dialogue', this)">대사 생성</button>
+    <button class="tab-btn" id="tab-guide" onclick="selectMainTab('guide', this)">사용 가이드</button>
   </div>
 
+  <!-- 서브 탭 (나만의 세상 만들기 선택 시 활성화) -->
   <div class="sub-tab-container" id="subTabContainer">
     <button class="sub-tab-btn active" onclick="selectSubTab('world', this)">세계관 생성</button>
     <button class="sub-tab-btn" onclick="selectSubTab('character', this)">캐릭터 설정</button>
@@ -111,7 +128,7 @@
 
   <main>
     <div class="content-area">
-      <!-- 폼 입력 섹션 (요구사항 -> AI 관여도 -> 키워드) -->
+      <!-- 1. 설정 입력 섹션 (요구사항 -> AI 관여도 -> 키워드) -->
       <section class="card" id="inputSection">
         <div class="card-title" id="formTitle">세계관 설정 입력</div>
         
@@ -126,13 +143,13 @@
           </select>
         </div>
 
-        <!-- 1. 상세 요구사항 -->
+        <!-- 1) 상세 요구사항 / 프롬프트 -->
         <div class="form-group">
-          <label>상세 요구사항 / 프롬프트</label>
+          <label id="promptLabel">상세 요구사항 / 프롬프트</label>
           <textarea id="promptInput" placeholder="추가로 들어가야 할 세부 내용이나 원하는 분위기를 입력해 주세요..."></textarea>
         </div>
 
-        <!-- 2. AI 관여도 -->
+        <!-- 2) AI 관여도 (창의성 Level) -->
         <div class="form-group">
           <div class="slider-header">
             <label for="aiLevelInput">AI 관여도 (창의성 Level)</label>
@@ -141,24 +158,72 @@
           <input type="range" id="aiLevelInput" min="1" max="5" value="3" oninput="updateAiLevelDesc(this.value)">
         </div>
 
-        <!-- 3. 핵심 키워드 -->
+        <!-- 3) 핵심 키워드 -->
         <div class="form-group">
-          <label>핵심 키워드 (선택)</label>
+          <label id="keywordLabel">핵심 키워드 (선택)</label>
           <input type="text" id="keywordInput" placeholder="미입력 시 맥락/캐릭터 설정에 맞춰 AI가 자동 생성합니다.">
         </div>
 
         <button type="button" class="primary-btn" onclick="generateContent()">[ 생성 실행 ]</button>
       </section>
 
-      <!-- 생성 결과 출력 영역 -->
+      <!-- 2. 관계도 & 스토리 캔버스 영역 -->
+      <section class="card" id="boardSection" style="display: none;">
+        <div class="card-title">RELATIONSHIP & STORY CANVAS</div>
+        <div class="board-toolbar">
+          <div class="board-tool-group">
+            <button class="board-tool-btn" id="tool-select" onclick="setBoardTool('select')">선택/이동</button>
+            <button class="board-tool-btn active" id="tool-draw" onclick="setBoardTool('draw')">펜 드로잉</button>
+            <button class="board-tool-btn" id="tool-erase" onclick="setBoardTool('erase')">지우개</button>
+          </div>
+          <div class="board-tool-group">
+            <button class="small-btn" onclick="clearCanvasDrawing()">초기화</button>
+          </div>
+        </div>
+        <div class="board-container" id="boardContainer">
+          <div class="board-viewport">
+            <canvas id="drawingCanvas"></canvas>
+          </div>
+        </div>
+        <div class="form-group" style="margin-top: 10px;">
+          <label>통합 스토리 서술 노트 (자동 저장됨)</label>
+          <textarea id="boardStoryText" placeholder="전체 이야기 흐름 및 사건 전개를 서술해 주세요..."></textarea>
+        </div>
+      </section>
+
+      <!-- 3. AI 생성 결과 출력 영역 -->
       <article class="card" id="resultSection">
         <div class="card-title">생성 결과</div>
         <div id="resultOutput" class="result-box markdown-body">결과가 여기에 표시됩니다.</div>
       </article>
+
+      <!-- 4. 사용 가이드 영역 (가이드 탭 클릭 시 표시) -->
+      <section class="card" id="guideSection" style="display: none;">
+        <div class="card-title">SYSTEM MANUAL & USER GUIDE</div>
+        <div class="result-box markdown-body" style="border: none;">
+          <h3>Your World Helper v2.0 매뉴얼</h3>
+          <p>웹소설 및 창작자를 위한 통합 세계관/스토리 기획 툴입니다.</p>
+          <hr>
+          <h4>1. 탭별 주요 기능</h4>
+          <ul>
+            <li><strong>나만의 세상 만들기</strong>: 세계관의 기본 뼈대 및 캐릭터 세부 설정을 구축합니다.</li>
+            <li><strong>주제 선정</strong>: 창작 프로젝트의 핵심 주제 및 훅(Hook) 요소를 생성합니다.</li>
+            <li><strong>플롯/스토리</strong>: 3막 구조나 발단-전개-위기-절정-결말에 맞춘 사건 개요를 작성합니다.</li>
+            <li><strong>대사 생성</strong>: 캐릭터의 성격과 말투를 반영한 실제 작중 대화를 구성합니다.</li>
+          </ul>
+          <hr>
+          <h4>2. 입력 옵션 사용법</h4>
+          <ul>
+            <li><strong>AI 관여도 (창의성 Level)</strong>: Lv.1(원문 충실)부터 Lv.5(자율 발상)까지 AI의 창의적 개입 범위를 조정합니다.</li>
+            <li><strong>핵심 키워드</strong>: 비워둘 경우 입력된 맥락을 추론하여 AI가 알맞은 소재를 자동으로 생성합니다.</li>
+          </ul>
+        </div>
+      </section>
     </div>
 
     <!-- 우측 사이드바 -->
     <sidebar>
+      <!-- 유저 프로필 -->
       <div class="profile-card">
         <div class="card-title">USER PROFILE</div>
         <div class="profile-img-box">
@@ -170,10 +235,27 @@
         <input type="file" id="profileInput" accept="image/*" style="display: none;" onchange="loadProfileImageFromFile(event)">
       </div>
 
+      <!-- 명령어 및 시스템 설정 -->
+      <div class="card">
+        <div class="card-title">
+          <span>SETTINGS (명령어 설정)</span>
+          <button type="button" class="card-title-btn" id="settingsToggleBtn" onclick="toggleSettingsCard()">▲ 열기</button>
+        </div>
+        <div id="settingsContent" class="collapsible-content collapsed">
+          <p style="font-size: 11px; margin-top: 6px;">AI 응답 출력 속도 및 커스텀 프롬프트 프리셋 설정 옵션이 위치하는 곳입니다.</p>
+        </div>
+      </div>
+
+      <!-- 메모장 -->
       <div class="card">
         <div class="card-title">MEMO PAD</div>
-        <textarea id="memoInput" placeholder="메모를 입력하세요..." style="height: 80px; font-size: 11px;"></textarea>
+        <textarea id="memoInput" placeholder="메모를 입력하세요..." style="height: 90px; font-size: 11px;"></textarea>
       </div>
+
+      <!-- 관계도 사이드 버튼 -->
+      <button class="side-nav-btn" id="relationSideBtn" onclick="selectMainTab('relation', this)">
+        ★ 관계도 & 스토리 캔버스
+      </button>
     </sidebar>
   </main>
 
@@ -185,6 +267,12 @@
 <script>
   let currentMainTab = 'myWorld';
   let currentSubTab = 'world';
+  let boardTool = 'draw';
+  let isDrawing = false;
+  let lastX = 0, lastY = 0;
+
+  const canvas = document.getElementById('drawingCanvas');
+  const ctx = canvas.getContext('2d');
 
   const aiLevelDescriptions = {
     "1": "Lv.1 최소 (원문 내용 유지)",
@@ -194,6 +282,10 @@
     "5": "Lv.5 최대 (자율 구성)"
   };
 
+  window.addEventListener('DOMContentLoaded', () => {
+    initCanvas();
+  });
+
   function changeTheme(themeName) {
     document.body.setAttribute('data-theme', themeName);
   }
@@ -202,16 +294,43 @@
     document.getElementById('aiLevelDesc').innerText = aiLevelDescriptions[val];
   }
 
+  /* 메인 탭 전환 로직 (가이드 탭 및 관계도 탭 포함) */
   function selectMainTab(tabType, element) {
     currentMainTab = tabType;
-    document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+    document.querySelectorAll('.tab-btn, .side-nav-btn').forEach(btn => btn.classList.remove('active'));
     if (element) element.classList.add('active');
 
     const subTabContainer = document.getElementById('subTabContainer');
+    const inputSection = document.getElementById('inputSection');
+    const boardSection = document.getElementById('boardSection');
+    const resultSection = document.getElementById('resultSection');
+    const guideSection = document.getElementById('guideSection');
+
     if (tabType === 'myWorld') {
       subTabContainer.style.display = 'flex';
+      inputSection.style.display = 'block';
+      boardSection.style.display = 'none';
+      resultSection.style.display = 'block';
+      guideSection.style.display = 'none';
+    } else if (tabType === 'relation') {
+      subTabContainer.style.display = 'none';
+      inputSection.style.display = 'none';
+      boardSection.style.display = 'block';
+      resultSection.style.display = 'none';
+      guideSection.style.display = 'none';
+      resizeCanvas();
+    } else if (tabType === 'guide') {
+      subTabContainer.style.display = 'none';
+      inputSection.style.display = 'none';
+      boardSection.style.display = 'none';
+      resultSection.style.display = 'none';
+      guideSection.style.display = 'block';
     } else {
       subTabContainer.style.display = 'none';
+      inputSection.style.display = 'block';
+      boardSection.style.display = 'none';
+      resultSection.style.display = 'block';
+      guideSection.style.display = 'none';
       document.getElementById('genreGroup').style.display = 'none';
       document.getElementById('formTitle').innerText = element.innerText + ' 입력';
     }
@@ -223,6 +342,64 @@
     if (element) element.classList.add('active');
     document.getElementById('genreGroup').style.display = subType === 'world' ? 'block' : 'none';
     document.getElementById('formTitle').innerText = subType === 'world' ? '세계관 설정 입력' : '캐릭터 설정 입력';
+  }
+
+  function toggleSettingsCard() {
+    const content = document.getElementById('settingsContent');
+    const btn = document.getElementById('settingsToggleBtn');
+    content.classList.toggle('collapsed');
+    btn.innerText = content.classList.contains('collapsed') ? '▲ 열기' : '▼ 접기';
+  }
+
+  /* 캔버스 드로잉 기능 */
+  function initCanvas() {
+    resizeCanvas();
+    canvas.addEventListener('mousedown', (e) => {
+      if (boardTool === 'select') return;
+      isDrawing = true;
+      const rect = canvas.getBoundingClientRect();
+      lastX = e.clientX - rect.left;
+      lastY = e.clientY - rect.top;
+    });
+
+    canvas.addEventListener('mousemove', (e) => {
+      if (!isDrawing || boardTool === 'select') return;
+      const rect = canvas.getBoundingClientRect();
+      const curX = e.clientX - rect.left;
+      const curY = e.clientY - rect.top;
+
+      ctx.beginPath();
+      ctx.moveTo(lastX, lastY);
+      ctx.lineTo(curX, curY);
+      ctx.strokeStyle = boardTool === 'draw' ? '#8e5572' : '#ffffff';
+      ctx.lineWidth = boardTool === 'draw' ? 2 : 20;
+      ctx.lineCap = 'round';
+      ctx.stroke();
+
+      lastX = curX;
+      lastY = curY;
+    });
+
+    canvas.addEventListener('mouseup', () => isDrawing = false);
+    canvas.addEventListener('mouseleave', () => isDrawing = false);
+  }
+
+  function resizeCanvas() {
+    const container = document.getElementById('boardContainer');
+    if (container) {
+      canvas.width = container.clientWidth;
+      canvas.height = container.clientHeight;
+    }
+  }
+
+  function setBoardTool(tool) {
+    boardTool = tool;
+    document.querySelectorAll('.board-tool-btn').forEach(b => b.classList.remove('active'));
+    document.getElementById(`tool-${tool}`).classList.add('active');
+  }
+
+  function clearCanvasDrawing() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
   }
 
   function loadProfileImageFromFile(event) {
@@ -239,6 +416,7 @@
     }
   }
 
+  /* 실제 백엔드 연동 및 마크다운 출력 함수 */
   async function generateContent() {
     const promptText = document.getElementById('promptInput').value.trim();
     const keywordText = document.getElementById('keywordInput').value.trim();
@@ -251,26 +429,24 @@
       return;
     }
 
-    outputDiv.innerHTML = '생성 중...';
+    outputDiv.innerHTML = '<p>AI가 완벽한 마크다운 스토리를 작성 중입니다...</p>';
 
-    // 키워드가 빈칸일 때 맥락 자동 추론 명령어 구성
     let contextInstruction = "";
     if (!keywordText) {
       if (currentMainTab === 'dialogue') {
-        contextInstruction = "[지침: 핵심 키워드가 비어 있으므로, 요구사항에 입력된 캐릭터 설정 및 말투에 맞춰 어울리는 상호작용 상황을 AI가 자율적으로 구성하여 대사를 출력하세요.]";
+        contextInstruction = "핵심 키워드가 비어 있으므로 입력된 요구사항 기반 캐릭터 말투와 상황에 어울리는 대사를 자동 구성해 주세요.";
       } else {
-        contextInstruction = "[지침: 핵심 키워드가 비어 있으므로, 선택된 장르와 요구사항 맥락에 적합한 관련 세계관 요소 및 스토리 아이디어를 AI가 자동으로 추론하여 구성하세요.]";
+        contextInstruction = `핵심 키워드가 비어 있으므로 ${genre} 장르와 입력된 요구사항 맥락에 적합한 세계관 및 스토리 아이디어를 자동 생성해 주세요.`;
       }
     }
 
     const fullPrompt = `
-[메인 카테고리: ${currentMainTab}]
-[서브 카테고리: ${currentSubTab}]
-[선택 장르: ${genre}]
-[AI 관여도: Level ${aiLevel}]
-[요구사항: ${promptText || '없음'}]
-[핵심 키워드: ${keywordText || '자동 생성 (미입력)'}]
-${contextInstruction}
+- 카테고리: ${currentMainTab} / ${currentSubTab}
+- 장르: ${genre}
+- AI 창의성 Level: ${aiLevel}
+- 상세 요구사항: ${promptText || '없음'}
+- 핵심 키워드: ${keywordText || '자동 추론'}
+- 추가 지침: ${contextInstruction}
     `.trim();
 
     try {
@@ -279,19 +455,19 @@ ${contextInstruction}
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ prompt: fullPrompt })
       });
-      
-      if (!response.ok) {
-        throw new Error('서버 응답 오류');
-      }
 
       const data = await response.json();
-      outputDiv.innerHTML = data.result ? marked.parse(data.result) : '결과 데이터를 불러오지 못했습니다.';
+
+      if (response.ok && data.result) {
+        outputDiv.innerHTML = marked.parse(data.result);
+      } else {
+        outputDiv.innerHTML = `<p style="color: red;">생성 실패: ${data.error || '알 수 없는 오류'}</p>`;
+      }
     } catch (err) {
-      outputDiv.innerHTML = '서버 통신 오류가 발생했거나 백엔드 API 엔드포인트(/api/generate)가 설정되지 않았습니다.';
+      outputDiv.innerHTML = '<p style="color: red;">서버 통신 오류가 발생했거나 백엔드 API가 설정되지 않았습니다.</p>';
     }
   }
 </script>
 
 </body>
 </html>
-
