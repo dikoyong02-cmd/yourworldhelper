@@ -82,7 +82,6 @@
     .board-toolbar { display: flex; flex-wrap: wrap; gap: 4px; margin-bottom: 8px; align-items: center; justify-content: space-between; background: var(--card-bg); padding: 6px; border: 1px solid var(--border-color); }
     .board-tool-group { display: flex; gap: 4px; align-items: center; flex-wrap: wrap; }
 
-    /* 리사이즈 가능한 캔버스 노드 */
     .canvas-node { position: absolute; background: var(--input-bg); border: 1px solid var(--border-color); padding: 6px; font-size: 11px; box-shadow: 2px 2px 0px rgba(0,0,0,0.2); cursor: move; user-select: none; min-width: 80px; min-height: 40px; }
     .canvas-node img { width: 100%; height: 100%; object-fit: contain; display: block; pointer-events: none; }
     .resize-handle { position: absolute; right: 0; bottom: 0; width: 10px; height: 10px; background: var(--border-color); cursor: se-resize; }
@@ -111,7 +110,6 @@
     </div>
   </header>
 
-  <!-- 메인 탭 (플롯/스토리는 '나만의 세상 만들기' 서브 탭으로 이동) -->
   <div class="tab-container">
     <button class="tab-btn active" id="tab-myWorld" onclick="selectMainTab('myWorld', this)">나만의 세상 만들기</button>
     <button class="tab-btn" id="tab-topic" onclick="selectMainTab('topic', this)">주제 선정</button>
@@ -119,7 +117,6 @@
     <button class="tab-btn" id="tab-guide" onclick="selectMainTab('guide', this)">사용 가이드</button>
   </div>
 
-  <!-- 서브 탭 (플롯/스토리 포함) -->
   <div class="sub-tab-container" id="subTabContainer">
     <button class="sub-tab-btn active" id="subTab-world" onclick="selectSubTab('world', this)">세계관 생성</button>
     <button class="sub-tab-btn" id="subTab-character" onclick="selectSubTab('character', this)">캐릭터 설정</button>
@@ -128,11 +125,9 @@
 
   <main>
     <div class="content-area">
-      <!-- 설정 입력 카드 -->
       <section class="card" id="inputSection">
         <div class="card-title" id="formTitle">세계관 설정 입력</div>
         
-        <!-- 장르 선택 -->
         <div class="form-group" id="genreGroup">
           <label>장르 / 테마</label>
           <select id="genreSelect">
@@ -144,19 +139,16 @@
           </select>
         </div>
 
-        <!-- 기본 프롬프트 입력창 -->
         <div class="form-group" id="mainPromptGroup">
           <label id="promptLabel">상세 요구사항 / 프롬프트</label>
           <textarea id="promptInput" placeholder="원하는 분위기나 핵심 소재를 입력해보세요..."></textarea>
         </div>
 
-        <!-- 대사 생성 전용 입력창 -->
         <div class="form-group" id="dialogueExtraGroup" style="display: none;">
           <label>상황 및 장소 설정</label>
           <textarea id="dialogueContextInput" placeholder="예: 비 내리는 조용한 골목길, 대립 중인 상황"></textarea>
         </div>
 
-        <!-- AI 관여도 슬라이더 -->
         <div class="form-group" id="aiLevelGroup">
           <div class="slider-header">
             <label for="aiLevelInput">AI 관여도 (창의성 Level)</label>
@@ -165,7 +157,6 @@
           <input type="range" id="aiLevelInput" min="1" max="5" value="3" oninput="updateAiLevelDesc(this.value)">
         </div>
 
-        <!-- 키워드 입력창 -->
         <div class="form-group" id="keywordGroup">
           <label id="keywordLabel">핵심 키워드 (선택)</label>
           <input type="text" id="keywordInput" placeholder="예: 시계탑, 비밀, 안개">
@@ -174,7 +165,7 @@
         <button type="button" class="primary-btn" onclick="generateContent()">[ 생성 실행 ]</button>
       </section>
 
-      <!-- 관계도 & 스토리 캔버스 -->
+      <!-- 캔버스 영역 -->
       <section class="card" id="boardSection" style="display: none;">
         <div class="card-title">RELATIONSHIP & STORY CANVAS</div>
         <div class="board-toolbar">
@@ -182,7 +173,6 @@
             <button class="board-tool-btn" id="tool-select" onclick="setBoardTool('select')">선택/이동</button>
             <button class="board-tool-btn active" id="tool-draw" onclick="setBoardTool('draw')">펜 드로잉</button>
             <button class="board-tool-btn" id="tool-arrow" onclick="setBoardTool('arrow')">화살표</button>
-            <!-- 화살표/선 두께 선택 옵션 -->
             <select id="arrowWidthSelect" style="width: 70px; height: 28px; font-size: 11px;" onchange="updateLineWidth(this.value)">
               <option value="1">1px</option>
               <option value="2" selected>2px</option>
@@ -192,13 +182,14 @@
             <button class="board-tool-btn" id="tool-erase" onclick="setBoardTool('erase')">지우개</button>
           </div>
           <div class="board-tool-group">
-            <!-- 캔버스 Zoom (확대/축소) 버튼 추가 -->
-            <button class="small-btn" onclick="zoomCanvas(0.1)" title="확대">🔍 +</button>
-            <button class="small-btn" onclick="zoomCanvas(-0.1)" title="축소">🔍 -</button>
-            <button class="small-btn" onclick="resetZoom()" title="원래 크기">100%</button>
+            <!-- 요청사항 반영: [+] (왼쪽) [100%] (중간) [-] (오른쪽) 정렬 -->
+            <button class="small-btn" onclick="zoomCanvas(0.1)" title="확대">+</button>
+            <button class="small-btn" id="zoomResetBtn" onclick="resetZoom()" title="원래 크기">100%</button>
+            <button class="small-btn" onclick="zoomCanvas(-0.1)" title="축소">-</button>
             <button class="small-btn" onclick="addTextCard()">+ 카드</button>
             <button class="small-btn" onclick="document.getElementById('canvasImageInput').click()">+ 이미지</button>
             <input type="file" id="canvasImageInput" accept="image/*" style="display:none;" onchange="addCanvasImage(event)">
+            <!-- 되돌리기 / 다시실행 화살표 기호 아이콘 적용 -->
             <button class="small-btn" onclick="undoCanvas()" title="되돌리기">↩</button>
             <button class="small-btn" onclick="redoCanvas()" title="다시실행">↪</button>
             <button class="small-btn" onclick="clearCanvasDrawing()">초기화</button>
@@ -215,13 +206,11 @@
         </div>
       </section>
 
-      <!-- 생성 결과 영역 -->
       <article class="card" id="resultSection">
         <div class="card-title">생성 결과</div>
         <div id="resultOutput" class="result-box markdown-body">결과가 여기에 표시됩니다.</div>
       </article>
 
-      <!-- 사용 가이드 영역 -->
       <section class="card" id="guideSection" style="display: none;">
         <div class="card-title">SYSTEM MANUAL & USER GUIDE</div>
         <div class="result-box markdown-body" style="border: none;">
@@ -242,21 +231,20 @@
 
           <h4>3. 관계도 & 스토리 캔버스 활용법</h4>
           <ul>
-            <li><strong>줌(Zoom) 기능</strong>: 상단 툴바의 🔍+, 🔍-, 100% 버튼을 통해 캔버스 전체 화면을 자유롭게 확대/축소할 수 있습니다.</li>
+            <li><strong>줌(Zoom) 기능</strong>: +, 100%, - 버튼을 통해 캔버스 전체 화면을 자유롭게 확대/축소할 수 있습니다.</li>
             <li><strong>카드 및 이미지 크기 조절</strong>: 캔버스에 추가된 카드나 이미지의 우측 하단 리사이즈 핸들을 드래그하여 자유롭게 크기를 변경할 수 있습니다.</li>
             <li><strong>화살표 드로잉 (두께/길이 조절)</strong>: 화살표 툴 선택 후 원하는 두께(1px~6px)를 지정하여 클릭&드래그로 길이에 맞게 연출할 수 있습니다.</li>
           </ul>
 
           <h4>4. AI 사용 관련 규정 및 저작권 가이드라인</h4>
           <ul>
-            <li><strong>공모전 및 대외 제출 작품 규정</strong>: 개인적인 습작이나 단순 소장용 작품 외에 **공모전, 외부 출판, 상업적 연재, 기타 대외 공식 발표용 작품**의 경우 제출 기관의 AI 활용 관련 요강을 사전 확인해야 하며, 필수적으로 AI 도구 활용 사실 및 출처(예: <em>"본 작품은 AI 도구 Your World Helper의 아이디어 보조를 받아 작성되었습니다."</em>)를 명확히 명시해야 합니다.</li>
+            <li><strong>공모전 및 대외 제출 작품 규정</strong>: 개인적인 습작이나 단순 소장용 작품 외에 공모전, 외부 출판, 상업적 연재, 기타 대외 공식 발표용 작품의 경우 제출 기관의 AI 활용 관련 요강을 사전 확인해야 하며, 필수적으로 AI 도구 활용 사실 및 출처(예: <em>"본 작품은 AI 도구 Your World Helper의 아이디어 보조를 받아 작성되었습니다."</em>)를 명확히 명시해야 합니다.</li>
             <li><strong>저작권 및 독자적 창작 권장</strong>: AI가 생성한 결과물은 아이디어 서포트용 텍스트입니다. 타 저작권 침해 방지 및 완성도 높은 본인만의 저작권을 확보하기 위해 생성 결과를 뼈대로 사용자가 직접 재구성(2차 가공 및 리라이팅)할 것을 강력히 권장합니다.</li>
           </ul>
         </div>
       </section>
     </div>
 
-    <!-- 우측 사이드바 -->
     <sidebar>
       <div class="profile-card">
         <div class="card-title">USER PROFILE</div>
@@ -341,7 +329,6 @@
     currentLineWidth = parseInt(val);
   }
 
-  // 캔버스 Zoom (확대/축소) 기능
   function zoomCanvas(delta) {
     canvasScale = Math.min(Math.max(0.5, canvasScale + delta), 2.0);
     applyCanvasScale();
@@ -355,6 +342,10 @@
   function applyCanvasScale() {
     const viewport = document.getElementById('boardViewport');
     viewport.style.transform = `scale(${canvasScale})`;
+    const zoomBtn = document.getElementById('zoomResetBtn');
+    if (zoomBtn) {
+      zoomBtn.innerText = Math.round(canvasScale * 100) + '%';
+    }
   }
 
   function selectMainTab(tabType, element) {
@@ -615,7 +606,6 @@
     }
   }
 
-  // 드래그 이동 및 크기 조절(Resizing) 공통 처리
   function makeElementInteractive(element) {
     let posX = 0, posY = 0, initialX = 0, initialY = 0;
     const resizeHandle = element.querySelector('.resize-handle');
@@ -711,7 +701,6 @@
     setTimeout(() => {
       let resultMD = "";
 
-      // 1. 주제 선정 탭
       if (currentMainTab === 'topic') {
         resultMD = `## [주제 추천] 장소 & 설정 연출 가이드\n\n`;
         resultMD += `* **AI 관여도**: Level ${aiLevel}\n`;
@@ -742,7 +731,6 @@
         }
         resultMD += `\n> *※ 본 주제 선정 탭에서는 인물 간 관계나 캐릭터 요소 없이 장소와 상황 어휘만을 독립적으로 추천합니다.*`;
       } 
-      // 2. 대사 생성 탭
       else if (currentMainTab === 'dialogue') {
         const charTone = promptText || "냉정하고 차분한 어조";
         const contextSituation = dialogueContextText || "어두운 밤, 비가 내리는 골목길";
@@ -759,7 +747,6 @@
         resultMD += `* **목소리 톤**: 낮은 저음, 단호하고 차분한 호흡 유지\n`;
         resultMD += `* **시선 처리**: 빗속에서도 흔들리지 않는 시선 고정\n`;
       } 
-      // 3. 나만의 세상 만들기 탭 (세계관 / 캐릭터 / 플롯)
       else if (currentMainTab === 'myWorld') {
         if (currentSubTab === 'world') {
           const titleText = promptText ? `'${promptText}' 기반 세계관` : `새로운 세계관 구상`;
