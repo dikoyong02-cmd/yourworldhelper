@@ -3,169 +3,159 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Your World Helper</title>
+  <title>Your World Helper - Y2K Edition</title>
   <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
   <style>
+    /* Y2K 평면(Flat) 레트로 스타일 변수 */
     :root {
-      --bg-color: #f4f4f6;
-      --card-bg: #ffffff;
-      --card-sub-bg: #fafafa;
-      --text-color: #333333;
-      --border-color: #333333;
-      --accent-color: #333333;
+      --bg-color: #008080;
+      --card-bg: #c0c0c0;
+      --card-sub-bg: #d4d0c8;
+      --text-color: #000000;
+      --border-color: #000000;
+      --accent-color: #000080;
       --accent-text: #ffffff;
       --input-bg: #ffffff;
-      --dashed-border: #aaaaaa;
-      --preview-bg: #f9f9f9;
-      --footer-text: #666666;
+      --window-title-bg: #000080;
+      --footer-text: #404040;
     }
 
     [data-theme="classic"] {
-      --bg-color: #f4f4f6;
-      --card-bg: #ffffff;
-      --card-sub-bg: #fafafa;
-      --text-color: #333333;
-      --border-color: #333333;
-      --accent-color: #333333;
+      --bg-color: #008080;
+      --card-bg: #c0c0c0;
+      --card-sub-bg: #d4d0c8;
+      --text-color: #000000;
+      --border-color: #000000;
+      --accent-color: #000080;
       --accent-text: #ffffff;
       --input-bg: #ffffff;
-      --dashed-border: #aaaaaa;
-      --preview-bg: #f9f9f9;
-      --footer-text: #666666;
+      --window-title-bg: #000080;
     }
 
     [data-theme="dark"] {
-      --bg-color: #1a1d24;
-      --card-bg: #242832;
-      --card-sub-bg: #2c313e;
-      --text-color: #e0e6ed;
-      --border-color: #4f586b;
-      --accent-color: #3b82f6;
+      --bg-color: #1a1a1a;
+      --card-bg: #2d2d2d;
+      --card-sub-bg: #3a3a3a;
+      --text-color: #00ff66;
+      --border-color: #00ff66;
+      --accent-color: #ff007f;
       --accent-text: #ffffff;
-      --input-bg: #1c2029;
-      --dashed-border: #64748b;
-      --preview-bg: #181b22;
-      --footer-text: #94a3b8;
+      --input-bg: #121212;
+      --window-title-bg: #ff007f;
     }
 
     [data-theme="emerald"] {
-      --bg-color: #eef7f2;
-      --card-bg: #ffffff;
-      --card-sub-bg: #f2f9f5;
-      --text-color: #1c3a27;
-      --border-color: #2e6b46;
-      --accent-color: #2e6b46;
+      --bg-color: #004d40;
+      --card-bg: #b2dfdb;
+      --card-sub-bg: #e0f2f1;
+      --text-color: #00251a;
+      --border-color: #00251a;
+      --accent-color: #00796b;
       --accent-text: #ffffff;
       --input-bg: #ffffff;
-      --dashed-border: #82bca0;
-      --preview-bg: #e5f3eb;
-      --footer-text: #4a7c59;
+      --window-title-bg: #004d40;
     }
 
     [data-theme="sunset"] {
-      --bg-color: #fdf5f2;
-      --card-bg: #ffffff;
-      --card-sub-bg: #fef8f6;
-      --text-color: #4a1e1b;
-      --border-color: #9e3a33;
-      --accent-color: #c0392b;
+      --bg-color: #800000;
+      --card-bg: #ffcca8;
+      --card-sub-bg: #ffe0cc;
+      --text-color: #4a0000;
+      --border-color: #4a0000;
+      --accent-color: #d32f2f;
       --accent-text: #ffffff;
       --input-bg: #ffffff;
-      --dashed-border: #d98880;
-      --preview-bg: #fbeee8;
-      --footer-text: #884ea0;
+      --window-title-bg: #800000;
     }
 
     [data-theme="cyber"] {
-      --bg-color: #0b0c10;
-      --card-bg: #1f2833;
-      --card-sub-bg: #121c24;
-      --text-color: #66fcf1;
-      --border-color: #45a29e;
-      --accent-color: #66fcf1;
-      --accent-text: #0b0c10;
-      --input-bg: #0b0c10;
-      --dashed-border: #45a29e;
-      --preview-bg: #08090c;
-      --footer-text: #c5c6c7;
+      --bg-color: #000033;
+      --card-bg: #111144;
+      --card-sub-bg: #222266;
+      --text-color: #00ffff;
+      --border-color: #00ffff;
+      --accent-color: #ff00ff;
+      --accent-text: #ffffff;
+      --input-bg: #000022;
+      --window-title-bg: #ff00ff;
     }
 
     [data-theme="pastel"] {
-      --bg-color: #f7f3ff;
-      --card-bg: #ffffff;
-      --card-sub-bg: #fbf9ff;
-      --text-color: #4a3e56;
-      --border-color: #a288b8;
-      --accent-color: #9b72cf;
+      --bg-color: #d8bfd8;
+      --card-bg: #f5e6f5;
+      --card-sub-bg: #ffffff;
+      --text-color: #4b0082;
+      --border-color: #4b0082;
+      --accent-color: #ba55d3;
       --accent-text: #ffffff;
       --input-bg: #ffffff;
-      --dashed-border: #c6b3d9;
-      --preview-bg: #f0eaf7;
-      --footer-text: #846a9f;
+      --window-title-bg: #ba55d3;
     }
 
     * {
       box-sizing: border-box;
       margin: 0;
       padding: 0;
-      font-family: 'Pretendard', 'Malgun Gothic', sans-serif;
-      transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+      font-family: 'Tahoma', 'Dotum', '굴림', sans-serif;
     }
 
     body {
       background-color: var(--bg-color);
       color: var(--text-color);
-      padding: 20px;
+      padding: 15px;
     }
 
+    /* 평면적인 Y2K 메인 프레임 */
     .container {
-      max-width: 1080px;
+      max-width: 1000px;
       margin: 0 auto;
       background: var(--card-bg);
       border: 2px solid var(--border-color);
-      padding: 20px;
+      padding: 10px;
+      box-shadow: 4px 4px 0px #000000;
     }
 
     header {
-      border-bottom: 2px solid var(--border-color);
-      padding-bottom: 15px;
-      margin-bottom: 20px;
+      background: var(--window-title-bg);
+      padding: 6px 10px;
+      margin-bottom: 12px;
       display: flex;
       justify-content: space-between;
       align-items: center;
       flex-wrap: wrap;
       gap: 10px;
+      border: 1px solid var(--border-color);
     }
 
     header h1 {
-      font-size: 20px;
+      font-size: 14px;
       font-weight: bold;
+      color: #ffffff;
+      letter-spacing: 1px;
     }
 
     .theme-selector-box {
       display: flex;
       align-items: center;
-      gap: 8px;
-    }
-
-    .theme-selector-box label {
-      font-size: 13px;
-      font-weight: bold;
+      gap: 6px;
+      color: #ffffff;
+      font-size: 11px;
     }
 
     .theme-selector-box select {
-      padding: 5px 8px;
-      font-size: 12px;
+      padding: 3px 6px;
+      font-size: 11px;
       border: 1px solid var(--border-color);
       background-color: var(--input-bg);
       color: var(--text-color);
-      cursor: pointer;
+      outline: none;
     }
 
+    /* 평면(Flat) 버튼 스타일 */
     .tab-container {
       display: flex;
-      gap: 5px;
-      margin-bottom: 10px;
+      gap: 4px;
+      margin-bottom: 8px;
       flex-wrap: wrap;
     }
 
@@ -173,10 +163,11 @@
       border: 1px solid var(--border-color);
       background: var(--card-sub-bg);
       color: var(--text-color);
-      padding: 8px 14px;
-      font-size: 13px;
+      padding: 6px 12px;
+      font-size: 11px;
       font-weight: bold;
       cursor: pointer;
+      outline: none;
     }
 
     .tab-btn.active {
@@ -186,127 +177,130 @@
 
     .sub-tab-container {
       display: flex;
-      gap: 5px;
-      margin-bottom: 15px;
-      padding-left: 10px;
-      border-bottom: 2px solid var(--border-color);
-      padding-bottom: 10px;
+      gap: 4px;
+      margin-bottom: 12px;
+      padding-left: 2px;
     }
 
     .sub-tab-btn {
-      border: 1px dashed var(--border-color);
+      border: 1px solid var(--border-color);
       background: var(--card-bg);
       color: var(--text-color);
-      padding: 5px 10px;
-      font-size: 12px;
+      padding: 4px 10px;
+      font-size: 11px;
       font-weight: bold;
       cursor: pointer;
+      outline: none;
     }
 
     .sub-tab-btn.active {
-      border-style: solid;
       background: var(--accent-color);
       color: var(--accent-text);
     }
 
     main {
       display: grid;
-      grid-template-columns: 1fr 280px;
-      gap: 20px;
+      grid-template-columns: 1fr 260px;
+      gap: 12px;
     }
 
     .content-area {
       display: flex;
       flex-direction: column;
-      gap: 20px;
+      gap: 12px;
     }
 
+    /* 평면 카드 패널 */
     .card {
-      border: 2px solid var(--border-color);
+      border: 1px solid var(--border-color);
       background: var(--card-sub-bg);
-      padding: 15px;
+      padding: 12px;
     }
 
     .card-title {
-      font-size: 15px;
+      font-size: 12px;
       font-weight: bold;
       margin-bottom: 10px;
-      border-bottom: 1px dashed var(--dashed-border);
-      padding-bottom: 5px;
+      background: var(--accent-color);
+      color: var(--accent-text);
+      padding: 4px 8px;
+      border: 1px solid var(--border-color);
     }
 
     .form-group {
-      margin-bottom: 12px;
+      margin-bottom: 10px;
     }
 
     .form-group label {
       display: block;
-      font-size: 12px;
+      font-size: 11px;
       font-weight: bold;
       margin-bottom: 4px;
-      opacity: 0.9;
     }
 
     input[type="text"], select, textarea {
       width: 100%;
       border: 1px solid var(--border-color);
-      padding: 8px;
-      font-size: 13px;
+      padding: 6px;
+      font-size: 12px;
       background: var(--input-bg);
       color: var(--text-color);
+      outline: none;
     }
 
     textarea {
-      height: 90px;
+      height: 80px;
       resize: vertical;
     }
 
     button.primary-btn {
       width: 100%;
-      padding: 10px;
+      padding: 8px;
       background: var(--accent-color);
       color: var(--accent-text);
-      border: none;
+      border: 1px solid var(--border-color);
       font-weight: bold;
+      font-size: 12px;
       cursor: pointer;
+      outline: none;
     }
 
     button.primary-btn:hover {
-      opacity: 0.85;
+      opacity: 0.9;
     }
 
     .result-box {
-      min-height: 180px;
-      background: var(--card-bg);
-      border: 1px dashed var(--dashed-border);
-      padding: 15px;
-      line-height: 1.6;
+      min-height: 160px;
+      background: var(--input-bg);
+      border: 1px solid var(--border-color);
+      padding: 10px;
+      font-size: 12px;
+      line-height: 1.5;
     }
 
     sidebar {
       display: flex;
       flex-direction: column;
-      gap: 20px;
+      gap: 12px;
     }
 
     .profile-card {
-      border: 2px solid var(--border-color);
-      padding: 15px;
-      background: var(--card-bg);
+      border: 1px solid var(--border-color);
+      padding: 12px;
+      background: var(--card-sub-bg);
       text-align: center;
     }
 
     .profile-img-box {
-      width: 110px;
-      height: 110px;
+      width: 90px;
+      height: 90px;
       border: 1px solid var(--border-color);
-      margin: 0 auto 10px;
+      margin: 0 auto 8px;
       display: flex;
       align-items: center;
       justify-content: center;
-      background: var(--preview-bg);
+      background: var(--input-bg);
       overflow: hidden;
-      position: relative;
     }
 
     .profile-img-box img {
@@ -316,38 +310,35 @@
       display: none;
     }
 
-    .image-mode-select {
-      margin-bottom: 8px;
-    }
-
     .profile-btn {
       border: 1px solid var(--border-color);
-      background: var(--card-sub-bg);
+      background: var(--card-bg);
       color: var(--text-color);
-      padding: 6px 12px;
-      font-size: 12px;
+      padding: 5px 8px;
+      font-size: 11px;
       cursor: pointer;
       font-weight: bold;
       width: 100%;
       margin-top: 4px;
+      outline: none;
     }
 
     .img-input-group {
       display: flex;
       flex-direction: column;
-      gap: 6px;
-      margin-top: 8px;
+      gap: 4px;
+      margin-top: 6px;
     }
 
     .guide-box {
-      font-size: 12px;
-      line-height: 1.6;
+      font-size: 11px;
+      line-height: 1.5;
     }
 
     .guide-section {
-      margin-bottom: 16px;
-      padding-bottom: 12px;
-      border-bottom: 1px dashed var(--dashed-border);
+      margin-bottom: 12px;
+      padding-bottom: 8px;
+      border-bottom: 1px dashed var(--border-color);
     }
 
     .guide-section:last-child {
@@ -358,25 +349,25 @@
 
     .guide-section-title {
       font-weight: bold;
-      font-size: 13px;
-      color: var(--accent-color);
-      margin-bottom: 6px;
+      font-size: 11px;
+      margin-bottom: 4px;
+      text-decoration: underline;
     }
 
     .guide-box ul {
-      padding-left: 18px;
+      padding-left: 16px;
     }
 
     .guide-box li {
-      margin-bottom: 4px;
+      margin-bottom: 3px;
     }
 
     footer {
-      margin-top: 20px;
-      border-top: 2px solid var(--border-color);
-      padding-top: 15px;
+      margin-top: 15px;
+      border-top: 1px solid var(--border-color);
+      padding-top: 8px;
       text-align: center;
-      font-size: 12px;
+      font-size: 11px;
       color: var(--footer-text);
     }
 
@@ -391,17 +382,17 @@
 
 <div class="container">
   <header>
-    <h1>Your World Helper</h1>
+    <h1>YOUR WORLD HELPER (v2.0)</h1>
     
     <div class="theme-selector-box">
-      <label for="themeSelect">테마 변경:</label>
+      <label for="themeSelect">COLOR THEME:</label>
       <select id="themeSelect" onchange="changeTheme(this.value)">
-        <option value="classic">Retro Classic (기본)</option>
-        <option value="dark">Dark Navy</option>
-        <option value="emerald">Emerald Nature</option>
-        <option value="sunset">Sunset Crimson</option>
-        <option value="cyber">Cyber Neon</option>
-        <option value="pastel">Pastel Dream</option>
+        <option value="classic">Classic Teal</option>
+        <option value="dark">Dark Matrix</option>
+        <option value="emerald">Emerald 98</option>
+        <option value="sunset">Crimson Retro</option>
+        <option value="cyber">Cyber Pink</option>
+        <option value="pastel">Pastel Violet</option>
       </select>
     </div>
   </header>
@@ -448,7 +439,7 @@
           <textarea id="promptInput" placeholder="추가로 들어가야 할 세부 내용을 입력해 주세요..."></textarea>
         </div>
 
-        <button type="button" class="primary-btn" onclick="generateContent()">생성하기</button>
+        <button type="button" class="primary-btn" onclick="generateContent()">[ 생성 실행 ]</button>
       </section>
 
       <!-- 생성 결과 표시 영역 -->
@@ -457,14 +448,13 @@
         <div id="resultOutput" class="result-box">결과가 여기에 표시됩니다.</div>
       </article>
 
-      <!-- 요약된 사용 가이드 영역 -->
+      <!-- 요약 사용 가이드 영역 (SECTION 1, 2) -->
       <section class="card" id="guideSection" style="display: none;">
-        <div class="card-title">사용 안내 및 매뉴얼</div>
+        <div class="card-title">SYSTEM MANUAL</div>
         <div class="guide-box">
 
-          <!-- 세션 2 요약 -->
           <div class="guide-section">
-            <div class="guide-section-title">SECTION 2. 현재 버전 기능 사용법</div>
+            <div class="guide-section-title">SECTION 1. 현재 버전 기능 사용법</div>
             <ul>
               <li><b>나만의 세상 만들기</b>: 메인 탭 선택 시 하단 서브 탭을 통해 [세계관 생성]과 [캐릭터 설정]을 손쉽게 이동할 수 있습니다.</li>
               <li><b>유연한 옵션 구성</b>: '세계관 생성' 탭에서만 장르를 지정하며, 나머지 기능에서는 설정한 세계관에 맞춰 자유롭게 작성합니다.</li>
@@ -473,9 +463,8 @@
             </ul>
           </div>
 
-          <!-- 세션 3 요약 -->
           <div class="guide-section">
-            <div class="guide-section-title">SECTION 3. AI 출처 표기 및 주의사항</div>
+            <div class="guide-section-title">SECTION 2. AI 출처 표기 및 주의사항</div>
             <ul>
               <li><b>출처 명시</b>: AI로 생성한 결과물을 외부에 공개할 경우 AI 보조를 받았음을 명시하는 것을 권장합니다.</li>
               <li><b>수정 및 가공</b>: 결과물은 완성본이 아닌 아이디어 초안으로 활용하는 것이 좋습니다.</li>
@@ -494,17 +483,17 @@
         <div class="card-title">USER PROFILE</div>
         <div class="profile-img-box">
           <img id="profilePreview" src="" alt="프로필 사진">
-          <div id="profilePlaceholder" style="color: var(--footer-text); font-size: 12px;">
-            이미지 없음
+          <div id="profilePlaceholder" style="font-size: 11px;">
+            NO IMAGE
           </div>
         </div>
 
-        <div style="font-weight: bold; font-size: 14px; margin-bottom: 8px;">User</div>
+        <div style="font-weight: bold; font-size: 12px; margin-bottom: 6px;">User_01</div>
 
         <div class="image-mode-select">
-          <select id="fitModeSelect" onchange="changeImageFitMode(this.value)" style="font-size: 11px; padding: 3px;">
-            <option value="cover">이미지 방식: Cover (채우기)</option>
-            <option value="contain">이미지 방식: Contain (맞추기)</option>
+          <select id="fitModeSelect" onchange="changeImageFitMode(this.value)" style="font-size: 10px; padding: 2px;">
+            <option value="cover">Fit: Cover</option>
+            <option value="contain">Fit: Contain</option>
           </select>
         </div>
 
@@ -516,14 +505,14 @@
       </div>
 
       <div class="card">
-        <div class="card-title">메모장</div>
-        <textarea id="memoInput" placeholder="아이디어를 자유롭게 메모하세요..." style="height: 120px; font-size: 12px;" oninput="saveMemo(this.value)"></textarea>
+        <div class="card-title">MEMO PAD</div>
+        <textarea id="memoInput" placeholder="메모를 입력하세요..." style="height: 110px; font-size: 11px;" oninput="saveMemo(this.value)"></textarea>
       </div>
     </sidebar>
   </main>
 
   <footer>
-    <p>© 2026 yourworldhelper. All rights reserved.</p>
+    <p>Copyright (c) 2026 yourworldhelper. All rights reserved.</p>
   </footer>
 </div>
 
