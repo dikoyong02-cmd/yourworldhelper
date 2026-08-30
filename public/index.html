@@ -677,18 +677,18 @@
         
         <div class="board-toolbar">
           <div class="board-tool-group">
-            <button class="board-tool-btn active" id="tool-select" onclick="setBoardTool('select')">선택/이동</button>
-            <button class="board-tool-btn" id="tool-draw" onclick="setBoardTool('draw')">펜 드로잉</button>
-            <button class="board-tool-btn" id="tool-erase" onclick="setBoardTool('erase')">지우개</button>
-            <button class="board-tool-btn" id="tool-link" onclick="setBoardTool('link')">화살표 연결</button>
-            <button class="board-tool-btn icon-btn" id="tool-undo" onclick="undoCanvas()" title="되돌리기 (Ctrl+Z)">↩</button>
-            <button class="board-tool-btn icon-btn" id="tool-redo" onclick="redoCanvas()" title="다시하기 (Ctrl+Y)">↪</button>
+            <button class="board-tool-btn active" id="tool-select" onclick="setBoardTool('select')">S</button>
+            <button class="board-tool-btn" id="tool-draw" onclick="setBoardTool('draw')">B</button>
+            <button class="board-tool-btn" id="tool-erase" onclick="setBoardTool('erase')">C</button>
+            <button class="board-tool-btn" id="tool-link" onclick="setBoardTool('link')">L</button>
+            <button class="board-tool-btn icon-btn" id="tool-undo" onclick="undoCanvas()" title="되돌리기 (Ctrl+Z)">Ctrl+Z</button>
+            <button class="board-tool-btn icon-btn" id="tool-redo" onclick="redoCanvas()" title="다시하기 (Ctrl+Y)">Ctrl+Y</button>
           </div>
 
           <div class="board-tool-group">
-            <button class="board-tool-btn" id="btn-add-card" onclick="addBoardNode('text')">+ 카드 추가</button>
+            <button class="board-tool-btn" id="btn-add-card" onclick="addBoardNode('text')">+Card</button>
             <label class="board-tool-btn" id="btn-add-img" style="cursor: pointer;">
-              + 사진 추가
+              +Img
               <input type="file" id="boardImgUpload" accept="image/*" style="display: none;" onchange="addBoardImage(event)">
             </label>
             <button class="board-tool-btn" onclick="exportBoardData()">파일 저장(.json)</button>
@@ -714,7 +714,7 @@
         <div class="form-group" style="margin-top: 10px;">
           <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
             <label style="margin-bottom: 0;">통합 스토리 서술 노트 (자동 저장됨)</label>
-            <button class="small-btn" id="btn-reset-draw" onclick="clearCanvasDrawing()">드로잉 초기화</button>
+            <button class="small-btn" id="btn-reset-draw" onclick="clearCanvasDrawing()">Reset</button>
           </div>
           <textarea id="boardStoryText" placeholder="캔버스 상의 관계도를 기반으로 전체 이야기 흐름 및 사건 전개를 서술해 주세요..." style="height: 80px;" oninput="saveBoardState()"></textarea>
         </div>
@@ -735,9 +735,9 @@
             <ul>
               <li><b>위치 이동</b>: 우측 사이드바의 '관계도 & 스토리 캔버스' 버튼을 누르면 칠판 모드로 전환됩니다.</li>
               <li><b>터치 지원 및 드로잉</b>: 모바일/패드 기기에서도 손가락이나 펜으로 직접 그림을 그리거나 지울 수 있습니다.</li>
-              <li><b>되돌리기 / 다시하기</b>: 툴바 상단의 `↩`, `↪` 아이콘 버튼으로 작업 내역을 이동시킬 수 있으며 단축키(`Ctrl+Z`, `Ctrl+Y`)도 지원됩니다.</li>
-              <li><b>명령어 커스텀 설정</b>: 우측 프로필 하단의 SETTINGS 영역에서 지우개, 펜 드로잉 등 각 명령어의 이름을 자유롭게 변경하고 파일로 저장이 가능합니다. (우측 상단 '▼ 접기 / ▲ 열기' 버튼으로 열고 닫을 수 있습니다.)</li>
-              <li><b>카드 삭제 및 연결</b>: 카드의 빨간색 'X' 버튼을 누르면 연관된 화살표와 함께 삭제됩니다. '화살표 연결' 버튼 클릭 후 카드 두 개를 순서대로 누르면 방향 화살표가 생성됩니다.</li>
+              <li><b>되돌리기 / 다시하기</b>: 툴바 상단의 `Ctrl+Z`, `Ctrl+Y` 버튼으로 작업 내역을 이동시킬 수 있으며 단축키도 지원됩니다.</li>
+              <li><b>명령어 커스텀 설정</b>: 우측 프로필 하단의 SETTINGS 영역에서 각 명령어의 단축키를 자유롭게 변경하고 파일로 저장이 가능합니다.</li>
+              <li><b>카드 삭제 및 연결</b>: 카드의 빨간색 'X' 버튼을 누르면 연관된 화살표와 함께 삭제됩니다. 'L (화살표 연결)' 버튼 클릭 후 카드 두 개를 순서대로 누르면 방향 화살표가 생성됩니다.</li>
             </ul>
           </div>
         </div>
@@ -777,40 +777,40 @@
         <div id="settingsContent" class="collapsible-content">
           <div class="cmd-setting-group">
             <div class="cmd-item">
-              <label>펜 드로잉</label>
-              <input type="text" id="cmd-draw" value="펜 드로잉">
+              <label>Brush (펜)</label>
+              <input type="text" id="cmd-draw" value="B">
             </div>
             <div class="cmd-item">
-              <label>지우개</label>
-              <input type="text" id="cmd-erase" value="지우개">
+              <label>Clear (지우개)</label>
+              <input type="text" id="cmd-erase" value="C">
             </div>
             <div class="cmd-item">
-              <label>선택/이동</label>
-              <input type="text" id="cmd-select" value="선택/이동">
+              <label>Select (선택)</label>
+              <input type="text" id="cmd-select" value="S">
             </div>
             <div class="cmd-item">
-              <label>화살표 연결</label>
-              <input type="text" id="cmd-link" value="화살표 연결">
+              <label>Link (연결)</label>
+              <input type="text" id="cmd-link" value="L">
             </div>
             <div class="cmd-item">
-              <label>카드 추가</label>
-              <input type="text" id="cmd-add-card" value="+ 카드 추가">
+              <label>Add Card</label>
+              <input type="text" id="cmd-add-card" value="+Card">
             </div>
             <div class="cmd-item">
-              <label>사진 추가</label>
-              <input type="text" id="cmd-add-img" value="+ 사진 추가">
+              <label>Add Image</label>
+              <input type="text" id="cmd-add-img" value="+Img">
             </div>
             <div class="cmd-item">
-              <label>되돌리기</label>
-              <input type="text" id="cmd-undo" value="↩">
+              <label>Undo</label>
+              <input type="text" id="cmd-undo" value="Ctrl+Z">
             </div>
             <div class="cmd-item">
-              <label>다시하기</label>
-              <input type="text" id="cmd-redo" value="↪">
+              <label>Redo</label>
+              <input type="text" id="cmd-redo" value="Ctrl+Y">
             </div>
             <div class="cmd-item">
-              <label>드로잉 초기화</label>
-              <input type="text" id="cmd-reset-draw" value="드로잉 초기화">
+              <label>Reset</label>
+              <input type="text" id="cmd-reset-draw" value="Reset">
             </div>
           </div>
 
@@ -862,17 +862,17 @@
   const canvas = document.getElementById('drawingCanvas');
   const ctx = canvas.getContext('2d');
 
-  // Default Command Dictionary
+  // Command Settings Defaults (Single letter / Shortcut style)
   let commandSettings = {
-    draw: "펜 드로잉",
-    erase: "지우개",
-    select: "선택/이동",
-    link: "화살표 연결",
-    addCard: "+ 카드 추가",
-    addImg: "+ 사진 추가",
-    undo: "↩",
-    redo: "↪",
-    resetDraw: "드로잉 초기화"
+    draw: "B",
+    erase: "C",
+    select: "S",
+    link: "L",
+    addCard: "+Card",
+    addImg: "+Img",
+    undo: "Ctrl+Z",
+    redo: "Ctrl+Y",
+    resetDraw: "Reset"
   };
 
   const aiLevelDescriptions = {
