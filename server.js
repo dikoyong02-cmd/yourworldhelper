@@ -13,13 +13,13 @@ app.post('/api/generate', async (req, res) => {
     const hfToken = process.env.HF_TOKEN;
 
     if (!hfToken) {
-      console.error('HF_TOKEN이 설정되지 않았습니다.');
-      return res.status(500).json({ error: '서버 환경 변수(HF_TOKEN)가 설정되지 않았습니다.' });
+      console.error('HF_TOKEN 미설정');
+      return res.status(500).json({ error: 'HF_TOKEN 환경 변수가 설정되지 않았습니다.' });
     }
 
-    // Hugging Face 무료 한국어/영문 고성능 모델 호출
+    // Hugging Face 최신 Router URL 사용
     const response = await fetch(
-      "https://api-inference.huggingface.co/models/Qwen/Qwen2.5-7B-Instruct",
+      "https://router.huggingface.co/hf-inference/v1/chat/completions",
       {
         method: "POST",
         headers: {
@@ -27,12 +27,13 @@ app.post('/api/generate', async (req, res) => {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          inputs: `<|im_start|>system\n당신은 스토리 기획 전문 AI 작가입니다. 요구사항에 맞춰 깔끔한 마크다운 문서로 답변하세요.<|im_end|>\n<|im_start|>user\n${prompt}<|im_end|>\n<|im_start|>assistant\n`,
-          parameters: {
-            max_new_tokens: 700,
-            temperature: 0.7,
-            return_full_text: false
-          }
+          model: "Qwen/Qwen2.5-7B-Instruct",
+          messages: [
+            { role: "system", content: "당신은 스토리 기획 전문 AI 작가입니다. 마크다운 형식으로 답변하세요." },
+            { role: "user", content: prompt }
+          ],
+          max_tokens: 700,
+          temperature: 0.7
         }),
       }
     );
@@ -40,28 +41,19 @@ app.post('/api/generate', async (req, res) => {
     const data = await response.json();
 
     if (!response.ok) {
-      console.error('Hugging Face API 에러:', data);
-      return res.status(500).json({ error: data.error || 'AI 응답 생성 실패' });
+      console.error('API Error Response:', data);
+      return res.status(500).json({ error: data.error?.message || 'AI 응답 생성 실패' });
     }
 
-    // 결과 텍스트 추출
-    let resultText = "";
-    if (Array.isArray(data) && data.length > 0) {
-      resultText = data[0].generated_text;
-    } else if (data.generated_text) {
-      resultText = data.generated_text;
-    } else {
-      resultText = "결과를 생성할 수 없습니다.";
-    }
-
+    const resultText = data.choices[0]?.message?.content || "결과를 생성할 수 없습니다.";
     res.json({ result: resultText });
 
   } catch (error) {
-    console.error('서버 오류:', error);
+    console.error('Server Catch Error:', error);
     res.status(500).json({ error: 'AI 생성 처리 중 오류가 발생했습니다.' });
   }
 });
 
 app.listen(PORT, () => {
-  console.log(`Server is running on port ${PORT}`);
+  console.log(`Server running on port ${PORT}`);
 });
