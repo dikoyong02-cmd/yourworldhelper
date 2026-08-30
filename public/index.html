@@ -1042,7 +1042,11 @@
     const tempValue = 0.3 + (aiLevel - 1) * 0.15;
 
     try {
-      const response = await fetch("https://api-inference.huggingface.co/models/Qwen/Qwen2.5-72B-Instruct/v1/chat/completions", {
+      // CORS 우회를 위한 corsproxy.io 프록시 적용
+      const originalApiUrl = "https://api-inference.huggingface.co/models/Qwen/Qwen2.5-72B-Instruct/v1/chat/completions";
+      const targetUrl = "https://corsproxy.io/?" + encodeURIComponent(originalApiUrl);
+
+      const response = await fetch(targetUrl, {
         method: "POST",
         headers: {
           "Authorization": `Bearer ${hfToken}`,
@@ -1084,3 +1088,4 @@
 
 </body>
 </html>
+
