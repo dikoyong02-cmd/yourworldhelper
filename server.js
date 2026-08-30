@@ -4,48 +4,47 @@ const path = require('path');
 const app = express();
 const PORT = process.env.PORT || 3000;
 
+// Render 설정의 Environment Variables에서 키를 가져옵니다.
+const OPENROUTER_API_KEY = process.env.OPENROUTER_API_KEY;
+
 app.use(express.json());
 app.use(express.static(path.join(__dirname, 'public')));
 
 app.post('/generate', async (req, res) => {
-  const { hf_token, prompt } = req.body; 
+  const { prompt } = req.body;
 
-  if (!hf_token || !prompt) {
-    return res.status(400).json({ error: 'API 토큰과 프롬프트를 입력해 주세요.' });
+  if (!prompt) {
+    return res.status(400).json({ error: '프롬프트 내용이 없습니다.' });
   }
 
   try {
     const response = await fetch('https://openrouter.ai/api/v1/chat/completions', {
       method: 'POST',
       headers: {
-        'Authorization': `Bearer ${hf_token}`,
-        'Content-Type': 'application/json',
-        'HTTP-Referer': 'https://render.com',
-        'X-Title': 'My Story Generator'
+        'Authorization': `Bearer ${OPENROUTER_API_KEY}`,
+        'Content-Type': 'application/json'
       },
       body: JSON.stringify({
-        model: 'meta-llama/llama-3.1-8b-instruct:free', 
-        messages: [
-          { role: 'user', content: prompt }
-        ]
+        // 정상 동작하는 무료 Llama 모델 사용
+        model: 'meta-llama/llama-3.1-8b-instruct',
+        messages: [{ role: 'user', content: prompt }]
       })
     });
 
     const data = await response.json();
 
-    if (!response.ok) {
-      throw new Error(data.error?.message || 'OpenRouter 요청 실패');
+    if (response.ok && data.choices) {
+      return res.json({ result: data.choices[0].message.content });
+    } else {
+      const errorMsg = data.error?.message || 'AI 답변 생성에 실패했습니다.';
+      return res.status(response.status).json({ error: errorMsg });
     }
-
-    res.json({ result: data.choices[0].message.content });
-
   } catch (error) {
     console.error('Error:', error);
-    res.status(500).json({ error: error.message });
+    return res.status(500).json({ error: error.message });
   }
 });
 
-// 서버 실행 구문 (누락되었던 부분)
 app.listen(PORT, () => {
-  console.log(`Server is running on port ${PORT}`);
+  console.log(`Server running on port ${PORT}`);
 });
