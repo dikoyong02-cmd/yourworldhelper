@@ -6,7 +6,6 @@
   <title>Your World Helper</title>
   <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
   <style>
-    /* CSS 변수를 활용한 동적 테마 시스템 */
     :root {
       --bg-color: #f4f4f6;
       --card-bg: #ffffff;
@@ -21,7 +20,6 @@
       --footer-text: #666666;
     }
 
-    /* Theme 1: Retro Classic (기본) */
     [data-theme="classic"] {
       --bg-color: #f4f4f6;
       --card-bg: #ffffff;
@@ -36,7 +34,6 @@
       --footer-text: #666666;
     }
 
-    /* Theme 2: Dark Navy */
     [data-theme="dark"] {
       --bg-color: #1a1d24;
       --card-bg: #242832;
@@ -51,7 +48,6 @@
       --footer-text: #94a3b8;
     }
 
-    /* Theme 3: Emerald Nature */
     [data-theme="emerald"] {
       --bg-color: #eef7f2;
       --card-bg: #ffffff;
@@ -66,7 +62,6 @@
       --footer-text: #4a7c59;
     }
 
-    /* Theme 4: Sunset Crimson */
     [data-theme="sunset"] {
       --bg-color: #fdf5f2;
       --card-bg: #ffffff;
@@ -81,7 +76,6 @@
       --footer-text: #884ea0;
     }
 
-    /* Theme 5: Cyber Neon */
     [data-theme="cyber"] {
       --bg-color: #0b0c10;
       --card-bg: #1f2833;
@@ -96,7 +90,6 @@
       --footer-text: #c5c6c7;
     }
 
-    /* Theme 6: Pastel Dream */
     [data-theme="pastel"] {
       --bg-color: #f7f3ff;
       --card-bg: #ffffff;
@@ -172,9 +165,7 @@
     .tab-container {
       display: flex;
       gap: 5px;
-      margin-bottom: 15px;
-      border-bottom: 2px solid var(--border-color);
-      padding-bottom: 10px;
+      margin-bottom: 10px;
       flex-wrap: wrap;
     }
 
@@ -189,6 +180,32 @@
     }
 
     .tab-btn.active {
+      background: var(--accent-color);
+      color: var(--accent-text);
+    }
+
+    /* 나만의 세상 만들기 서브탭 영역 */
+    .sub-tab-container {
+      display: flex;
+      gap: 5px;
+      margin-bottom: 15px;
+      padding-left: 10px;
+      border-bottom: 2px solid var(--border-color);
+      padding-bottom: 10px;
+    }
+
+    .sub-tab-btn {
+      border: 1px dashed var(--border-color);
+      background: var(--card-bg);
+      color: var(--text-color);
+      padding: 5px 10px;
+      font-size: 12px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    .sub-tab-btn.active {
+      border-style: solid;
       background: var(--accent-color);
       color: var(--accent-text);
     }
@@ -390,12 +407,19 @@
     </div>
   </header>
 
+  <!-- 메인 탭 영역 -->
   <div class="tab-container">
-    <button class="tab-btn active" onclick="selectTab('world', this)">🌍 세계관 생성</button>
-    <button class="tab-btn" onclick="selectTab('character', this)">👤 캐릭터 설정</button>
-    <button class="tab-btn" onclick="selectTab('plot', this)">📖 플롯/스토리</button>
-    <button class="tab-btn" onclick="selectTab('dialogue', this)">💬 대사 생성</button>
-    <button class="tab-btn" onclick="selectTab('guide', this)">💡 사용 가이드</button>
+    <button class="tab-btn active" id="myWorldBtn" onclick="selectMainTab('myWorld', this)">✨ 나만의 세상 만들기</button>
+    <button class="tab-btn" onclick="selectMainTab('topic', this)">🎯 세계관 기반 주제 선정</button>
+    <button class="tab-btn" onclick="selectMainTab('plot', this)">📖 플롯/스토리</button>
+    <button class="tab-btn" onclick="selectMainTab('dialogue', this)">💬 대사 생성</button>
+    <button class="tab-btn" onclick="selectMainTab('guide', this)">💡 사용 가이드</button>
+  </div>
+
+  <!-- '나만의 세상 만들기' 전용 서브 탭 -->
+  <div class="sub-tab-container" id="subTabContainer">
+    <button class="sub-tab-btn active" onclick="selectSubTab('world', this)">🌍 세계관 생성</button>
+    <button class="sub-tab-btn" onclick="selectSubTab('character', this)">👤 캐릭터 설정</button>
   </div>
 
   <main>
@@ -404,7 +428,8 @@
       <section class="card" id="inputSection">
         <div class="card-title" id="formTitle">🌍 세계관 설정 입력</div>
         
-        <div class="form-group">
+        <!-- 장르 선택 ('세계관 생성' 탭에서만 노출) -->
+        <div class="form-group" id="genreGroup">
           <label>장르 / 테마</label>
           <select id="genreSelect">
             <option value="판타지">판타지</option>
@@ -416,12 +441,12 @@
         </div>
 
         <div class="form-group">
-          <label>핵심 키워드</label>
+          <label id="keywordLabel">핵심 키워드</label>
           <input type="text" id="keywordInput" placeholder="예: 마법학교, 비밀 조직, 시간여행 등">
         </div>
 
         <div class="form-group">
-          <label>상세 요구사항 / 프롬프트</label>
+          <label id="promptLabel">상세 요구사항 / 프롬프트</label>
           <textarea id="promptInput" placeholder="추가로 들어가야 할 세부 내용을 입력해 주세요..."></textarea>
         </div>
 
@@ -434,7 +459,7 @@
         <div id="resultOutput" class="result-box">결과가 여기에 표시됩니다.</div>
       </article>
 
-      <!-- 3세션 세분화 사용 가이드 영역 -->
+      <!-- 3세션 사용 가이드 영역 -->
       <section class="card" id="guideSection" style="display: none;">
         <div class="card-title">📖 사용 안내 & 매뉴얼 (3개 세션)</div>
         <div class="guide-box">
@@ -453,8 +478,8 @@
           <div class="guide-section">
             <div class="guide-section-title">SECTION 2. 이번 사이트(현재 버전) 기능 사용법</div>
             <ul>
-              <li><b>카테고리 탭 선택</b>: 상단 탭(세계관, 캐릭터, 플롯, 대사)을 선택하여 원하는 목적에 최적화된 프롬프트를 구성할 수 있습니다.</li>
-              <li><b>세부 옵션 설정</b>: 장르/테마 선택 드롭다운과 핵심 키워드, 상세 요구사항을 분리 입력하여 정확도를 높였습니다.</li>
+              <li><b>✨ 나만의 세상 만들기 메뉴</b>: 상단 메인 버튼을 누르면 하단 서브 탭을 통해 <b>[세계관 생성]</b>과 <b>[캐릭터 설정]</b>을 손쉽게 오갈 수 있습니다.</li>
+              <li><b>유연한 옵션 구성</b>: '세계관 생성' 탭에서만 장르를 지정하며, 캐릭터 설정·주제 선정·플롯·대사 생성에서는 입력한 설정 내용에 맞춰 자유롭게 작성할 수 있습니다.</li>
               <li><b>다방향 테마 변경</b>: 우측 상단 <b>[🎨 테마 변경]</b> 메뉴에서 6가지 파스텔·레트로·다크 테마를 실시간으로 전환할 수 있습니다.</li>
               <li><b>커스텀 프로필 업로드</b>:
                 <ul>
@@ -473,7 +498,7 @@
             <ul>
               <li><b>📌 AI 생성물 출처 명시 (Attribution)</b>:
                 <ul>
-                  <li>본 사이트를 통해 생성된 스토리, 캐릭터, 대사 등을 외부(소설 플랫폼, 블로그, SNS 등)에 공개할 경우, AI 보조를 받았음을 명시하는 것을 권장합니다.</li>
+                  <li>본 사이트를 통해 생성된 스토리, 세계관, 대사 등을 외부(소설 플랫폼, 블로그, SNS 등)에 공개할 경우, AI 보조를 받았음을 명시하는 것을 권장합니다.</li>
                   <li><i>(예시 표기: "본 세계관/설정의 초안은 Your World Helper AI의 도움을 받아 작성되었습니다.")</i></li>
                 </ul>
               </li>
@@ -541,7 +566,8 @@
 </div>
 
 <script>
-  let currentTab = 'world';
+  let currentMainTab = 'myWorld';
+  let currentSubTab = 'world';
 
   window.addEventListener('DOMContentLoaded', () => {
     const savedTheme = localStorage.getItem('app_theme') || 'classic';
@@ -564,30 +590,68 @@
     localStorage.setItem('app_theme', themeName);
   }
 
-  function selectTab(tabType, element) {
-    currentTab = tabType;
+  function selectMainTab(tabType, element) {
+    currentMainTab = tabType;
     document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
     element.classList.add('active');
 
+    const subTabContainer = document.getElementById('subTabContainer');
     const inputSection = document.getElementById('inputSection');
     const resultSection = document.getElementById('resultSection');
     const guideSection = document.getElementById('guideSection');
-    const formTitle = document.getElementById('formTitle');
 
-    if (tabType === 'guide') {
-      inputSection.style.display = 'none';
-      resultSection.style.display = 'none';
-      guideSection.style.display = 'block';
+    if (tabType === 'myWorld') {
+      subTabContainer.style.display = 'flex';
+      // 서브탭 기본 상태 복원
+      const activeSubBtn = document.querySelector('.sub-tab-btn.active');
+      selectSubTab(currentSubTab, activeSubBtn || document.querySelector('.sub-tab-btn'));
     } else {
-      inputSection.style.display = 'block';
-      resultSection.style.display = 'block';
-      guideSection.style.display = 'none';
+      subTabContainer.style.display = 'none';
+      
+      if (tabType === 'guide') {
+        inputSection.style.display = 'none';
+        resultSection.style.display = 'none';
+        guideSection.style.display = 'block';
+      } else {
+        inputSection.style.display = 'block';
+        resultSection.style.display = 'block';
+        guideSection.style.display = 'none';
+        
+        document.getElementById('genreGroup').style.display = 'none';
 
-      if (tabType === 'world') formTitle.innerText = '🌍 세계관 설정 입력';
-      else if (tabType === 'character') formTitle.innerText = '👤 캐릭터 설정 입력';
-      else if (tabType === 'plot') formTitle.innerText = '📖 플롯/스토리 설정 입력';
-      else if (tabType === 'dialogue') formTitle.innerText = '💬 대사 생성 설정 입력';
+        if (tabType === 'topic') {
+          updateFormText('🎯 세계관 기반 주제 선정', '예: 기존 세계관 이름 또는 대표 설정 키워드', '기존 세계관에 대해 설명해 주시거나 구상하고 싶은 주제 방향성을 적어주세요...');
+        } else if (tabType === 'plot') {
+          updateFormText('📖 플롯/스토리 설정 입력', '예: 갈등 요소, 주요 사건 키워드', '이야기의 시작, 전개 상황 및 원하시는 사건 흐름을 입력해 주세요...');
+        } else if (tabType === 'dialogue') {
+          updateFormText('💬 대사 생성 설정 입력', '예: 캐릭터 성격, 현재 상황 키워드', '대화가 이루어지는 상황과 두 캐릭터 간의 관계, 주고받을 대사 톤을 적어주세요...');
+        }
+      }
     }
+  }
+
+  function selectSubTab(subType, element) {
+    currentSubTab = subType;
+    document.querySelectorAll('.sub-tab-btn').forEach(btn => btn.classList.remove('active'));
+    if (element) element.classList.add('active');
+
+    document.getElementById('inputSection').style.display = 'block';
+    document.getElementById('resultSection').style.display = 'block';
+    document.getElementById('guideSection').style.display = 'none';
+
+    if (subType === 'world') {
+      document.getElementById('genreGroup').style.display = 'block';
+      updateFormText('🌍 세계관 설정 입력', '예: 마법학교, 비밀 조직, 시간여행 등', '추가로 들어가야 할 세부 내용을 입력해 주세요...');
+    } else if (subType === 'character') {
+      document.getElementById('genreGroup').style.display = 'none';
+      updateFormText('👤 캐릭터 설정 입력', '예: 주연/조연 이름, 역할, 대표 성격', '캐릭터의 외형, 배경 스토리, 특별한 능력 등을 적어주세요...');
+    }
+  }
+
+  function updateFormText(title, keyPlaceholder, promptPlaceholder) {
+    document.getElementById('formTitle').innerText = title;
+    document.getElementById('keywordInput').placeholder = keyPlaceholder;
+    document.getElementById('promptInput').placeholder = promptPlaceholder;
   }
 
   function loadProfileImageFromFile(event) {
@@ -638,12 +702,19 @@
   }
 
   async function generateContent() {
-    const genre = document.getElementById('genreSelect').value;
     const keyword = document.getElementById('keywordInput').value;
     const prompt = document.getElementById('promptInput').value;
     const outputDiv = document.getElementById('resultOutput');
 
-    const fullPrompt = `[카테고리: ${currentTab}] [장르: ${genre}] [키워드: ${keyword}]\n내용: ${prompt}`;
+    let category = currentMainTab === 'myWorld' ? currentSubTab : currentMainTab;
+    let fullPrompt = '';
+
+    if (category === 'world') {
+      const genre = document.getElementById('genreSelect').value;
+      fullPrompt = `[카테고리: 세계관 생성] [장르: ${genre}] [키워드: ${keyword}]\n내용: ${prompt}`;
+    } else {
+      fullPrompt = `[카테고리: ${category}] [키워드: ${keyword}]\n내용: ${prompt}`;
+    }
 
     if (!keyword.trim() && !prompt.trim()) {
       alert('키워드나 상세 내용을 입력해 주세요!');
@@ -675,3 +746,4 @@
 
 </body>
 </html>
+
