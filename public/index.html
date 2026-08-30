@@ -81,11 +81,15 @@
     input[type="text"], input[type="password"], select, textarea { width: 100%; border: 1px solid var(--border-color); padding: 6px; font-size: 12px; background: var(--input-bg); color: var(--text-color); outline: none; }
     textarea { height: 75px; resize: vertical; }
 
+    /* 키보드 명령어 설정 그리드 */
+    .shortcut-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
+    .shortcut-input { text-align: center; font-weight: bold; cursor: pointer; background-color: var(--input-bg); }
+    .shortcut-input:focus { border-color: var(--accent-color); background-color: #fffde7; }
+
     .result-box { min-height: 180px; background: var(--input-bg); border: 1px solid var(--border-color); padding: 12px; font-size: 12px; line-height: 1.6; }
     .markdown-body h1, .markdown-body h2, .markdown-body h3 { margin-top: 10px; margin-bottom: 6px; color: var(--accent-color); border-bottom: 1px dashed var(--border-color); padding-bottom: 4px; }
     .markdown-body p { margin-bottom: 8px; }
     .markdown-body ul, .markdown-body ol { margin-left: 20px; margin-bottom: 8px; }
-    .markdown-body blockquote { border-left: 3px solid var(--accent-color); padding-left: 8px; margin: 8px 0; color: #666; font-style: italic; }
 
     .board-container { position: relative; width: 100%; height: 450px; background-color: var(--canvas-bg); border: 2px solid var(--canvas-frame); overflow: hidden; touch-action: none; }
     .board-viewport { position: absolute; width: 100%; height: 100%; background-image: linear-gradient(var(--canvas-grid) 1px, transparent 1px), linear-gradient(90deg, var(--canvas-grid) 1px, transparent 1px); background-size: 20px 20px; transform-origin: 0 0; }
@@ -184,16 +188,16 @@
         <div class="card-title">RELATIONSHIP & STORY CANVAS</div>
         <div class="board-toolbar">
           <div class="board-tool-group">
-            <button class="board-tool-btn" id="tool-select" onclick="setBoardTool('select')">선택/이동</button>
-            <button class="board-tool-btn active" id="tool-draw" onclick="setBoardTool('draw')">펜 드로잉</button>
-            <button class="board-tool-btn" id="tool-arrow" onclick="setBoardTool('arrow')">화살표</button>
+            <button class="board-tool-btn" id="tool-select" onclick="setBoardTool('select')">이동 (<span id="btn-key-select">M</span>)</button>
+            <button class="board-tool-btn active" id="tool-draw" onclick="setBoardTool('draw')">펜 (<span id="btn-key-draw">P</span>)</button>
+            <button class="board-tool-btn" id="tool-arrow" onclick="setBoardTool('arrow')">화살표 (<span id="btn-key-arrow">A</span>)</button>
             <select id="arrowWidthSelect" style="width: 70px; height: 28px; font-size: 11px;" onchange="updateLineWidth(this.value)">
               <option value="1">1px</option>
               <option value="2" selected>2px</option>
               <option value="4">4px</option>
               <option value="6">6px</option>
             </select>
-            <button class="board-tool-btn" id="tool-erase" onclick="setBoardTool('erase')">지우개</button>
+            <button class="board-tool-btn" id="tool-erase" onclick="setBoardTool('erase')">지우개 (<span id="btn-key-erase">E</span>)</button>
           </div>
           <div class="board-tool-group">
             <button class="small-btn" onclick="zoomCanvas(0.1)" title="확대">+</button>
@@ -202,8 +206,8 @@
             <button class="small-btn" onclick="addTextCard()">+ 카드</button>
             <button class="small-btn" onclick="document.getElementById('canvasImageInput').click()">+ 이미지</button>
             <input type="file" id="canvasImageInput" accept="image/*" style="display:none;" onchange="addCanvasImage(event)">
-            <button class="small-btn" onclick="undoCanvas()" title="되돌리기">↩</button>
-            <button class="small-btn" onclick="redoCanvas()" title="다시실행">↪</button>
+            <button class="small-btn" onclick="undoCanvas()" title="되돌리기">↩ (<span id="btn-key-undo">Ctrl+Z</span>)</button>
+            <button class="small-btn" onclick="redoCanvas()" title="다시실행">↪ (<span id="btn-key-redo">Ctrl+Y</span>)</button>
             <button class="small-btn" onclick="clearCanvasDrawing()">초기화</button>
           </div>
         </div>
@@ -232,8 +236,8 @@
           <h3>2. 주요 기능 활용법</h3>
           <ul>
             <li><strong>세계관 / 캐릭터 / 플롯 생성:</strong> 원하는 키워드와 AI 관여도를 설정하여 서사를 확장하세요.</li>
-            <li><strong>관계도 & 스토리 캔버스:</strong> 펜 드로잉, 메모 카드, 이미지를 캔버스 위에 자유롭게 자유 배치하고 구도를 스케치하세요.</li>
-            <li><strong>AI 관여도 (Level 1~5):</strong> 설정값이 높을수록 AI가 창의적이고 새로운 아이디어를 다양하게 제안합니다.</li>
+            <li><strong>관계도 & 스토리 캔버스:</strong> 펜 드로잉, 메모 카드, 이미지를 캔버스 위에 자유롭게 배치하고 구도를 스케치하세요.</li>
+            <li><strong>키보드 명령어 (단축키):</strong> SETTINGS 메인 메뉴에서 각 동작의 단축키를 자유롭게 바꿀 수 있습니다.</li>
           </ul>
 
           <h3>3. 저작권 및 공모전 이용 안내</h3>
@@ -267,9 +271,37 @@
             <label>Hugging Face Token (HF_token)</label>
             <input type="password" id="hfTokenInput" placeholder="hf_xxxxxxxxxxxxxxxxxxxx" oninput="saveToken(this.value)">
           </div>
+
+          <!-- 키보드 명령어(단축키) 커스텀 변경 설정 -->
           <div class="form-group">
-            <label>AI 시스템 명령어 (System Prompt)</label>
-            <textarea id="systemPromptInput" style="height: 70px; font-size: 10px;" placeholder="AI 서법 및 말투 지침을 입력하세요...">당신은 스토리 기획 전문 AI 작가입니다. 마크다운 형식을 활용해 풍부한 텍스트를 작성하세요.</textarea>
+            <label>키보드 명령어 (단축키 커스텀)</label>
+            <p style="font-size: 10px; color: #666; margin-bottom: 6px;">클릭 후 감지할 원하는 키를 누르세요.</p>
+            <div class="shortcut-grid">
+              <div>
+                <label style="font-weight:normal; font-size:10px;">이동</label>
+                <input type="text" id="keySelect" class="shortcut-input" value="M" readonly onkeydown="recordKey(event, 'select')">
+              </div>
+              <div>
+                <label style="font-weight:normal; font-size:10px;">펜</label>
+                <input type="text" id="keyDraw" class="shortcut-input" value="P" readonly onkeydown="recordKey(event, 'draw')">
+              </div>
+              <div>
+                <label style="font-weight:normal; font-size:10px;">화살표</label>
+                <input type="text" id="keyArrow" class="shortcut-input" value="A" readonly onkeydown="recordKey(event, 'arrow')">
+              </div>
+              <div>
+                <label style="font-weight:normal; font-size:10px;">지우개</label>
+                <input type="text" id="keyErase" class="shortcut-input" value="E" readonly onkeydown="recordKey(event, 'erase')">
+              </div>
+              <div>
+                <label style="font-weight:normal; font-size:10px;">Undo(되돌리기)</label>
+                <input type="text" id="keyUndo" class="shortcut-input" value="Ctrl+Z" readonly onkeydown="recordKey(event, 'undo')">
+              </div>
+              <div>
+                <label style="font-weight:normal; font-size:10px;">Redo(다시실행)</label>
+                <input type="text" id="keyRedo" class="shortcut-input" value="Ctrl+Y" readonly onkeydown="recordKey(event, 'redo')">
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -305,6 +337,16 @@
   let redoStack = [];
   const MAX_HISTORY = 20;
 
+  // 명령어(키바인딩) 데이터 기본값
+  let keybindings = {
+    select: "M",
+    draw: "P",
+    arrow: "A",
+    erase: "E",
+    undo: "Ctrl+Z",
+    redo: "Ctrl+Y"
+  };
+
   const canvas = document.getElementById('drawingCanvas');
   const ctx = canvas.getContext('2d');
   let canvasSnapshot = null;
@@ -320,6 +362,8 @@
   window.addEventListener('DOMContentLoaded', () => {
     initCanvas();
     loadToken();
+    loadKeybindings();
+    window.addEventListener('keydown', handleGlobalShortcuts);
   });
 
   function saveToken(val) {
@@ -331,6 +375,81 @@
     if (savedToken) {
       document.getElementById('hfTokenInput').value = savedToken;
     }
+  }
+
+  // 단축키 설정 저장 및 로드
+  function loadKeybindings() {
+    const savedKeys = localStorage.getItem('canvas_keybindings');
+    if (savedKeys) {
+      try {
+        keybindings = JSON.parse(savedKeys);
+      } catch (e) {}
+    }
+    updateKeyDisplay();
+  }
+
+  function saveKeybindings() {
+    localStorage.setItem('canvas_keybindings', JSON.stringify(keybindings));
+    updateKeyDisplay();
+  }
+
+  function updateKeyDisplay() {
+    document.getElementById('keySelect').value = keybindings.select;
+    document.getElementById('keyDraw').value = keybindings.draw;
+    document.getElementById('keyArrow').value = keybindings.arrow;
+    document.getElementById('keyErase').value = keybindings.erase;
+    document.getElementById('keyUndo').value = keybindings.undo;
+    document.getElementById('keyRedo').value = keybindings.redo;
+
+    document.getElementById('btn-key-select').innerText = keybindings.select;
+    document.getElementById('btn-key-draw').innerText = keybindings.draw;
+    document.getElementById('btn-key-arrow').innerText = keybindings.arrow;
+    document.getElementById('btn-key-erase').innerText = keybindings.erase;
+    document.getElementById('btn-key-undo').innerText = keybindings.undo;
+    document.getElementById('btn-key-redo').innerText = keybindings.redo;
+  }
+
+  function recordKey(e, toolAction) {
+    e.preventDefault();
+    if (e.key === "Control" || e.key === "Shift" || e.key === "Alt") return;
+
+    let combo = [];
+    if (e.ctrlKey) combo.push("Ctrl");
+    if (e.shiftKey) combo.push("Shift");
+    if (e.altKey) combo.push("Alt");
+    combo.push(e.key.length === 1 ? e.key.toUpperCase() : e.key);
+
+    const keyString = combo.join("+");
+    keybindings[toolAction] = keyString;
+    saveKeybindings();
+    e.target.blur();
+  }
+
+  // 전역 키보드 명령어 감지 처리
+  function handleGlobalShortcuts(e) {
+    // 텍스트 입력을 수행하고 있을 경우 단축키 작동 차단
+    const activeEl = document.activeElement;
+    const isEditing = activeEl && (
+      activeEl.tagName === 'INPUT' || 
+      activeEl.tagName === 'TEXTAREA' || 
+      activeEl.isContentEditable
+    );
+    if (isEditing) return;
+
+    let combo = [];
+    if (e.ctrlKey) combo.push("Ctrl");
+    if (e.shiftKey) combo.push("Shift");
+    if (e.altKey) combo.push("Alt");
+    combo.push(e.key.length === 1 ? e.key.toUpperCase() : e.key);
+
+    const keyString = combo.join("+");
+
+    if (keyString === keybindings.select) { setBoardTool('select'); }
+    else if (keyString === keybindings.draw) { setBoardTool('draw'); }
+    else if (keyString === keybindings.arrow) { setBoardTool('arrow'); }
+    else if (keyString === keybindings.erase) { setBoardTool('erase'); }
+    else if (keyString === keybindings.undo) { e.preventDefault(); undoCanvas(); }
+    else if (keyString === keybindings.redo) { e.preventDefault(); redoCanvas(); }
   }
 
   function changeTheme(themeName) {
@@ -711,11 +830,10 @@
     const keywordText = document.getElementById('keywordInput').value.trim();
     const aiLevel = parseInt(document.getElementById('aiLevelInput').value);
     const genre = document.getElementById('genreSelect').value;
-    const systemPrompt = document.getElementById('systemPromptInput').value.trim();
     const outputDiv = document.getElementById('resultOutput');
 
     if (!hfToken) {
-      alert("SETTINGS(명령어 설정) 탭을 열어 Hugging Face Token (HF_token)을 입력해주세요!");
+      alert("SETTINGS 탭을 열어 Hugging Face Token (HF_token)을 입력해주세요!");
       return;
     }
 
@@ -726,7 +844,9 @@
 
     outputDiv.innerHTML = '<p>AI가 답변을 생성하는 중입니다...</p>';
 
+    let systemPrompt = "당신은 스토리 기획 전문 AI 작가입니다. 마크다운 형식을 활용해 풍부한 텍스트를 작성하세요.";
     let userPromptMessage = "";
+
     if (currentMainTab === 'topic') {
       userPromptMessage = `[주제/분위기 장소 추천 요청]\n배경/힌트: ${promptText}\n키워드: ${keywordText}\n관여도 Level: ${aiLevel}\n장소 문장 및 공간 연출 단어를 다채롭게 추천해주세요.`;
     } else if (currentMainTab === 'dialogue') {
