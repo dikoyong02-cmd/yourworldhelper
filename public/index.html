@@ -207,7 +207,8 @@
     .sub-tab-btn, 
     button.primary-btn, 
     .profile-btn,
-    .board-tool-btn {
+    .board-tool-btn,
+    .side-nav-btn {
       display: inline-flex;
       align-items: center;
       justify-content: center;
@@ -229,16 +230,26 @@
     .sub-tab-btn:active, 
     button.primary-btn:active, 
     .profile-btn:active,
-    .board-tool-btn:active {
+    .board-tool-btn:active,
+    .side-nav-btn:active {
       background: var(--accent-color) !important;
       color: var(--accent-text) !important;
     }
 
     .tab-btn.active, 
     .sub-tab-btn.active,
-    .board-tool-btn.active {
+    .board-tool-btn.active,
+    .side-nav-btn.active {
       background: var(--accent-color);
       color: var(--accent-text);
+    }
+
+    .side-nav-btn {
+      width: 100%;
+      height: 40px;
+      font-size: 12px;
+      border: 2px solid var(--border-color);
+      box-shadow: 2px 2px 0px rgba(0,0,0,0.2);
     }
 
     button.primary-btn {
@@ -348,9 +359,6 @@
       line-height: 1.5;
     }
 
-    /* ---------------------------------------------------- */
-    /* 테마 연동형 캔버스 보드 커스텀 스타일 (칠판 느낌 제거) */
-    /* ---------------------------------------------------- */
     .board-container {
       position: relative;
       width: 100%;
@@ -535,15 +543,16 @@
     </div>
   </header>
 
+  <!-- 메인 탭 영역 (요청에 따라 '관계도 & 스토리 캔버스' 버튼은 사이드바 하단으로 이동) -->
   <div class="tab-container">
     <button class="tab-btn active" id="myWorldBtn" onclick="selectMainTab('myWorld', this)">나만의 세상 만들기</button>
-    <button class="tab-btn" onclick="selectMainTab('relation', this)">관계도 & 스토리 캔버스</button>
     <button class="tab-btn" onclick="selectMainTab('topic', this)">주제 선정</button>
     <button class="tab-btn" onclick="selectMainTab('plot', this)">플롯/스토리</button>
     <button class="tab-btn" onclick="selectMainTab('dialogue', this)">대사 생성</button>
     <button class="tab-btn" onclick="selectMainTab('guide', this)">사용 가이드</button>
   </div>
 
+  <!-- '나만의 세상 만들기' 전용 서브 탭 -->
   <div class="sub-tab-container" id="subTabContainer">
     <button class="sub-tab-btn active" onclick="selectSubTab('world', this)">세계관 생성</button>
     <button class="sub-tab-btn" onclick="selectSubTab('character', this)">캐릭터 설정</button>
@@ -551,6 +560,7 @@
 
   <main>
     <div class="content-area">
+      <!-- 1. 일반 입력 Form Section -->
       <section class="card" id="inputSection">
         <div class="card-title" id="formTitle">세계관 설정 입력</div>
         
@@ -586,6 +596,7 @@
         <button type="button" class="primary-btn" onclick="generateContent()">[ 생성 실행 ]</button>
       </section>
 
+      <!-- 2. 관계도 & 스토리 캔버스 Section -->
       <section class="card" id="boardSection" style="display: none;">
         <div class="card-title">RELATIONSHIP & STORY CANVAS</div>
         
@@ -623,18 +634,20 @@
         </div>
       </section>
 
+      <!-- 생성 결과 표시 영역 -->
       <article class="card" id="resultSection">
         <div class="card-title">생성 결과</div>
         <div id="resultOutput" class="result-box">결과가 여기에 표시됩니다.</div>
       </article>
 
+      <!-- 가이드 영역 -->
       <section class="card" id="guideSection" style="display: none;">
         <div class="card-title">SYSTEM MANUAL</div>
         <div class="guide-box">
           <div class="guide-section">
             <div class="guide-section-title">SECTION 1. 테마 연동 스토리 캔버스</div>
             <ul>
-              <li><b>칠판 디자인 탈피</b>: 선택한 컬러 테마(Teal, Matrix, Pastel 등)에 맞춰 캔버스 배경 및 요소 색상이 자동으로 변경됩니다.</li>
+              <li><b>위치 이동</b>: 우측 사이드바의 '관계도 & 스토리 캔버스' 버튼으로 언제든지 캔버스 모드로 전환 가능합니다.</li>
               <li><b>자동 저장 및 파일 내보내기</b>: 캔버스 작업 내용과 서술 노트는 브라우저에 임시 저장되며, JSON 파일로 저장/불러오기가 가능합니다.</li>
             </ul>
           </div>
@@ -648,6 +661,7 @@
       </section>
     </div>
 
+    <!-- 우측 사이드바 -->
     <sidebar>
       <div class="profile-card">
         <div class="card-title">USER PROFILE</div>
@@ -673,6 +687,11 @@
         <div class="card-title">MEMO PAD</div>
         <textarea id="memoInput" placeholder="메모를 입력하세요..." style="height: 110px; font-size: 11px;" oninput="saveMemo(this.value)"></textarea>
       </div>
+
+      <!-- 이동 배치된 관계도 & 스토리 캔버스 버튼 -->
+      <button class="side-nav-btn" id="relationSideBtn" onclick="selectMainTab('relation', this)">
+        ★ 관계도 & 스토리 캔버스
+      </button>
     </sidebar>
   </main>
 
@@ -736,8 +755,8 @@
 
   function selectMainTab(tabType, element) {
     currentMainTab = tabType;
-    document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
-    element.classList.add('active');
+    document.querySelectorAll('.tab-btn, .side-nav-btn').forEach(btn => btn.classList.remove('active'));
+    if (element) element.classList.add('active');
 
     const subTabContainer = document.getElementById('subTabContainer');
     const inputSection = document.getElementById('inputSection');
@@ -1137,3 +1156,4 @@
 
 </body>
 </html>
+
