@@ -174,9 +174,7 @@
       outline: none;
     }
 
-    /* ===================================================
-       공통 버튼 디자인 통일 (규격 및 스타일)
-    =================================================== */
+    /* 공통 버튼 디자인 통일 */
     .tab-btn, 
     .sub-tab-btn, 
     button.primary-btn, 
@@ -198,7 +196,7 @@
       transition: background-color 0.1s, color 0.1s;
     }
 
-    /* 테마 맞춤 터치/클릭 반응 (:active) */
+    /* 테마별 클릭 반응 (:active) */
     .tab-btn:active, 
     .sub-tab-btn:active, 
     button.primary-btn:active, 
@@ -207,19 +205,16 @@
       color: var(--accent-text) !important;
     }
 
-    /* 선택되어 활성화된 상태의 탭 스타일 */
     .tab-btn.active, 
     .sub-tab-btn.active {
       background: var(--accent-color);
       color: var(--accent-text);
     }
 
-    /* 실행 버튼 전용 너비 조정 */
     button.primary-btn {
       width: 100%;
     }
 
-    /* 사이드바 프로필 버튼 전용 너비 조정 */
     .profile-btn {
       width: 100%;
     }
@@ -275,6 +270,28 @@
       font-size: 11px;
       font-weight: bold;
       margin-bottom: 4px;
+    }
+
+    .slider-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .slider-desc {
+      font-size: 11px;
+      font-weight: normal;
+      color: var(--accent-color);
+    }
+
+    input[type="range"] {
+      width: 100%;
+      height: 6px;
+      background: var(--input-bg);
+      border: 1px solid var(--border-color);
+      outline: none;
+      accent-color: var(--accent-color);
+      cursor: pointer;
     }
 
     input[type="text"], select, textarea {
@@ -449,8 +466,17 @@
           <input type="text" id="keywordInput" placeholder="예: 마법학교, 비밀 조직, 시간여행 등">
         </div>
 
+        <!-- AI 관여도 슬라이더 -->
         <div class="form-group">
-          <label id="promptLabel">상세 요구사항 / 프롬프트</label>
+          <div class="slider-header">
+            <label for="aiLevelInput">AI 관여도 (창의성 Level)</label>
+            <span id="aiLevelDesc" class="slider-desc">Lv.3 보통 (적절한 디테일 추가)</span>
+          </div>
+          <input type="range" id="aiLevelInput" min="1" max="5" value="3" oninput="updateAiLevelDesc(this.value)">
+        </div>
+
+        <div class="form-group">
+          <label id="promptLabel">상세 요구사항 / 프롬프트 (선택)</label>
           <textarea id="promptInput" placeholder="추가로 들어가야 할 세부 내용을 입력해 주세요..."></textarea>
         </div>
 
@@ -463,28 +489,37 @@
         <div id="resultOutput" class="result-box">결과가 여기에 표시됩니다.</div>
       </article>
 
-      <!-- 요약 사용 가이드 영역 -->
+      <!-- 시스템 매뉴얼 (가이드 내용 업데이트) -->
       <section class="card" id="guideSection" style="display: none;">
         <div class="card-title">SYSTEM MANUAL</div>
         <div class="guide-box">
 
           <div class="guide-section">
-            <div class="guide-section-title">SECTION 1. 현재 버전 기능 사용법</div>
+            <div class="guide-section-title">SECTION 1. 주요 기능 및 사용 방법</div>
             <ul>
-              <li><b>나만의 세상 만들기</b>: 메인 탭 선택 시 하단 서브 탭을 통해 [세계관 생성]과 [캐릭터 설정]을 손쉽게 이동할 수 있습니다.</li>
-              <li><b>유연한 옵션 구성</b>: '세계관 생성' 탭에서만 장르를 지정하며, 나머지 기능에서는 설정한 세계관에 맞춰 자유롭게 작성합니다.</li>
-              <li><b>테마 및 프로필 설정</b>: 우측 상단에서 8가지 테마를 전환할 수 있으며, 선택한 테마는 브라우저에 저장됩니다.</li>
-              <li><b>메모장 기능</b>: 사이드바 메모장에 작성한 내용은 브라우저에 자동 저장됩니다.</li>
+              <li><b>나만의 세상 만들기</b>: 서브 탭([세계관 생성], [캐릭터 설정])을 활용하여 세부적인 구상을 빠르게 진행할 수 있습니다.</li>
+              <li><b>AI 관여도 슬라이더</b>: 설명글을 길게 적지 않아도 슬라이더 조정(1~5단계)만으로 AI의 창의적 상상력 수준을 결정합니다.</li>
+              <li><b>통일된 인터페이스</b>: 클릭/터치 시 현재 선택된 컬러스킴 테마에 맞춰 버튼에 시각적 반응이 적용됩니다.</li>
+              <li><b>프로필 & 메모 저장</b>: 이미지 파일 업로드/URL 입력 및 메모장에 작성한 내용은 브라우저에 자동 반영됩니다.</li>
             </ul>
           </div>
 
           <div class="guide-section">
-            <div class="guide-section-title">SECTION 2. AI 출처 표기 및 주의사항</div>
+            <div class="guide-section-title">SECTION 2. AI 관여도 레벨 활용 가이드</div>
             <ul>
-              <li><b>출처 명시</b>: AI로 생성한 결과물을 외부에 공개할 경우 AI 보조를 받았음을 명시하는 것을 권장합니다.</li>
-              <li><b>수정 및 가공</b>: 결과물은 완성본이 아닌 아이디어 초안으로 활용하는 것이 좋습니다.</li>
-              <li><b>저작권 주의</b>: 기존 작품과의 유사성 및 상표권 침해 여부를 사전 검토해야 합니다.</li>
-              <li><b>개인정보 보호</b>: 프롬프트나 메모장에 개인정보를 입력하지 않도록 유의해야 합니다.</li>
+              <li><b>Lv.1 (최소)</b>: 입력한 키워드와 원문의 형태를 그대로 유지하며 오탈자 및 문장 구성만 다듬습니다.</li>
+              <li><b>Lv.2~3 (절제/보통)</b>: 핵심 설정을 보존하면서 개연성을 더해줄 유용한 디테일과 살을 붙여줍니다.</li>
+              <li><b>Lv.4~5 (높음/최대)</b>: 소량의 키워드만으로도 놀랍고 독창적인 스토리, 반전 요소 및 복선을 풍부하게 창작합니다.</li>
+            </ul>
+          </div>
+
+          <div class="guide-section">
+            <div class="guide-section-title">SECTION 3. 저작권 및 이용 시 유의사항</div>
+            <ul>
+              <li><b>결과물 가공</b>: 생성된 결과는 아이디어 초안으로 사용하며, 본인의 의도에 맞게 다듬어 사용하는 것을 권장합니다.</li>
+              <li><b>출처 표기</b>: AI의 도움으로 제작된 결과물을 공공 플랫폼에 게시할 경우 AI 작성 보조 출처를 밝혀주세요.</li>
+              <li><b>권리 검토</b>: 기존 타인의 작품, 상표권과의 유사성 여부를 사전에 확인해 주세요.</li>
+              <li><b>개인정보 보호</b>: 프롬프트나 메모장에는 중요한 민감정보나 개인정보를 입력하지 마세요.</li>
             </ul>
           </div>
 
@@ -535,6 +570,14 @@
   let currentMainTab = 'myWorld';
   let currentSubTab = 'world';
 
+  const aiLevelDescriptions = {
+    "1": "Lv.1 최소 (입력 내용 및 키워드 유지, 다듬기)",
+    "2": "Lv.2 절제 (약간의 설정 보완)",
+    "3": "Lv.3 보통 (적절한 디테일 추가)",
+    "4": "Lv.4 높음 (창의적 요소 적극 추가)",
+    "5": "Lv.5 최대 (자유롭고 파격적인 스토리 확장)"
+  };
+
   window.addEventListener('DOMContentLoaded', () => {
     const savedTheme = localStorage.getItem('app_theme') || 'classic';
     document.getElementById('themeSelect').value = savedTheme;
@@ -550,6 +593,10 @@
     const savedMemo = localStorage.getItem('user_memo');
     if (savedMemo) document.getElementById('memoInput').value = savedMemo;
   });
+
+  function updateAiLevelDesc(val) {
+    document.getElementById('aiLevelDesc').innerText = aiLevelDescriptions[val];
+  }
 
   function changeTheme(themeName) {
     document.body.setAttribute('data-theme', themeName);
@@ -669,6 +716,8 @@
   async function generateContent() {
     const keyword = document.getElementById('keywordInput').value;
     const prompt = document.getElementById('promptInput').value;
+    const aiLevel = document.getElementById('aiLevelInput').value;
+    const aiLevelText = aiLevelDescriptions[aiLevel];
     const outputDiv = document.getElementById('resultOutput');
 
     let category = currentMainTab === 'myWorld' ? currentSubTab : currentMainTab;
@@ -676,13 +725,13 @@
 
     if (category === 'world') {
       const genre = document.getElementById('genreSelect').value;
-      fullPrompt = `[카테고리: 세계관 생성] [장르: ${genre}] [키워드: ${keyword}]\n내용: ${prompt}`;
+      fullPrompt = `[카테고리: 세계관 생성] [장르: ${genre}] [키워드: ${keyword}] [AI 관여도: ${aiLevelText}]\n내용: ${prompt}`;
     } else {
-      fullPrompt = `[카테고리: ${category}] [키워드: ${keyword}]\n내용: ${prompt}`;
+      fullPrompt = `[카테고리: ${category}] [키워드: ${keyword}] [AI 관여도: ${aiLevelText}]\n내용: ${prompt}`;
     }
 
     if (!keyword.trim() && !prompt.trim()) {
-      alert('키워드나 상세 내용을 입력해 주세요!');
+      alert('키워드를 입력해 주세요!');
       return;
     }
 
@@ -711,3 +760,4 @@
 
 </body>
 </html>
+
