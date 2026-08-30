@@ -3,788 +3,301 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Your World Helper - Y2K Edition</title>
-  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+  <title>AI 이미지 생성기</title>
   <style>
     :root {
-      --bg-color: #ffcbf2;
-      --card-bg: #fde2e4;
-      --card-sub-bg: #ffffff;
-      --text-color: #5c3d51;
-      --border-color: #8e5572;
-      --accent-color: #a3a3f5;
-      --accent-text: #ffffff;
-      --input-bg: #ffffff;
-      --window-title-bg: #a3a3f5;
-      --footer-text: #404040;
-      --canvas-bg: #fff5fa;
-      --canvas-grid: rgba(142, 85, 114, 0.15);
-      --canvas-frame: #a3a3f5;
+      --bg-color: #0f172a;
+      --card-bg: #1e293b;
+      --card-sub-bg: #334155;
+      --border-color: #475569;
+      --text-color: #f8fafc;
+      --text-muted: #94a3b8;
+      --primary-color: #6366f1;
+      --primary-hover: #4f46e5;
+      --accent-color: #e0e7ff;
     }
 
-    [data-theme="classic"] {
-      --bg-color: #008080;
-      --card-bg: #c0c0c0;
-      --card-sub-bg: #d4d0c8;
-      --text-color: #000000;
-      --border-color: #000000;
-      --accent-color: #000080;
-      --accent-text: #ffffff;
-      --input-bg: #ffffff;
-      --window-title-bg: #000080;
-      --canvas-bg: #0b3c3c;
-      --canvas-grid: rgba(255, 255, 255, 0.12);
-      --canvas-frame: #000080;
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
     }
 
-    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Tahoma', 'Dotum', '굴림', sans-serif; }
-    body { background-color: var(--bg-color); color: var(--text-color); padding: 15px; touch-action: manipulation; }
-    .container { max-width: 1000px; margin: 0 auto; background: var(--card-bg); border: 2px solid var(--border-color); padding: 10px; box-shadow: 4px 4px 0px #000000; }
-    
-    header { background: var(--window-title-bg); padding: 6px 10px; margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center; border: 1px solid var(--border-color); }
-    header h1 { font-size: 14px; font-weight: bold; color: #ffffff; }
-    .theme-selector-box { display: flex; align-items: center; gap: 6px; color: #ffffff; font-size: 11px; }
-    .theme-selector-box select { padding: 3px 6px; font-size: 11px; border: 1px solid var(--border-color); background-color: var(--input-bg); color: var(--text-color); }
-    
-    .tab-btn, .sub-tab-btn, button.primary-btn, .profile-btn, .board-tool-btn, .side-nav-btn, .small-btn {
-      display: inline-flex; align-items: center; justify-content: center; height: 28px; padding: 0 10px;
-      border: 1px solid var(--border-color); background: var(--card-bg); color: var(--text-color);
-      font-size: 11px; font-weight: bold; cursor: pointer; outline: none; user-select: none;
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      background-color: var(--bg-color);
+      color: var(--text-color);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      padding: 20px;
     }
-    .tab-btn.active, .sub-tab-btn.active, .board-tool-btn.active, .side-nav-btn.active { background: var(--accent-color); color: var(--accent-text); }
-    .side-nav-btn { width: 100%; height: 36px; font-size: 11px; border: 1px solid var(--border-color); }
-    button.primary-btn, .profile-btn { width: 100%; }
 
-    .tab-container { display: flex; gap: 4px; margin-bottom: 8px; flex-wrap: wrap; }
-    .sub-tab-container { display: flex; gap: 4px; margin-bottom: 12px; padding-left: 2px; }
-    main { display: grid; grid-template-columns: 1fr 260px; gap: 12px; }
-    .content-area { display: flex; flex-direction: column; gap: 12px; }
-    .card { border: 1px solid var(--border-color); background: var(--card-sub-bg); padding: 12px; }
-    .card-title { font-size: 12px; font-weight: bold; margin-bottom: 10px; background: var(--accent-color); color: var(--accent-text); padding: 4px 8px; border: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center; }
-    .card-title-btn { background: var(--card-bg); color: var(--text-color); border: 1px solid var(--border-color); font-size: 10px; padding: 1px 6px; cursor: pointer; }
+    .container {
+      width: 100%;
+      max-width: 500px;
+      background-color: var(--card-bg);
+      border-radius: 12px;
+      padding: 24px;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+      border: 1px solid var(--border-color);
+    }
 
-    .form-group { margin-bottom: 10px; }
-    .form-group label { display: block; font-size: 11px; font-weight: bold; margin-bottom: 4px; }
-    .slider-header { display: flex; justify-content: space-between; align-items: center; }
-    .slider-desc { font-size: 11px; color: var(--accent-color); }
-    input[type="range"] { width: 100%; height: 6px; background: var(--input-bg); border: 1px solid var(--border-color); accent-color: var(--accent-color); cursor: pointer; }
-    input[type="text"], select, textarea { width: 100%; border: 1px solid var(--border-color); padding: 6px; font-size: 12px; background: var(--input-bg); color: var(--text-color); outline: none; }
-    textarea { height: 75px; resize: vertical; }
+    h1 {
+      font-size: 1.5rem;
+      margin-bottom: 12px;
+      text-align: center;
+    }
 
-    .result-box { min-height: 180px; background: var(--input-bg); border: 1px solid var(--border-color); padding: 12px; font-size: 12px; line-height: 1.6; }
-    .markdown-body h1, .markdown-body h2, .markdown-body h3 { margin-top: 10px; margin-bottom: 6px; color: var(--accent-color); border-bottom: 1px dashed var(--border-color); padding-bottom: 4px; }
-    .markdown-body p { margin-bottom: 8px; }
-    .markdown-body ul, .markdown-body ol { margin-left: 20px; margin-bottom: 8px; }
-    .markdown-body blockquote { border-left: 3px solid var(--accent-color); padding-left: 8px; margin: 8px 0; color: #666; font-style: italic; }
+    /* 상단 안내 박스 */
+    .notice-box {
+      background-color: var(--card-sub-bg);
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      padding: 10px 14px;
+      margin-bottom: 20px;
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      line-height: 1.4;
+    }
 
-    .board-container { position: relative; width: 100%; height: 450px; background-color: var(--canvas-bg); border: 2px solid var(--canvas-frame); overflow: hidden; touch-action: none; }
-    .board-viewport { position: absolute; width: 100%; height: 100%; background-image: linear-gradient(var(--canvas-grid) 1px, transparent 1px), linear-gradient(90deg, var(--canvas-grid) 1px, transparent 1px); background-size: 20px 20px; transform-origin: 0 0; }
-    .board-toolbar { display: flex; flex-wrap: wrap; gap: 4px; margin-bottom: 8px; align-items: center; justify-content: space-between; background: var(--card-bg); padding: 6px; border: 1px solid var(--border-color); }
-    .board-tool-group { display: flex; gap: 4px; align-items: center; flex-wrap: wrap; }
+    .notice-box strong {
+      color: var(--accent-color);
+    }
 
-    .canvas-node { position: absolute; background: var(--input-bg); border: 1px solid var(--border-color); padding: 6px; font-size: 11px; box-shadow: 2px 2px 0px rgba(0,0,0,0.2); cursor: move; user-select: none; min-width: 80px; min-height: 40px; }
-    .canvas-node img { width: 100%; height: 100%; object-fit: contain; display: block; pointer-events: none; }
-    .resize-handle { position: absolute; right: 0; bottom: 0; width: 10px; height: 10px; background: var(--border-color); cursor: se-resize; }
+    .tabs {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 20px;
+      border-bottom: 1px solid var(--border-color);
+      padding-bottom: 8px;
+    }
 
-    sidebar { display: flex; flex-direction: column; gap: 12px; }
-    .profile-card { border: 1px solid var(--border-color); padding: 12px; background: var(--card-sub-bg); text-align: center; }
-    .profile-img-box { width: 90px; height: 90px; border: 1px solid var(--border-color); margin: 0 auto 8px; display: flex; align-items: center; justify-content: center; background: var(--input-bg); overflow: hidden; }
-    .profile-img-box img { width: 100%; height: 100%; object-fit: cover; display: none; }
-    .collapsible-content.collapsed { display: none; }
+    .tab-btn {
+      background: none;
+      border: none;
+      color: var(--text-muted);
+      padding: 8px 16px;
+      cursor: pointer;
+      font-weight: 600;
+      border-radius: 6px;
+    }
 
-    footer { margin-top: 15px; border-top: 1px solid var(--border-color); padding-top: 8px; text-align: center; font-size: 11px; color: var(--footer-text); }
-    @media (max-width: 768px) { main { grid-template-columns: 1fr; } }
+    .tab-btn.active {
+      background-color: var(--primary-color);
+      color: #fff;
+    }
+
+    .tab-content {
+      display: none;
+    }
+
+    .tab-content.active {
+      display: block;
+    }
+
+    .form-group {
+      margin-bottom: 16px;
+    }
+
+    label {
+      display: block;
+      font-size: 0.9rem;
+      margin-bottom: 6px;
+      color: var(--text-muted);
+    }
+
+    input[type="text"],
+    input[type="password"],
+    textarea {
+      width: 100%;
+      padding: 10px;
+      background-color: var(--bg-color);
+      border: 1px solid var(--border-color);
+      border-radius: 6px;
+      color: var(--text-color);
+      font-size: 0.95rem;
+    }
+
+    textarea {
+      resize: vertical;
+      min-height: 80px;
+    }
+
+    button.btn-primary {
+      width: 100%;
+      padding: 12px;
+      background-color: var(--primary-color);
+      border: none;
+      border-radius: 6px;
+      color: white;
+      font-weight: bold;
+      cursor: pointer;
+      transition: background-color 0.2s;
+    }
+
+    button.btn-primary:hover {
+      background-color: var(--primary-hover);
+    }
+
+    .canvas-container {
+      width: 100%;
+      display: flex;
+      justify-content: center;
+      margin-top: 20px;
+      background-color: var(--bg-color);
+      border-radius: 8px;
+      overflow: hidden;
+      border: 1px solid var(--border-color);
+    }
+
+    canvas {
+      max-width: 100%;
+      height: auto;
+      display: block;
+    }
   </style>
 </head>
-<body data-theme="bubblegum">
+<body>
 
-<div class="container">
-  <header>
-    <h1>YOUR WORLD HELPER (v2.0)</h1>
-    <div class="theme-selector-box">
-      <label for="themeSelect">COLOR THEME:</label>
-      <select id="themeSelect" onchange="changeTheme(this.value)">
-        <option value="bubblegum">Y2K Bubblegum</option>
-        <option value="classic">Classic Teal</option>
-      </select>
-    </div>
-  </header>
+  <div class="container">
+    <h1>🎨 AI 이미지 생성기</h1>
 
-  <div class="tab-container">
-    <button class="tab-btn active" id="tab-myWorld" onclick="selectMainTab('myWorld', this)">나만의 세상 만들기</button>
-    <button class="tab-btn" id="tab-topic" onclick="selectMainTab('topic', this)">주제 선정</button>
-    <button class="tab-btn" id="tab-dialogue" onclick="selectMainTab('dialogue', this)">대사 생성</button>
-    <button class="tab-btn" id="tab-guide" onclick="selectMainTab('guide', this)">사용 가이드</button>
-  </div>
-
-  <div class="sub-tab-container" id="subTabContainer">
-    <button class="sub-tab-btn active" id="subTab-world" onclick="selectSubTab('world', this)">세계관 생성</button>
-    <button class="sub-tab-btn" id="subTab-character" onclick="selectSubTab('character', this)">캐릭터 설정</button>
-    <button class="sub-tab-btn" id="subTab-plot" onclick="selectSubTab('plot', this)">플롯 / 스토리</button>
-  </div>
-
-  <main>
-    <div class="content-area">
-      <section class="card" id="inputSection">
-        <div class="card-title" id="formTitle">세계관 설정 입력</div>
-        
-        <div class="form-group" id="genreGroup">
-          <label>장르 / 테마</label>
-          <select id="genreSelect">
-            <option value="판타지">판타지</option>
-            <option value="SF/사이버펑크">SF / 사이버펑크</option>
-            <option value="현대 로맨스">현대 로맨스</option>
-            <option value="미스터리/스릴러">미스터리 / 스릴러</option>
-            <option value="무협/시대극">무협 / 시대극</option>
-          </select>
-        </div>
-
-        <div class="form-group" id="mainPromptGroup">
-          <label id="promptLabel">상세 요구사항 / 프롬프트</label>
-          <textarea id="promptInput" placeholder="원하는 분위기나 핵심 소재를 입력해보세요..."></textarea>
-        </div>
-
-        <div class="form-group" id="dialogueExtraGroup" style="display: none;">
-          <label>상황 및 장소 설정</label>
-          <textarea id="dialogueContextInput" placeholder="예: 비 내리는 조용한 골목길, 대립 중인 상황"></textarea>
-        </div>
-
-        <div class="form-group" id="aiLevelGroup">
-          <div class="slider-header">
-            <label for="aiLevelInput">AI 관여도 (창의성 Level)</label>
-            <span id="aiLevelDesc" class="slider-desc">Lv.3 보통 (적절한 디테일 추가)</span>
-          </div>
-          <input type="range" id="aiLevelInput" min="1" max="5" value="3" oninput="updateAiLevelDesc(this.value)">
-        </div>
-
-        <div class="form-group" id="keywordGroup">
-          <label id="keywordLabel">핵심 키워드 (선택)</label>
-          <input type="text" id="keywordInput" placeholder="예: 시계탑, 비밀, 안개">
-        </div>
-
-        <button type="button" class="primary-btn" onclick="generateContent()">[ 생성 실행 ]</button>
-      </section>
-
-      <!-- 캔버스 영역 -->
-      <section class="card" id="boardSection" style="display: none;">
-        <div class="card-title">RELATIONSHIP & STORY CANVAS</div>
-        <div class="board-toolbar">
-          <div class="board-tool-group">
-            <button class="board-tool-btn" id="tool-select" onclick="setBoardTool('select')">선택/이동</button>
-            <button class="board-tool-btn active" id="tool-draw" onclick="setBoardTool('draw')">펜 드로잉</button>
-            <button class="board-tool-btn" id="tool-arrow" onclick="setBoardTool('arrow')">화살표</button>
-            <select id="arrowWidthSelect" style="width: 70px; height: 28px; font-size: 11px;" onchange="updateLineWidth(this.value)">
-              <option value="1">1px</option>
-              <option value="2" selected>2px</option>
-              <option value="4">4px</option>
-              <option value="6">6px</option>
-            </select>
-            <button class="board-tool-btn" id="tool-erase" onclick="setBoardTool('erase')">지우개</button>
-          </div>
-          <div class="board-tool-group">
-            <!-- 요청사항 반영: [+] (왼쪽) [100%] (중간) [-] (오른쪽) 정렬 -->
-            <button class="small-btn" onclick="zoomCanvas(0.1)" title="확대">+</button>
-            <button class="small-btn" id="zoomResetBtn" onclick="resetZoom()" title="원래 크기">100%</button>
-            <button class="small-btn" onclick="zoomCanvas(-0.1)" title="축소">-</button>
-            <button class="small-btn" onclick="addTextCard()">+ 카드</button>
-            <button class="small-btn" onclick="document.getElementById('canvasImageInput').click()">+ 이미지</button>
-            <input type="file" id="canvasImageInput" accept="image/*" style="display:none;" onchange="addCanvasImage(event)">
-            <!-- 되돌리기 / 다시실행 화살표 기호 아이콘 적용 -->
-            <button class="small-btn" onclick="undoCanvas()" title="되돌리기">↩</button>
-            <button class="small-btn" onclick="redoCanvas()" title="다시실행">↪</button>
-            <button class="small-btn" onclick="clearCanvasDrawing()">초기화</button>
-          </div>
-        </div>
-        <div class="board-container" id="boardContainer">
-          <div class="board-viewport" id="boardViewport">
-            <canvas id="drawingCanvas"></canvas>
-          </div>
-        </div>
-        <div class="form-group" style="margin-top: 10px;">
-          <label>통합 스토리 서술 노트</label>
-          <textarea id="boardStoryText" placeholder="아이디어나 전체 스토리 흐름을 자유롭게 정리하세요..."></textarea>
-        </div>
-      </section>
-
-      <article class="card" id="resultSection">
-        <div class="card-title">생성 결과</div>
-        <div id="resultOutput" class="result-box markdown-body">결과가 여기에 표시됩니다.</div>
-      </article>
-
-      <section class="card" id="guideSection" style="display: none;">
-        <div class="card-title">SYSTEM MANUAL & USER GUIDE</div>
-        <div class="result-box markdown-body" style="border: none;">
-          <h3>Your World Helper v2.0 매뉴얼</h3>
-          <p>창작자를 위한 서포팅 및 스토리텔링 오프라인 워크스페이스 가이드입니다.</p>
-          <hr>
-          <h4>1. 시스템 개요 및 기초 사용법</h4>
-          <p>상단 메인 탭 및 서브 탭을 이용하여 기획 분야(세계관, 캐릭터, 플롯, 주제, 대사)를 선택할 수 있습니다. 입력창에 원하는 설정을 입력한 후 <strong>[ 생성 실행 ]</strong> 버튼을 누르면 프로젝트안이 생성됩니다.</p>
-
-          <h4>2. 탭별 기능 지침</h4>
-          <ul>
-            <li><strong>세계관 생성</strong>: 입력된 핵심 설정을 토대로 AI가 배경, 물리/사회적 법칙을 풍부하게 완성합니다.</li>
-            <li><strong>캐릭터 설정</strong>: 인물의 외형, 내부 서사, 행동 동기 및 갈등 요소를 서술합니다.</li>
-            <li><strong>플롯 / 스토리</strong>: 전체 서사의 기승전결 뼈대와 전환점을 구체적으로 렌더링합니다.</li>
-            <li><strong>주제 선정 (장소/설정 어휘)</strong>: 관여도 슬라이더(Lv.1~Lv.5)를 활용해 인물 제외, 장소 및 연출 문장/단어를 추천받습니다.</li>
-            <li><strong>대사 생성</strong>: '캐릭터 성격'과 '상황/장소'를 독립 입력받아 생생한 스크립트를 출력합니다.</li>
-          </ul>
-
-          <h4>3. 관계도 & 스토리 캔버스 활용법</h4>
-          <ul>
-            <li><strong>줌(Zoom) 기능</strong>: +, 100%, - 버튼을 통해 캔버스 전체 화면을 자유롭게 확대/축소할 수 있습니다.</li>
-            <li><strong>카드 및 이미지 크기 조절</strong>: 캔버스에 추가된 카드나 이미지의 우측 하단 리사이즈 핸들을 드래그하여 자유롭게 크기를 변경할 수 있습니다.</li>
-            <li><strong>화살표 드로잉 (두께/길이 조절)</strong>: 화살표 툴 선택 후 원하는 두께(1px~6px)를 지정하여 클릭&드래그로 길이에 맞게 연출할 수 있습니다.</li>
-          </ul>
-
-          <h4>4. AI 사용 관련 규정 및 저작권 가이드라인</h4>
-          <ul>
-            <li><strong>공모전 및 대외 제출 작품 규정</strong>: 개인적인 습작이나 단순 소장용 작품 외에 공모전, 외부 출판, 상업적 연재, 기타 대외 공식 발표용 작품의 경우 제출 기관의 AI 활용 관련 요강을 사전 확인해야 하며, 필수적으로 AI 도구 활용 사실 및 출처(예: <em>"본 작품은 AI 도구 Your World Helper의 아이디어 보조를 받아 작성되었습니다."</em>)를 명확히 명시해야 합니다.</li>
-            <li><strong>저작권 및 독자적 창작 권장</strong>: AI가 생성한 결과물은 아이디어 서포트용 텍스트입니다. 타 저작권 침해 방지 및 완성도 높은 본인만의 저작권을 확보하기 위해 생성 결과를 뼈대로 사용자가 직접 재구성(2차 가공 및 리라이팅)할 것을 강력히 권장합니다.</li>
-          </ul>
-        </div>
-      </section>
+    <!-- 상단 안내 문구 -->
+    <div class="notice-box">
+      💡 <strong>이용 안내:</strong> 이미지 생성을 위해 <strong>Hugging Face API 토큰</strong>이 필요합니다. [설정] 탭에 토큰을 입력해 주세요. (한 번 입력 시 자동 저장됩니다)
     </div>
 
-    <sidebar>
-      <div class="profile-card">
-        <div class="card-title">USER PROFILE</div>
-        <div class="profile-img-box">
-          <img id="profilePreview" src="" alt="프로필">
-          <div id="profilePlaceholder" style="font-size: 11px;">NO IMAGE</div>
-        </div>
-        <div style="font-weight: bold; font-size: 12px; margin-bottom: 6px;">User_01</div>
-        <button type="button" class="profile-btn" onclick="document.getElementById('profileInput').click()">파일 선택</button>
-        <input type="file" id="profileInput" accept="image/*" style="display: none;" onchange="loadProfileImageFromFile(event)">
+    <div class="tabs">
+      <button class="tab-btn active" onclick="switchTab('create')">생성하기</button>
+      <button class="tab-btn" onclick="switchTab('settings')">설정</button>
+    </div>
+
+    <!-- 생성 탭 -->
+    <div id="tab-create" class="tab-content active">
+      <div class="form-group">
+        <label for="promptInput">프롬프트 (영어 권장)</label>
+        <textarea id="promptInput" placeholder="예: A cute cat wearing space suit, 8k resolution"></textarea>
       </div>
+      <button class="btn-primary" onclick="generateImage()">이미지 만들기</button>
 
-      <div class="card">
-        <div class="card-title">
-          <span>SETTINGS (명령어 설정)</span>
-          <button type="button" class="card-title-btn" id="settingsToggleBtn" onclick="toggleSettingsCard()">▲ 열기</button>
-        </div>
-        <div id="settingsContent" class="collapsible-content collapsed">
-          <div class="form-group" style="margin-top: 8px;">
-            <label>AI 시스템 명령어 (System Prompt)</label>
-            <textarea id="systemPromptInput" style="height: 70px; font-size: 10px;" placeholder="AI 서법 및 말투 지침을 입력하세요...">당신은 스토리 기획 전문 AI 작가입니다. 마크다운 형식을 활용해 풍부한 텍스트를 작성하세요.</textarea>
-          </div>
-        </div>
+      <div class="canvas-container">
+        <canvas id="resultCanvas" width="512" height="512"></canvas>
       </div>
+    </div>
 
-      <div class="card">
-        <div class="card-title">MEMO PAD</div>
-        <textarea id="memoInput" placeholder="간단한 메모를 기록하세요..." style="height: 90px; font-size: 11px;"></textarea>
+    <!-- 설정 탭 -->
+    <div id="tab-settings" class="tab-content">
+      <div class="form-group">
+        <label for="hfTokenInput">Hugging Face API Token</label>
+        <input type="password" id="hfTokenInput" placeholder="hf_xxxxxxxxxxxxxxxxxxxx" oninput="saveToken(this.value)">
       </div>
+    </div>
+  </div>
 
-      <button class="side-nav-btn" id="relationSideBtn" onclick="selectMainTab('relation', this)">
-        관계도 & 스토리 캔버스
-      </button>
-    </sidebar>
-  </main>
+  <script>
+    const canvas = document.getElementById('resultCanvas');
+    const ctx = canvas.getContext('2d');
 
-  <footer>
-    <p>Copyright (c) 2026 yourworldhelper. All rights reserved.</p>
-  </footer>
-</div>
+    // 페이지 로드 시 초기화 및 저장된 토큰 불러오기
+    window.addEventListener('DOMContentLoaded', () => {
+      initCanvas();
+      loadToken();
+    });
 
-<script>
-  let currentMainTab = 'myWorld';
-  let currentSubTab = 'world';
-  let boardTool = 'draw';
-  let currentLineWidth = 2;
-  let canvasScale = 1.0;
-
-  let isDrawing = false;
-  let lastX = 0, lastY = 0;
-  let startX = 0, startY = 0;
-
-  let undoStack = [];
-  let redoStack = [];
-  const MAX_HISTORY = 20;
-
-  const canvas = document.getElementById('drawingCanvas');
-  const ctx = canvas.getContext('2d');
-  let canvasSnapshot = null;
-
-  const aiLevelDescriptions = {
-    "1": "Lv.1 최소 (원문 충실)",
-    "2": "Lv.2 절제 (약간의 서술 보완)",
-    "3": "Lv.3 보통 (밸런스 있는 디테일 서술)",
-    "4": "Lv.4 높음 (창의적 설정 확장)",
-    "5": "Lv.5 최대 (자율적 아이디어 파생)"
-  };
-
-  window.addEventListener('DOMContentLoaded', () => {
-    initCanvas();
-  });
-
-  function changeTheme(themeName) {
-    document.body.setAttribute('data-theme', themeName);
-  }
-
-  function updateAiLevelDesc(val) {
-    document.getElementById('aiLevelDesc').innerText = aiLevelDescriptions[val];
-  }
-
-  function updateLineWidth(val) {
-    currentLineWidth = parseInt(val);
-  }
-
-  function zoomCanvas(delta) {
-    canvasScale = Math.min(Math.max(0.5, canvasScale + delta), 2.0);
-    applyCanvasScale();
-  }
-
-  function resetZoom() {
-    canvasScale = 1.0;
-    applyCanvasScale();
-  }
-
-  function applyCanvasScale() {
-    const viewport = document.getElementById('boardViewport');
-    viewport.style.transform = `scale(${canvasScale})`;
-    const zoomBtn = document.getElementById('zoomResetBtn');
-    if (zoomBtn) {
-      zoomBtn.innerText = Math.round(canvasScale * 100) + '%';
-    }
-  }
-
-  function selectMainTab(tabType, element) {
-    currentMainTab = tabType;
-    document.querySelectorAll('.tab-btn, .side-nav-btn').forEach(btn => btn.classList.remove('active'));
-    if (element) element.classList.add('active');
-
-    const subTabContainer = document.getElementById('subTabContainer');
-    const inputSection = document.getElementById('inputSection');
-    const boardSection = document.getElementById('boardSection');
-    const resultSection = document.getElementById('resultSection');
-    const guideSection = document.getElementById('guideSection');
-
-    const genreGroup = document.getElementById('genreGroup');
-    const dialogueExtraGroup = document.getElementById('dialogueExtraGroup');
-    const promptLabel = document.getElementById('promptLabel');
-    const promptInput = document.getElementById('promptInput');
-
-    if (tabType === 'myWorld') {
-      subTabContainer.style.display = 'flex';
-      inputSection.style.display = 'block';
-      boardSection.style.display = 'none';
-      resultSection.style.display = 'block';
-      guideSection.style.display = 'none';
-      
-      updateSubTabUI();
-    } else if (tabType === 'dialogue') {
-      subTabContainer.style.display = 'none';
-      inputSection.style.display = 'block';
-      boardSection.style.display = 'none';
-      resultSection.style.display = 'block';
-      guideSection.style.display = 'none';
-      genreGroup.style.display = 'none';
-      dialogueExtraGroup.style.display = 'block';
-      promptLabel.innerText = '캐릭터 성격 및 말투 입력';
-      promptInput.placeholder = '예: 냉정하고 차분한 어조, 단정한 말투';
-      document.getElementById('formTitle').innerText = '대사 생성 입력';
-    } else if (tabType === 'topic') {
-      subTabContainer.style.display = 'none';
-      inputSection.style.display = 'block';
-      boardSection.style.display = 'none';
-      resultSection.style.display = 'block';
-      guideSection.style.display = 'none';
-      genreGroup.style.display = 'none';
-      dialogueExtraGroup.style.display = 'none';
-      promptLabel.innerText = '원하는 분위기 / 배경 설정 힌트';
-      promptInput.placeholder = '예: 차가운 새벽 공기, 시간 멈춤';
-      document.getElementById('formTitle').innerText = '주제 선정 (장소/설정 문장 & 단어 추천)';
-    } else if (tabType === 'relation') {
-      subTabContainer.style.display = 'none';
-      inputSection.style.display = 'none';
-      boardSection.style.display = 'block';
-      resultSection.style.display = 'none';
-      guideSection.style.display = 'none';
-      resizeCanvas();
-    } else if (tabType === 'guide') {
-      subTabContainer.style.display = 'none';
-      inputSection.style.display = 'none';
-      boardSection.style.display = 'none';
-      resultSection.style.display = 'none';
-      guideSection.style.display = 'block';
-    }
-  }
-
-  function selectSubTab(subType, element) {
-    currentSubTab = subType;
-    document.querySelectorAll('.sub-tab-btn').forEach(btn => btn.classList.remove('active'));
-    if (element) element.classList.add('active');
-    updateSubTabUI();
-  }
-
-  function updateSubTabUI() {
-    const genreGroup = document.getElementById('genreGroup');
-    const dialogueExtraGroup = document.getElementById('dialogueExtraGroup');
-    const promptLabel = document.getElementById('promptLabel');
-    const promptInput = document.getElementById('promptInput');
-
-    dialogueExtraGroup.style.display = 'none';
-
-    if (currentSubTab === 'world') {
-      genreGroup.style.display = 'block';
-      promptLabel.innerText = '세계관 상세 요구사항 / 프롬프트';
-      promptInput.placeholder = '원하는 분위기나 세계관 핵심 특징을 입력해보세요...';
-      document.getElementById('formTitle').innerText = '세계관 설정 입력';
-    } else if (currentSubTab === 'character') {
-      genreGroup.style.display = 'none';
-      promptLabel.innerText = '캐릭터 구상 프롬프트';
-      promptInput.placeholder = '인물의 외형, 성격, 배경 스토리를 입력해보세요...';
-      document.getElementById('formTitle').innerText = '캐릭터 설정 입력';
-    } else if (currentSubTab === 'plot') {
-      genreGroup.style.display = 'block';
-      promptLabel.innerText = '플롯/스토리 사건 프롬프트';
-      promptInput.placeholder = '스토리의 중심 갈등 사건이나 흐름을 입력해보세요...';
-      document.getElementById('formTitle').innerText = '플롯 / 스토리 입력';
-    }
-  }
-
-  function toggleSettingsCard() {
-    const content = document.getElementById('settingsContent');
-    const btn = document.getElementById('settingsToggleBtn');
-    content.classList.toggle('collapsed');
-    btn.innerText = content.classList.contains('collapsed') ? '▲ 열기' : '▼ 접기';
-  }
-
-  function saveState() {
-    if (undoStack.length >= MAX_HISTORY) undoStack.shift();
-    undoStack.push(ctx.getImageData(0, 0, canvas.width, canvas.height));
-    redoStack = [];
-  }
-
-  function undoCanvas() {
-    if (undoStack.length > 0) {
-      redoStack.push(ctx.getImageData(0, 0, canvas.width, canvas.height));
-      const previousState = undoStack.pop();
-      ctx.putImageData(previousState, 0, 0);
-    }
-  }
-
-  function redoCanvas() {
-    if (redoStack.length > 0) {
-      undoStack.push(ctx.getImageData(0, 0, canvas.width, canvas.height));
-      const nextState = redoStack.pop();
-      ctx.putImageData(nextState, 0, 0);
-    }
-  }
-
-  function getPos(e) {
-    const rect = canvas.getBoundingClientRect();
-    const clientX = e.touches && e.touches.length > 0 ? e.touches[0].clientX : e.clientX;
-    const clientY = e.touches && e.touches.length > 0 ? e.touches[0].clientY : e.clientY;
-    return { 
-      x: (clientX - rect.left) / canvasScale, 
-      y: (clientY - rect.top) / canvasScale 
-    };
-  }
-
-  function startDrawing(e) {
-    if (boardTool === 'select') return;
-    saveState();
-    isDrawing = true;
-    const pos = getPos(e);
-    startX = pos.x; startY = pos.y;
-    lastX = pos.x; lastY = pos.y;
-    if (boardTool === 'arrow') {
-      canvasSnapshot = ctx.getImageData(0, 0, canvas.width, canvas.height);
-    }
-  }
-
-  function draw(e) {
-    if (!isDrawing || boardTool === 'select') return;
-    e.preventDefault();
-    const pos = getPos(e);
-
-    if (boardTool === 'draw' || boardTool === 'erase') {
-      ctx.beginPath();
-      ctx.moveTo(lastX, lastY);
-      ctx.lineTo(pos.x, pos.y);
-      ctx.strokeStyle = boardTool === 'draw' ? '#8e5572' : '#ffffff';
-      ctx.lineWidth = boardTool === 'draw' ? currentLineWidth : 20;
-      ctx.lineCap = 'round';
-      ctx.stroke();
-      lastX = pos.x; lastY = pos.y;
-    } else if (boardTool === 'arrow') {
-      ctx.putImageData(canvasSnapshot, 0, 0);
-      drawArrow(startX, startY, pos.x, pos.y);
-    }
-  }
-
-  function drawArrow(fromx, fromy, tox, toy) {
-    const headlen = 8 + currentLineWidth * 2;
-    const angle = Math.atan2(toy - fromy, tox - fromx);
-    ctx.beginPath();
-    ctx.moveTo(fromx, fromy);
-    ctx.lineTo(tox, toy);
-    ctx.strokeStyle = '#8e5572';
-    ctx.lineWidth = currentLineWidth;
-    ctx.stroke();
-
-    ctx.beginPath();
-    ctx.moveTo(tox, toy);
-    ctx.lineTo(tox - headlen * Math.cos(angle - Math.PI / 6), toy - headlen * Math.sin(angle - Math.PI / 6));
-    ctx.lineTo(tox - headlen * Math.cos(angle + Math.PI / 6), toy - headlen * Math.sin(angle + Math.PI / 6));
-    ctx.lineTo(tox, toy);
-    ctx.fillStyle = '#8e5572';
-    ctx.fill();
-  }
-
-  function stopDrawing() { isDrawing = false; }
-
-  function initCanvas() {
-    resizeCanvas();
-    canvas.addEventListener('mousedown', startDrawing);
-    canvas.addEventListener('mousemove', draw);
-    canvas.addEventListener('mouseup', stopDrawing);
-    canvas.addEventListener('mouseleave', stopDrawing);
-    canvas.addEventListener('touchstart', startDrawing, { passive: false });
-    canvas.addEventListener('touchmove', draw, { passive: false });
-    canvas.addEventListener('touchend', stopDrawing);
-  }
-
-  function resizeCanvas() {
-    const container = document.getElementById('boardContainer');
-    if (container) {
-      canvas.width = container.clientWidth;
-      canvas.height = container.clientHeight;
-    }
-  }
-
-  function setBoardTool(tool) {
-    boardTool = tool;
-    document.querySelectorAll('.board-tool-btn').forEach(b => b.classList.remove('active'));
-    document.getElementById(`tool-${tool}`).classList.add('active');
-  }
-
-  function clearCanvasDrawing() {
-    saveState();
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    const viewport = document.getElementById('boardViewport');
-    document.querySelectorAll('.canvas-node').forEach(node => viewport.removeChild(node));
-  }
-
-  function addTextCard() {
-    const viewport = document.getElementById('boardViewport');
-    const card = document.createElement('div');
-    card.className = 'canvas-node';
-    card.style.left = '40px';
-    card.style.top = '40px';
-    card.style.width = '120px';
-    card.style.height = '60px';
-    card.innerHTML = `
-      <div contenteditable="true" style="outline:none; width:100%; height:100%; overflow:auto;">메모 입력</div>
-      <div class="resize-handle"></div>
-    `;
-    makeElementInteractive(card);
-    viewport.appendChild(card);
-  }
-
-  function addCanvasImage(event) {
-    const file = event.target.files[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onload = function(e) {
-        const viewport = document.getElementById('boardViewport');
-        const card = document.createElement('div');
-        card.className = 'canvas-node';
-        card.style.left = '60px';
-        card.style.top = '60px';
-        card.style.width = '130px';
-        card.style.height = '130px';
-        card.innerHTML = `
-          <img src="${e.target.result}" alt="카드 이미지">
-          <div class="resize-handle"></div>
-        `;
-        makeElementInteractive(card);
-        viewport.appendChild(card);
-      };
-      reader.readAsDataURL(file);
-    }
-  }
-
-  function makeElementInteractive(element) {
-    let posX = 0, posY = 0, initialX = 0, initialY = 0;
-    const resizeHandle = element.querySelector('.resize-handle');
-
-    element.onmousedown = dragMouseDown;
-    element.ontouchstart = dragMouseDown;
-
-    function dragMouseDown(e) {
-      if (boardTool !== 'select') return;
-      if (e.target === resizeHandle) return startResize(e);
-
-      e.stopPropagation();
-      const clientX = e.touches ? e.touches[0].clientX : e.clientX;
-      const clientY = e.touches ? e.touches[0].clientY : e.clientY;
-      initialX = clientX; initialY = clientY;
-
-      document.onmouseup = closeDragElement;
-      document.onmousemove = elementDrag;
-      document.ontouchend = closeDragElement;
-      document.ontouchmove = elementDrag;
+    // 캔버스 초기 상태 (안내 텍스트 출력)
+    function initCanvas() {
+      ctx.fillStyle = '#1e293b';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      ctx.fillStyle = '#94a3b8';
+      ctx.font = '16px sans-serif';
+      ctx.textAlign = 'center';
+      ctx.fillText('생성된 이미지가 여기에 표시됩니다.', canvas.width / 2, canvas.height / 2);
     }
 
-    function elementDrag(e) {
-      const clientX = e.touches ? e.touches[0].clientX : e.clientX;
-      const clientY = e.touches ? e.touches[0].clientY : e.clientY;
-      posX = (initialX - clientX) / canvasScale;
-      posY = (initialY - clientY) / canvasScale;
-      initialX = clientX; initialY = clientY;
-      element.style.top = (element.offsetTop - posY) + "px";
-      element.style.left = (element.offsetLeft - posX) + "px";
+    // 탭 전환 함수
+    function switchTab(tabName) {
+      document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+      document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+
+      if (tabName === 'create') {
+        document.querySelectorAll('.tab-btn')[0].classList.add('active');
+        document.getElementById('tab-create').classList.add('active');
+      } else {
+        document.querySelectorAll('.tab-btn')[1].classList.add('active');
+        document.getElementById('tab-settings').classList.add('active');
+      }
     }
 
-    function closeDragElement() {
-      document.onmouseup = null; document.onmousemove = null;
-      document.ontouchend = null; document.ontouchmove = null;
+    // 토큰 저장 (localStorage)
+    function saveToken(val) {
+      localStorage.setItem('hf_token', val.trim());
     }
 
-    function startResize(e) {
-      e.stopPropagation();
-      e.preventDefault();
-      const startW = element.offsetWidth;
-      const startH = element.offsetHeight;
-      const startX = e.touches ? e.touches[0].clientX : e.clientX;
-      const startY = e.touches ? e.touches[0].clientY : e.clientY;
+    // 토큰 불러오기
+    function loadToken() {
+      const savedToken = localStorage.getItem('hf_token');
+      if (savedToken) {
+        document.getElementById('hfTokenInput').value = savedToken;
+      }
+    }
 
-      function doResize(re) {
-        const currentX = re.touches ? re.touches[0].clientX : re.clientX;
-        const currentY = re.touches ? re.touches[0].clientY : re.clientY;
-        const newW = startW + (currentX - startX) / canvasScale;
-        const newH = startH + (currentY - startY) / canvasScale;
-        if (newW > 50) element.style.width = newW + 'px';
-        if (newH > 30) element.style.height = newH + 'px';
+    // API 호출 및 이미지 생성 함수
+    async function generateImage() {
+      const prompt = document.getElementById('promptInput').value.trim();
+      const token = document.getElementById('hfTokenInput').value.trim();
+
+      if (!token) {
+        alert('Hugging Face API 토큰을 설정 탭에 입력해 주세요.');
+        switchTab('settings');
+        return;
       }
 
-      function stopResize() {
-        document.removeEventListener('mousemove', doResize);
-        document.removeEventListener('mouseup', stopResize);
-        document.removeEventListener('touchmove', doResize);
-        document.removeEventListener('touchend', stopResize);
+      if (!prompt) {
+        alert('프롬프트를 입력해 주세요.');
+        return;
       }
 
-      document.addEventListener('mousemove', doResize);
-      document.addEventListener('mouseup', stopResize);
-      document.addEventListener('touchmove', doResize);
-      document.addEventListener('touchend', stopResize);
-    }
-  }
+      // 로딩 표시
+      ctx.fillStyle = '#0f172a';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      ctx.fillStyle = '#6366f1';
+      ctx.font = '18px sans-serif';
+      ctx.textAlign = 'center';
+      ctx.fillText('이미지 생성 중...', canvas.width / 2, canvas.height / 2);
 
-  function loadProfileImageFromFile(event) {
-    const file = event.target.files[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onload = function(e) {
-        const preview = document.getElementById('profilePreview');
-        preview.src = e.target.result;
-        preview.style.display = 'block';
-        document.getElementById('profilePlaceholder').style.display = 'none';
-      };
-      reader.readAsDataURL(file);
-    }
-  }
+      try {
+        const response = await fetch(
+          "https://api-inference.huggingface.co/models/black-forest-labs/FLUX.1-schnell",
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+              "Content-Type": "application/json",
+            },
+            method: "POST",
+            body: JSON.stringify({ inputs: prompt }),
+          }
+        );
 
-  function generateContent() {
-    const promptText = document.getElementById('promptInput').value.trim();
-    const dialogueContextText = document.getElementById('dialogueContextInput').value.trim();
-    const keywordText = document.getElementById('keywordInput').value.trim();
-    const aiLevel = parseInt(document.getElementById('aiLevelInput').value);
-    const genre = document.getElementById('genreSelect').value;
-    const outputDiv = document.getElementById('resultOutput');
-
-    outputDiv.innerHTML = '<p>텍스트를 생성 중입니다...</p>';
-
-    setTimeout(() => {
-      let resultMD = "";
-
-      if (currentMainTab === 'topic') {
-        resultMD = `## [주제 추천] 장소 & 설정 연출 가이드\n\n`;
-        resultMD += `* **AI 관여도**: Level ${aiLevel}\n`;
-        if (keywordText) resultMD += `* **입력 키워드**: ${keywordText}\n`;
-        resultMD += `\n---\n\n`;
-
-        if (aiLevel <= 2) {
-          resultMD += `### 1. 장소 및 상황 문장 추천 (절제 모드)\n`;
-          resultMD += `* "안개로 덮여 이정표가 보이지 않는 오래된 비포장 갈림길."\n`;
-          resultMD += `* "오랫동안 비어 있던 고층 빌딩의 지하 통제실에서 켜진 작은 전등."\n\n`;
-          resultMD += `### 2. 공간 연출 단어\n`;
-          resultMD += `* **공간**: *고요, 먼지, 정적, 경계선*\n`;
-          resultMD += `* **상태**: *잠김, 왜곡, 낡음, 교차*\n`;
-        } else if (aiLevel === 3) {
-          resultMD += `### 1. 장소 및 상황 문장 추천 (디테일 서술 모드)\n`;
-          resultMD += `* "밀물이 들어올 때마다 외부와 완전히 차단되는 바닷가 절벽 위의 폐가."\n`;
-          resultMD += `* "정해진 시간이 되면 현실의 소음이 모두 사라지고 낯선 진동만 울리는 지하철 역사."\n\n`;
-          resultMD += `### 2. 공간 연출 단어\n`;
-          resultMD += `* **분위기**: *밀폐, 차가운 공기, 이질감, 정적의 깨짐*\n`;
-          resultMD += `* **오감 어휘**: *비린내, 삐걱거림, 점멸하는 붉은 빛, 습기*\n`;
-        } else {
-          resultMD += `### 1. 장소 및 상황 문장 추천 (창의성 확장 모드)\n`;
-          resultMD += `* "중력이 부분적으로 역전되어 천장으로 물건이 떨어지는 폐허가 된 전시장."\n`;
-          resultMD += `* "지도에 존재하지 않는 행선지가 표시되는 밤 11시 59분의 버스 정류장."\n\n`;
-          resultMD += `### 2. 공간 연출 단어\n`;
-          resultMD += `* **시공간 어휘**: *차원 균열, 거꾸로 흐르는 시계, 몽환적 잔상, 경계의 왜곡*\n`;
-          resultMD += `* **상황 어휘**: *비일상의 침범, 봉인 해제, 예고 없는 소멸, 교차하는 신호*\n`;
+        if (!response.ok) {
+          throw new Error('요청 실패: API 토큰이나 네트워크 상태를 확인해 주세요.');
         }
-        resultMD += `\n> *※ 본 주제 선정 탭에서는 인물 간 관계나 캐릭터 요소 없이 장소와 상황 어휘만을 독립적으로 추천합니다.*`;
-      } 
-      else if (currentMainTab === 'dialogue') {
-        const charTone = promptText || "냉정하고 차분한 어조";
-        const contextSituation = dialogueContextText || "어두운 밤, 비가 내리는 골목길";
 
-        resultMD = `## [대사 연출] 스크립트\n\n`;
-        resultMD += `* **캐릭터 성격/말투**: ${charTone}\n`;
-        resultMD += `* **상황 및 장소**: ${contextSituation}\n\n`;
-        resultMD += `---\n\n`;
-        resultMD += `### 1. 대사 스크립트\n\n`;
-        resultMD += `**"...결국 여기까지 따라온 건가."**\n\n`;
-        resultMD += `*(빗소리가 거세지자 빗방울을 쓸어내리며 차가운 눈빛으로 상대를 바라본다.)*\n\n`;
-        resultMD += `**"더 이상 나아가지 마라. 여기서부터는 네가 감당할 수 있는 구역이 아니다."**\n\n`;
-        resultMD += `### 2. 연출 지침\n`;
-        resultMD += `* **목소리 톤**: 낮은 저음, 단호하고 차분한 호흡 유지\n`;
-        resultMD += `* **시선 처리**: 빗속에서도 흔들리지 않는 시선 고정\n`;
-      } 
-      else if (currentMainTab === 'myWorld') {
-        if (currentSubTab === 'world') {
-          const titleText = promptText ? `'${promptText}' 기반 세계관` : `새로운 세계관 구상`;
-          resultMD = `## [세계관 생성] ${titleText}\n\n`;
-          resultMD += `* **장르**: ${genre}\n`;
-          resultMD += `* **AI 관여도**: Lv.${aiLevel}\n\n`;
-          resultMD += `---\n\n`;
-          resultMD += `### 1. AI 세부 설정 서술\n`;
-          resultMD += promptText ? `입력된 프롬프트를 바탕으로 구체적인 세계관 배경을 완성합니다.\n\n${promptText}\n\n` : `AI가 생성한 독자적인 배경 서사와 규칙 영역입니다.\n\n`;
-          resultMD += `### 2. 지리 및 환경적 특징\n`;
-          resultMD += `* **중심지**: 서사의 주 배경이 되는 거점 도시 및 환경\n`;
-          resultMD += `* **핵심 규칙**: 해당 세계관을 지배하는 물리적/사회적 법칙\n`;
-        } else if (currentSubTab === 'character') {
-          const titleText = promptText ? `'${promptText}' 기반 캐릭터` : `새로운 캐릭터 프로필`;
-          resultMD = `## [캐릭터 설정] ${titleText}\n\n`;
-          resultMD += `* **AI 관여도**: Lv.${aiLevel}\n\n`;
-          resultMD += `---\n\n`;
-          resultMD += `### 1. 인물 상세 서술\n`;
-          resultMD += promptText ? `입력된 요구사항에 따라 인물의 외형과 행동 동기를 구성합니다.\n\n${promptText}\n\n` : `AI가 서술하는 인물의 비하인드 스토리 영역입니다.\n\n`;
-          resultMD += `### 2. 인물 특징\n`;
-          resultMD += `* **외형**: 뚜렷하게 대비되는 상징적 요소와 복장\n`;
-          resultMD += `* **신념**: 인물이 행동하는 가장 중요한 내면적 동기\n`;
-        } else if (currentSubTab === 'plot') {
-          resultMD = `## [플롯 / 스토리] 서사 구조 및 사건 전개\n\n`;
-          resultMD += `* **장르**: ${genre}\n`;
-          resultMD += `* **AI 관여도**: Lv.${aiLevel}\n`;
-          if (promptText) resultMD += `* **핵심 프롬프트**: ${promptText}\n`;
-          resultMD += `\n---\n\n`;
-          resultMD += `### 1. 발단 (Beginning)\n* 배경의 도입 및 일상적인 상황에 미스터리가 침투하는 단계.\n\n`;
-          resultMD += `### 2. 전개 (Middle)\n* 사건의 갈등이 본격화되고 주인공이 직면한 선택의 기로.\n\n`;
-          resultMD += `### 3. 절정 (Climax)\n* 핵심 비밀이 밝혀지며 일어나는 치열한 대립 현장.\n\n`;
-          resultMD += `### 4. 결말 (Ending)\n* 사건 이후 세계관 및 환경의 변화와 남겨진 여운.\n`;
-        }
+        const blob = await response.blob();
+        const img = new Image();
+        img.src = URL.createObjectURL(blob);
+
+        img.onload = () => {
+          ctx.clearRect(0, 0, canvas.width, canvas.height);
+          ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+        };
+
+      } catch (error) {
+        alert(error.message);
+        initCanvas();
       }
-      outputDiv.innerHTML = marked.parse(resultMD);
-    }, 200);
-  }
-</script>
-
+    }
+  </script>
 </body>
 </html>
