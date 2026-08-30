@@ -4,7 +4,6 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Your World Helper - Y2K Edition</title>
-  <!-- Marked.js (마크다운 파싱 라이브러리) -->
   <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
   <style>
     :root {
@@ -72,15 +71,12 @@
     input[type="text"], select, textarea { width: 100%; border: 1px solid var(--border-color); padding: 6px; font-size: 12px; background: var(--input-bg); color: var(--text-color); outline: none; }
     textarea { height: 90px; resize: vertical; }
 
-    /* 결과 출력 영역 마크다운 렌더링 스타일 */
     .result-box { min-height: 180px; background: var(--input-bg); border: 1px solid var(--border-color); padding: 12px; font-size: 12px; line-height: 1.6; }
     .markdown-body h1, .markdown-body h2, .markdown-body h3 { margin-top: 10px; margin-bottom: 6px; color: var(--accent-color); border-bottom: 1px dashed var(--border-color); padding-bottom: 4px; }
     .markdown-body p { margin-bottom: 8px; }
     .markdown-body ul, .markdown-body ol { margin-left: 20px; margin-bottom: 8px; }
     .markdown-body blockquote { border-left: 3px solid var(--accent-color); padding-left: 8px; margin: 8px 0; color: #666; font-style: italic; }
-    .markdown-body hr { border: none; border-top: 1px solid var(--border-color); margin: 12px 0; }
 
-    /* 관계도 & 스토리 캔버스 스타일 */
     .board-container { position: relative; width: 100%; height: 420px; background-color: var(--canvas-bg); border: 2px solid var(--canvas-frame); overflow: hidden; touch-action: none; }
     .board-viewport { position: absolute; width: 100%; height: 100%; background-image: linear-gradient(var(--canvas-grid) 1px, transparent 1px), linear-gradient(90deg, var(--canvas-grid) 1px, transparent 1px); background-size: 20px 20px; }
     .board-toolbar { display: flex; flex-wrap: wrap; gap: 4px; margin-bottom: 8px; align-items: center; justify-content: space-between; background: var(--card-bg); padding: 6px; border: 1px solid var(--border-color); }
@@ -99,7 +95,6 @@
 <body data-theme="bubblegum">
 
 <div class="container">
-  <!-- 헤더 영역 -->
   <header>
     <h1>YOUR WORLD HELPER (v2.0)</h1>
     <div class="theme-selector-box">
@@ -111,7 +106,6 @@
     </div>
   </header>
 
-  <!-- 상단 메인 탭 -->
   <div class="tab-container">
     <button class="tab-btn active" id="tab-myWorld" onclick="selectMainTab('myWorld', this)">나만의 세상 만들기</button>
     <button class="tab-btn" id="tab-topic" onclick="selectMainTab('topic', this)">주제 선정</button>
@@ -120,7 +114,6 @@
     <button class="tab-btn" id="tab-guide" onclick="selectMainTab('guide', this)">사용 가이드</button>
   </div>
 
-  <!-- 서브 탭 (나만의 세상 만들기 선택 시 활성화) -->
   <div class="sub-tab-container" id="subTabContainer">
     <button class="sub-tab-btn active" onclick="selectSubTab('world', this)">세계관 생성</button>
     <button class="sub-tab-btn" onclick="selectSubTab('character', this)">캐릭터 설정</button>
@@ -128,7 +121,6 @@
 
   <main>
     <div class="content-area">
-      <!-- 1. 설정 입력 섹션 (요구사항 -> AI 관여도 -> 키워드) -->
       <section class="card" id="inputSection">
         <div class="card-title" id="formTitle">세계관 설정 입력</div>
         
@@ -143,13 +135,11 @@
           </select>
         </div>
 
-        <!-- 1) 상세 요구사항 / 프롬프트 -->
         <div class="form-group">
           <label id="promptLabel">상세 요구사항 / 프롬프트</label>
-          <textarea id="promptInput" placeholder="추가로 들어가야 할 세부 내용이나 원하는 분위기를 입력해 주세요..."></textarea>
+          <textarea id="promptInput" placeholder="원하는 세계관이나 스토리 요구사항을 자유롭게 입력해 주세요..."></textarea>
         </div>
 
-        <!-- 2) AI 관여도 (창의성 Level) -->
         <div class="form-group">
           <div class="slider-header">
             <label for="aiLevelInput">AI 관여도 (창의성 Level)</label>
@@ -158,16 +148,14 @@
           <input type="range" id="aiLevelInput" min="1" max="5" value="3" oninput="updateAiLevelDesc(this.value)">
         </div>
 
-        <!-- 3) 핵심 키워드 -->
         <div class="form-group">
           <label id="keywordLabel">핵심 키워드 (선택)</label>
-          <input type="text" id="keywordInput" placeholder="미입력 시 맥락/캐릭터 설정에 맞춰 AI가 자동 생성합니다.">
+          <input type="text" id="keywordInput" placeholder="미입력 시 맥락에 맞춰 AI가 알맞게 구성을 진행합니다.">
         </div>
 
         <button type="button" class="primary-btn" onclick="generateContent()">[ 생성 실행 ]</button>
       </section>
 
-      <!-- 2. 관계도 & 스토리 캔버스 영역 -->
       <section class="card" id="boardSection" style="display: none;">
         <div class="card-title">RELATIONSHIP & STORY CANVAS</div>
         <div class="board-toolbar">
@@ -187,17 +175,15 @@
         </div>
         <div class="form-group" style="margin-top: 10px;">
           <label>통합 스토리 서술 노트 (자동 저장됨)</label>
-          <textarea id="boardStoryText" placeholder="전체 이야기 흐름 및 사건 전개를 서술해 주세요..."></textarea>
+          <textarea id="boardStoryText" placeholder="이야기 흐름 및 연출 아이디어를 작성하세요..."></textarea>
         </div>
       </section>
 
-      <!-- 3. AI 생성 결과 출력 영역 -->
       <article class="card" id="resultSection">
         <div class="card-title">생성 결과</div>
         <div id="resultOutput" class="result-box markdown-body">결과가 여기에 표시됩니다.</div>
       </article>
 
-      <!-- 4. 사용 가이드 영역 (가이드 탭 클릭 시 표시) -->
       <section class="card" id="guideSection" style="display: none;">
         <div class="card-title">SYSTEM MANUAL & USER GUIDE</div>
         <div class="result-box markdown-body" style="border: none;">
@@ -206,24 +192,16 @@
           <hr>
           <h4>1. 탭별 주요 기능</h4>
           <ul>
-            <li><strong>나만의 세상 만들기</strong>: 세계관의 기본 뼈대 및 캐릭터 세부 설정을 구축합니다.</li>
-            <li><strong>주제 선정</strong>: 창작 프로젝트의 핵심 주제 및 훅(Hook) 요소를 생성합니다.</li>
-            <li><strong>플롯/스토리</strong>: 3막 구조나 발단-전개-위기-절정-결말에 맞춘 사건 개요를 작성합니다.</li>
-            <li><strong>대사 생성</strong>: 캐릭터의 성격과 말투를 반영한 실제 작중 대화를 구성합니다.</li>
-          </ul>
-          <hr>
-          <h4>2. 입력 옵션 사용법</h4>
-          <ul>
-            <li><strong>AI 관여도 (창의성 Level)</strong>: Lv.1(원문 충실)부터 Lv.5(자율 발상)까지 AI의 창의적 개입 범위를 조정합니다.</li>
-            <li><strong>핵심 키워드</strong>: 비워둘 경우 입력된 맥락을 추론하여 AI가 알맞은 소재를 자동으로 생성합니다.</li>
+            <li><strong>나만의 세상 만들기</strong>: 세계관 및 캐릭터 설정을 구성합니다.</li>
+            <li><strong>주제 선정</strong>: 창작 프로젝트의 메인 주제를 발굴합니다.</li>
+            <li><strong>플롯/스토리</strong>: 전체 스토리 사건 개요를 구성합니다.</li>
+            <li><strong>대사 생성</strong>: 캐릭터 간 상황별 대화를 생성합니다.</li>
           </ul>
         </div>
       </section>
     </div>
 
-    <!-- 우측 사이드바 -->
     <sidebar>
-      <!-- 유저 프로필 -->
       <div class="profile-card">
         <div class="card-title">USER PROFILE</div>
         <div class="profile-img-box">
@@ -235,24 +213,21 @@
         <input type="file" id="profileInput" accept="image/*" style="display: none;" onchange="loadProfileImageFromFile(event)">
       </div>
 
-      <!-- 명령어 및 시스템 설정 -->
       <div class="card">
         <div class="card-title">
-          <span>SETTINGS (명령어 설정)</span>
+          <span>SETTINGS (설정)</span>
           <button type="button" class="card-title-btn" id="settingsToggleBtn" onclick="toggleSettingsCard()">▲ 열기</button>
         </div>
         <div id="settingsContent" class="collapsible-content collapsed">
-          <p style="font-size: 11px; margin-top: 6px;">AI 응답 출력 속도 및 커스텀 프롬프트 프리셋 설정 옵션이 위치하는 곳입니다.</p>
+          <p style="font-size: 11px; margin-top: 6px;">기본 옵션 창입니다.</p>
         </div>
       </div>
 
-      <!-- 메모장 -->
       <div class="card">
         <div class="card-title">MEMO PAD</div>
         <textarea id="memoInput" placeholder="메모를 입력하세요..." style="height: 90px; font-size: 11px;"></textarea>
       </div>
 
-      <!-- 관계도 사이드 버튼 -->
       <button class="side-nav-btn" id="relationSideBtn" onclick="selectMainTab('relation', this)">
         ★ 관계도 & 스토리 캔버스
       </button>
@@ -294,7 +269,6 @@
     document.getElementById('aiLevelDesc').innerText = aiLevelDescriptions[val];
   }
 
-  /* 메인 탭 전환 로직 (가이드 탭 및 관계도 탭 포함) */
   function selectMainTab(tabType, element) {
     currentMainTab = tabType;
     document.querySelectorAll('.tab-btn, .side-nav-btn').forEach(btn => btn.classList.remove('active'));
@@ -351,7 +325,6 @@
     btn.innerText = content.classList.contains('collapsed') ? '▲ 열기' : '▼ 접기';
   }
 
-  /* 캔버스 드로잉 기능 */
   function initCanvas() {
     resizeCanvas();
     canvas.addEventListener('mousedown', (e) => {
@@ -416,37 +389,26 @@
     }
   }
 
-  /* 실제 백엔드 연동 및 마크다운 출력 함수 */
   async function generateContent() {
-    const promptText = document.getElementById('promptInput').value.trim();
-    const keywordText = document.getElementById('keywordInput').value.trim();
+    let promptText = document.getElementById('promptInput').value.trim();
+    let keywordText = document.getElementById('keywordInput').value.trim();
     const aiLevel = document.getElementById('aiLevelInput').value;
     const genre = document.getElementById('genreSelect').value;
     const outputDiv = document.getElementById('resultOutput');
 
+    // 사용자가 완전히 비워두었을 때 처리
     if (!promptText && !keywordText) {
-      alert('상세 요구사항 또는 키워드 중 하나 이상을 입력해 주세요.');
-      return;
+      promptText = `${genre} 장르에 어울리는 스토리 설정 및 구상을 만들어 줘.`;
     }
 
-    outputDiv.innerHTML = '<p>AI가 완벽한 마크다운 스토리를 작성 중입니다...</p>';
-
-    let contextInstruction = "";
-    if (!keywordText) {
-      if (currentMainTab === 'dialogue') {
-        contextInstruction = "핵심 키워드가 비어 있으므로 입력된 요구사항 기반 캐릭터 말투와 상황에 어울리는 대사를 자동 구성해 주세요.";
-      } else {
-        contextInstruction = `핵심 키워드가 비어 있으므로 ${genre} 장르와 입력된 요구사항 맥락에 적합한 세계관 및 스토리 아이디어를 자동 생성해 주세요.`;
-      }
-    }
+    outputDiv.innerHTML = '<p>AI가 스토리를 구성 중입니다...</p>';
 
     const fullPrompt = `
 - 카테고리: ${currentMainTab} / ${currentSubTab}
 - 장르: ${genre}
 - AI 창의성 Level: ${aiLevel}
-- 상세 요구사항: ${promptText || '없음'}
+- 상세 요구사항: ${promptText}
 - 핵심 키워드: ${keywordText || '자동 추론'}
-- 추가 지침: ${contextInstruction}
     `.trim();
 
     try {
@@ -464,7 +426,7 @@
         outputDiv.innerHTML = `<p style="color: red;">생성 실패: ${data.error || '알 수 없는 오류'}</p>`;
       }
     } catch (err) {
-      outputDiv.innerHTML = '<p style="color: red;">서버 통신 오류가 발생했거나 백엔드 API가 설정되지 않았습니다.</p>';
+      outputDiv.innerHTML = '<p style="color: red;">서버 통신 오류가 발생했습니다.</p>';
     }
   }
 </script>
