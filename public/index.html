@@ -3,10 +3,28 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Your World Helper - Y2K Edition</title>
+  <title>Your World Helper - Retro Edition</title>
   <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
   <style>
+    /* 1. 기본 테마: Classic Windows (기존 95/98 스타일) */
     :root {
+      --bg-color: #008080;
+      --card-bg: #c0c0c0;
+      --card-sub-bg: #c0c0c0;
+      --text-color: #000000;
+      --border-color: #000000;
+      --accent-color: #000080;
+      --accent-text: #ffffff;
+      --input-bg: #ffffff;
+      --window-title-bg: #000080;
+      --footer-text: #ffffff;
+      --canvas-bg: #ffffff;
+      --canvas-grid: rgba(0, 0, 0, 0.15);
+      --canvas-frame: #808080;
+    }
+
+    /* 2. Y2K Bubblegum */
+    [data-theme="bubblegum"] {
       --bg-color: #ffcbf2;
       --card-bg: #fde2e4;
       --card-sub-bg: #ffffff;
@@ -22,19 +40,55 @@
       --canvas-frame: #a3a3f5;
     }
 
-    [data-theme="classic"] {
-      --bg-color: #008080;
-      --card-bg: #c0c0c0;
-      --card-sub-bg: #d4d0c8;
-      --text-color: #000000;
-      --border-color: #000000;
-      --accent-color: #000080;
+    /* 3. Classic Teal */
+    [data-theme="classic-teal"] {
+      --bg-color: #0b3c3c;
+      --card-bg: #1f4e4e;
+      --card-sub-bg: #2b5e5e;
+      --text-color: #e0f2f1;
+      --border-color: #4db6ac;
+      --accent-color: #80cbc4;
+      --accent-text: #004d40;
+      --input-bg: #143737;
+      --window-title-bg: #004d40;
+      --footer-text: #80cbc4;
+      --canvas-bg: #072626;
+      --canvas-grid: rgba(77, 182, 172, 0.2);
+      --canvas-frame: #80cbc4;
+    }
+
+    /* 4. Cyberpunk Neon */
+    [data-theme="cyberpunk"] {
+      --bg-color: #0d0221;
+      --card-bg: #190934;
+      --card-sub-bg: #260f4c;
+      --text-color: #00f0ff;
+      --border-color: #ff007f;
+      --accent-color: #ff007f;
       --accent-text: #ffffff;
-      --input-bg: #ffffff;
-      --window-title-bg: #000080;
-      --canvas-bg: #0b3c3c;
-      --canvas-grid: rgba(255, 255, 255, 0.12);
-      --canvas-frame: #000080;
+      --input-bg: #05010d;
+      --window-title-bg: #ff007f;
+      --footer-text: #ff007f;
+      --canvas-bg: #0a0318;
+      --canvas-grid: rgba(0, 240, 255, 0.2);
+      --canvas-frame: #00f0ff;
+    }
+
+    /* 5. Dark Mode */
+    [data-theme="dark"] {
+      --bg-color: #121212;
+      --card-bg: #1e1e1e;
+      --card-sub-bg: #2d2d2d;
+      --text-color: #e0e0e0;
+      --border-color: #444444;
+      --accent-color: #bb86fc;
+      --accent-text: #000000;
+      --input-bg: #121212;
+      --window-title-bg: #272727;
+      --footer-text: #aaaaaa;
+      --canvas-bg: #181818;
+      --canvas-grid: rgba(255, 255, 255, 0.1);
+      --canvas-frame: #bb86fc;
     }
 
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Tahoma', 'Dotum', '굴림', sans-serif; }
@@ -83,7 +137,7 @@
 
     .tool-label-grid, .shortcut-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
     .shortcut-input { text-align: center; font-weight: bold; cursor: pointer; background-color: var(--input-bg); }
-    .shortcut-input:focus { border-color: var(--accent-color); background-color: #fffde7; }
+    .shortcut-input:focus { border-color: var(--accent-color); background-color: #fffde7; color: #000; }
 
     .result-box { min-height: 180px; background: var(--input-bg); border: 1px solid var(--border-color); padding: 12px; font-size: 12px; line-height: 1.6; }
     .markdown-body h1, .markdown-body h2, .markdown-body h3 { margin-top: 10px; margin-bottom: 6px; color: var(--accent-color); border-bottom: 1px dashed var(--border-color); padding-bottom: 4px; }
@@ -109,7 +163,7 @@
     @media (max-width: 768px) { main { grid-template-columns: 1fr; } }
   </style>
 </head>
-<body data-theme="bubblegum">
+<body data-theme="classic-win">
 
 <div class="container">
   <div class="token-notice">
@@ -121,8 +175,11 @@
     <div class="theme-selector-box">
       <label for="themeSelect">COLOR THEME:</label>
       <select id="themeSelect" onchange="changeTheme(this.value)">
+        <option value="classic-win" selected>Classic Windows 98</option>
         <option value="bubblegum">Y2K Bubblegum</option>
-        <option value="classic">Classic Teal</option>
+        <option value="classic-teal">Classic Teal</option>
+        <option value="cyberpunk">Cyberpunk Neon</option>
+        <option value="dark">Dark Mode</option>
       </select>
     </div>
   </header>
@@ -229,7 +286,7 @@
         <div class="card-title">SYSTEM MANUAL & USER GUIDE</div>
         <div class="result-box markdown-body" style="border: none;">
           <h3>1. 서비스 개요</h3>
-          <p>Your World Helper는 작가, 기획자, 크리에이터를 위한 Y2K 픽셀 스타일의 스토리보딩 및 세계관 생성 헬퍼 시스템입니다.</p>
+          <p>Your World Helper는 작가, 기획자, 크리에이터를 위한 레트로 스타일의 스토리보딩 및 세계관 생성 헬퍼 시스템입니다.</p>
           
           <h3>2. 주요 기능 활용법</h3>
           <ul>
@@ -241,7 +298,7 @@
           <h3>3. 저작권 및 공모전 / 공개 작품 제작 가이드라인</h3>
           <blockquote style="border-left: 3px solid var(--accent-color); padding-left: 8px; margin: 8px 0; color: var(--text-color);">
             <strong>Q. AI가 생성한 텍스트나 아이디어를 공모전 및 공개 작품에 바로 사용해도 되나요?</strong><br>
-            A. 본 서비스의 AI 생성물은 <u>창작 아이디어를 도우는 보조 도구(Assistant Tool)</u>입니다. 공모전 제출이나 일반 대중에게 공개되는 작품(소설, 웹툰, 시나리오 등)을 제작하실 때에는 <strong>AI 사용 여부를 명확히 밝히시거나, 생성 결과를 바탕으로 사용자의 독창적인 문체와 설정을 직접 수정·강화하여 완성하시는 것을 적극 권장합니다.</strong> 각 공모전/플랫폼별 AI 활용 규칙도 반드시 사전 확인 바랍니다.
+            A. 본 서비스의 AI 생성물은 <u>창작 아이디어를 돕는 보조 도구(Assistant Tool)</u>입니다. 공모전 제출이나 일반 대중에게 공개되는 작품(소설, 웹툰, 시나리오 등)을 제작하실 때에는 <strong>AI 사용 여부를 명확히 밝히시거나, 생성 결과를 바탕으로 사용자의 독창적인 문체와 설정을 직접 수정·강화하여 완성하시는 것을 적극 권장합니다.</strong> 각 공모전/플랫폼별 AI 활용 규칙도 반드시 사전 확인 바랍니다.
           </blockquote>
         </div>
       </section>
@@ -294,7 +351,7 @@
 
           <div class="form-group" style="border-top: 1px dashed var(--border-color); padding-top: 8px;">
             <label>키보드 명령어 (단축키)</label>
-            <p style="font-size: 10px; color: #666; margin-bottom: 6px;">클릭 후 사용하고 싶은 키보드 키를 누르세요.</p>
+            <p style="font-size: 10px; color: var(--text-color); opacity: 0.8; margin-bottom: 6px;">클릭 후 사용하고 싶은 키보드 키를 누르세요.</p>
             <div class="shortcut-grid">
               <div>
                 <label style="font-weight:normal; font-size:10px;">이동</label>
@@ -381,6 +438,7 @@
     initCanvas();
     loadToken();
     loadKeybindings();
+    loadSavedTheme(); // 저장된 테마 불러오기
     window.addEventListener('keydown', handleGlobalShortcuts);
   });
 
@@ -392,6 +450,28 @@
     const savedToken = localStorage.getItem('hf_token');
     if (savedToken) {
       document.getElementById('hfTokenInput').value = savedToken;
+    }
+  }
+
+  /* --- 테마 저장 및 불러오기 --- */
+  function changeTheme(themeName) {
+    if (themeName === 'classic-win') {
+      document.body.removeAttribute('data-theme');
+    } else {
+      document.body.setAttribute('data-theme', themeName);
+    }
+    // 선택한 테마 로컬 스토리지에 저장
+    localStorage.setItem('user_theme', themeName);
+  }
+
+  function loadSavedTheme() {
+    const savedTheme = localStorage.getItem('user_theme');
+    if (savedTheme) {
+      const themeSelect = document.getElementById('themeSelect');
+      if (themeSelect) {
+        themeSelect.value = savedTheme;
+      }
+      changeTheme(savedTheme);
     }
   }
 
@@ -474,10 +554,6 @@
     else if (keyString === keybindings.erase) { setBoardTool('erase'); }
     else if (keyString === keybindings.undo) { e.preventDefault(); undoCanvas(); }
     else if (keyString === keybindings.redo) { e.preventDefault(); redoCanvas(); }
-  }
-
-  function changeTheme(themeName) {
-    document.body.setAttribute('data-theme', themeName);
   }
 
   function updateAiLevelDesc(val) {
@@ -662,7 +738,7 @@
       ctx.beginPath();
       ctx.moveTo(lastX, lastY);
       ctx.lineTo(pos.x, pos.y);
-      ctx.strokeStyle = boardTool === 'draw' ? '#8e5572' : '#ffffff';
+      ctx.strokeStyle = boardTool === 'draw' ? getComputedStyle(document.documentElement).getPropertyValue('--border-color').trim() || '#000000' : getComputedStyle(document.documentElement).getPropertyValue('--canvas-bg').trim() || '#ffffff';
       ctx.lineWidth = boardTool === 'draw' ? currentLineWidth : 20;
       ctx.lineCap = 'round';
       ctx.stroke();
@@ -676,10 +752,12 @@
   function drawArrow(fromx, fromy, tox, toy) {
     const headlen = 8 + currentLineWidth * 2;
     const angle = Math.atan2(toy - fromy, tox - fromx);
+    const strokeColor = getComputedStyle(document.documentElement).getPropertyValue('--border-color').trim() || '#000000';
+    
     ctx.beginPath();
     ctx.moveTo(fromx, fromy);
     ctx.lineTo(tox, toy);
-    ctx.strokeStyle = '#8e5572';
+    ctx.strokeStyle = strokeColor;
     ctx.lineWidth = currentLineWidth;
     ctx.stroke();
 
@@ -688,7 +766,7 @@
     ctx.lineTo(tox - headlen * Math.cos(angle - Math.PI / 6), toy - headlen * Math.sin(angle - Math.PI / 6));
     ctx.lineTo(tox - headlen * Math.cos(angle + Math.PI / 6), toy - headlen * Math.sin(angle + Math.PI / 6));
     ctx.lineTo(tox, toy);
-    ctx.fillStyle = '#8e5572';
+    ctx.fillStyle = strokeColor;
     ctx.fill();
   }
 
