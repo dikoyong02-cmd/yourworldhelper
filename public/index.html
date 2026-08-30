@@ -170,7 +170,6 @@
     .board-toolbar { display: flex; flex-wrap: wrap; gap: 4px; margin-bottom: 8px; align-items: center; justify-content: space-between; background: var(--card-bg); padding: 6px; border: 1px solid var(--border-color); }
     .board-tool-group { display: flex; gap: 4px; align-items: center; flex-wrap: wrap; }
 
-    /* 카드 삭제 버튼 스타일 */
     .canvas-node { position: absolute; background: var(--input-bg); border: 1px solid var(--border-color); padding: 6px; font-size: 11px; box-shadow: 2px 2px 0px rgba(0,0,0,0.2); cursor: move; user-select: none; min-width: 80px; min-height: 40px; }
     .canvas-node img { width: 100%; height: 100%; object-fit: contain; display: block; pointer-events: none; }
     .card-delete-btn { position: absolute; top: -6px; right: -6px; width: 16px; height: 16px; background: #ff4d4f; color: #ffffff; border: 1px solid #000; border-radius: 50%; font-size: 10px; line-height: 14px; text-align: center; cursor: pointer; user-select: none; z-index: 10; font-weight: bold; }
@@ -196,7 +195,7 @@
     </div>
     <div class="notice-body" id="noticeBody">
       <ol>
-        <li>설정 칸에 임의의 아무 문자(예: mm 등)를 입력하더라도 저장 자체는 허용되나, <strong>실제 AI 호출 시에는 적용되지 않고 오류가 발생합니다.</strong> 그렇기 때문에 반드시 <a href="https://openrouter.ai/" target="_blank" style="color: inherit; font-weight: bold;">OpenRouter</a>에 로그인하여 정상적인 API Key(sk-or-v1-...)를 발급받아 등록해주시기 바랍니다.</li>
+        <li>백엔드 서버 연동을 통해 사용자가 별도의 API Key를 입력하지 않아도 바로 AI 창작 기능을 무료로 사용하실 수 있습니다.</li>
         <li>현재 버그, 디자인 개선, 신규 기능 제안을 위한 문의 창구를 별도로 개설해두지 않아 <strong>의견 반영이 다소 어려울 수 있는 점</strong> 양해 부탁드립니다.</li>
         <li>(추가예정)</li>
       </ol>
@@ -357,15 +356,6 @@
         </div>
         <div id="settingsContent" class="collapsible-content collapsed">
           <div class="form-group" style="margin-top: 8px;">
-            <label for="hfTokenInput">OpenRouter API Key</label>
-            <div style="display: flex; gap: 6px;">
-              <input type="password" id="hfTokenInput" placeholder="sk-or-v1-xxxxxxxx..." style="flex: 1;" />
-              <button type="button" id="saveTokenBtn" onclick="saveApiToken()" style="padding: 0 10px; cursor: pointer; font-size: 11px; font-weight: bold; border: 1px solid var(--border-color); background: var(--card-bg); color: var(--text-color);">저장</button>
-            </div>
-            <p id="tokenStatusText" style="font-size: 10px; margin-top: 5px; font-weight: bold;"></p>
-          </div>
-
-          <div class="form-group" style="border-top: 1px dashed var(--border-color); padding-top: 8px;">
             <label>툴 버튼 명칭 변경 (Label)</label>
             <div class="tool-label-grid">
               <div>
@@ -474,7 +464,6 @@
 
   window.addEventListener('DOMContentLoaded', () => {
     initCanvas();
-    loadToken();
     loadKeybindings();
     loadSavedTheme();
     window.addEventListener('keydown', handleGlobalShortcuts);
@@ -489,39 +478,6 @@
     } else {
       noticeBody.style.display = 'none';
       noticeBtn.innerText = '▼ 펼치기';
-    }
-  }
-
-  function saveApiToken() {
-    const tokenInput = document.getElementById("hfTokenInput");
-    const statusText = document.getElementById("tokenStatusText");
-    const tokenValue = tokenInput.value.trim();
-
-    if (!tokenValue) {
-      alert("OpenRouter API 키를 입력해 주세요.");
-      return;
-    }
-
-    localStorage.setItem("hf_token", tokenValue);
-    
-    statusText.innerText = "[확인] API 키가 저장되어 적용되었습니다.";
-    statusText.style.color = "#2b8a3e";
-    
-    alert("OpenRouter API 키가 성공적으로 저장 및 적용되었습니다.");
-  }
-
-  function loadToken() {
-    const savedToken = localStorage.getItem('hf_token');
-    const tokenInput = document.getElementById('hfTokenInput');
-    const statusText = document.getElementById('tokenStatusText');
-
-    if (savedToken) {
-      tokenInput.value = savedToken;
-      statusText.innerText = "[확인] API 키가 저장되어 있습니다.";
-      statusText.style.color = "#2b8a3e";
-    } else {
-      statusText.innerText = "[경고] API 키가 등록되지 않았습니다.";
-      statusText.style.color = "#e03131";
     }
   }
 
@@ -815,7 +771,6 @@
       ctx.moveTo(lastX, lastY);
       ctx.lineTo(pos.x, pos.y);
 
-      // [수정/개선] 지우개 툴을 쓰면 펜 선뿐만 아니라 "화살표"도 완전히 지워지도록 글로벌 합성(destination-out) 처리
       if (boardTool === 'erase') {
         ctx.globalCompositeOperation = 'destination-out';
         ctx.lineWidth = 20;
@@ -827,7 +782,7 @@
 
       ctx.lineCap = 'round';
       ctx.stroke();
-      ctx.globalCompositeOperation = 'source-over'; // 모드 원복
+      ctx.globalCompositeOperation = 'source-over';
 
       lastX = pos.x; lastY = pos.y;
     } else if (boardTool === 'arrow') {
@@ -891,7 +846,6 @@
     document.querySelectorAll('.canvas-node').forEach(node => viewport.removeChild(node));
   }
 
-  // [수정] 카드 삭제(X) 버튼이 내장된 텍스트 카드 생성
   function addTextCard() {
     const viewport = document.getElementById('boardViewport');
     const card = document.createElement('div');
@@ -909,7 +863,6 @@
     viewport.appendChild(card);
   }
 
-  // [수정] 카드 삭제(X) 버튼이 내장된 이미지 카드 생성
   function addCanvasImage(event) {
     const file = event.target.files[0];
     if (file) {
@@ -942,7 +895,7 @@
     element.ontouchstart = dragMouseDown;
 
     function dragMouseDown(e) {
-      if (e.target.classList.contains('card-delete-btn')) return; // 삭제 버튼 클릭 시 이동 이벤트 무시
+      if (e.target.classList.contains('card-delete-btn')) return;
       if (boardTool !== 'select') return;
       if (e.target === resizeHandle) return startResize(e);
 
@@ -1018,19 +971,12 @@
   }
 
   async function generateContent() {
-    const hfToken = localStorage.getItem("hf_token");
     const promptText = document.getElementById('promptInput').value.trim();
     const dialogueContextText = document.getElementById('dialogueContextInput').value.trim();
     const keywordText = document.getElementById('keywordInput').value.trim();
     const aiLevel = parseInt(document.getElementById('aiLevelInput').value);
     const genre = document.getElementById('genreSelect').value;
     const outputDiv = document.getElementById('resultOutput');
-
-    if (!hfToken) {
-      alert("API 키가 설정되지 않았습니다. [SETTINGS] 탭에서 OpenRouter API Key를 입력 후 [저장] 버튼을 눌러주세요.");
-      outputDiv.innerHTML = '<p style="color:red;"><strong>인증 오류:</strong> API 키가 누락되었습니다. [SETTINGS] 메뉴에서 OpenRouter API Key를 입력해 주세요.</p>';
-      return;
-    }
 
     if (!promptText && currentMainTab !== 'topic') {
       alert("요구사항 또는 프롬프트를 입력해주세요.");
@@ -1062,7 +1008,6 @@
           "Content-Type": "application/json"
         },
         body: JSON.stringify({
-          hf_token: hfToken,
           prompt: userPromptMessage
         })
       });
@@ -1077,7 +1022,7 @@
 
     } catch (error) {
       console.error("오류 상세 내용:", error);
-      outputDiv.innerHTML = `<p style="color:red;"><strong>생성 실패:</strong> ${error.message}<br><small>(SETTINGS 탭에서 OpenRouter API Key를 정확히 입력했는지 확인해 주세요)</small></p>`;
+      outputDiv.innerHTML = `<p style="color:red;"><strong>생성 실패:</strong> ${error.message}</p>`;
     }
   }
 </script>
