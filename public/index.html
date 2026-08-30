@@ -678,18 +678,18 @@
         
         <div class="board-toolbar">
           <div class="board-tool-group">
-            <button class="board-tool-btn active" id="tool-select" onclick="setBoardTool('select')">S</button>
-            <button class="board-tool-btn" id="tool-draw" onclick="setBoardTool('draw')">B</button>
-            <button class="board-tool-btn" id="tool-erase" onclick="setBoardTool('erase')">C</button>
-            <button class="board-tool-btn" id="tool-link" onclick="setBoardTool('link')">L</button>
+            <button class="board-tool-btn active" id="tool-select" onclick="setBoardTool('select')">선택/이동</button>
+            <button class="board-tool-btn" id="tool-draw" onclick="setBoardTool('draw')">펜 드로잉</button>
+            <button class="board-tool-btn" id="tool-erase" onclick="setBoardTool('erase')">지우개</button>
+            <button class="board-tool-btn" id="tool-link" onclick="setBoardTool('link')">화살표 연결</button>
             <button class="board-tool-btn icon-btn" id="tool-undo" onclick="undoCanvas()" title="되돌리기 (Ctrl+Z)">Ctrl+Z</button>
             <button class="board-tool-btn icon-btn" id="tool-redo" onclick="redoCanvas()" title="다시하기 (Ctrl+Y)">Ctrl+Y</button>
           </div>
 
           <div class="board-tool-group">
-            <button class="board-tool-btn" id="btn-add-card" onclick="addBoardNode('text')">+Card</button>
+            <button class="board-tool-btn" id="btn-add-card" onclick="addBoardNode('text')">+카드 추가</button>
             <label class="board-tool-btn" id="btn-add-img" style="cursor: pointer;">
-              +Img
+              +사진 추가
               <input type="file" id="boardImgUpload" accept="image/*" style="display: none;" onchange="addBoardImage(event)">
             </label>
             <button class="board-tool-btn" onclick="exportBoardData()">파일 저장(.json)</button>
@@ -715,7 +715,7 @@
         <div class="form-group" style="margin-top: 10px;">
           <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
             <label style="margin-bottom: 0;">통합 스토리 서술 노트 (자동 저장됨)</label>
-            <button class="small-btn" id="btn-reset-draw" onclick="clearCanvasDrawing()">Reset</button>
+            <button class="small-btn" id="btn-reset-draw" onclick="clearCanvasDrawing()">드로잉 초기화</button>
           </div>
           <textarea id="boardStoryText" placeholder="캔버스 상의 관계도를 기반으로 전체 이야기 흐름 및 사건 전개를 서술해 주세요..." style="height: 80px;" oninput="saveBoardState()"></textarea>
         </div>
@@ -827,7 +827,7 @@
 </div>
 
 <script>
-  // 마크다운 형태의 시스템 매뉴얼 가이드 (SECTION 1 신규 추가 및 재배치 완료)
+  // 마크다운 형태의 시스템 매뉴얼 가이드
   const systemManualMarkdown = `
 ### SECTION 1. 기능별 생성 가이드 (세계관, 주제, 플롯, 대사)
 * **세계관/캐릭터 생성**: 메인 탭의 \`나만의 세상 만들기\`에서 장르 및 키워드를 입력하여 세계관과 캐릭터 설정을 빠르게 구축합니다.
@@ -960,19 +960,7 @@
 
   /* ---------------- COMMAND SETTINGS LOGIC ---------------- */
   function applyCommandUI() {
-    document.getElementById('tool-draw').innerText = commandSettings.draw;
-    document.getElementById('tool-erase').innerText = commandSettings.erase;
-    document.getElementById('tool-select').innerText = commandSettings.select;
-    document.getElementById('tool-link').innerText = commandSettings.link;
-    document.getElementById('btn-add-card').innerText = commandSettings.addCard;
-    
-    const imgBtn = document.getElementById('btn-add-img');
-    imgBtn.childNodes[0].nodeValue = commandSettings.addImg + ' ';
-    
-    document.getElementById('tool-undo').innerText = commandSettings.undo;
-    document.getElementById('tool-redo').innerText = commandSettings.redo;
-    document.getElementById('btn-reset-draw').innerText = commandSettings.resetDraw;
-
+    // 상단 캔버스 버튼 이름은 한글로 고정하고, SETTINGS 입력창 값만 유지합니다.
     document.getElementById('cmd-draw').value = commandSettings.draw;
     document.getElementById('cmd-erase').value = commandSettings.erase;
     document.getElementById('cmd-select').value = commandSettings.select;
@@ -1000,7 +988,7 @@
     readCommandInputs();
     localStorage.setItem('user_command_settings', JSON.stringify(commandSettings));
     applyCommandUI();
-    alert('명령어 설정이 임시저장 및 적용되었습니다.');
+    alert('명령어 설정이 임시저장되었습니다.');
   }
 
   function loadCommandSettings() {
