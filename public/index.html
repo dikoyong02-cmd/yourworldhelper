@@ -4,6 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>yourworldhelper - 창작 영감 도우미</title>
+    <!-- 마크다운 파서 라이브러리 (marked.js) 추가 -->
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
     <style>
         :root {
             --bg-color: #f8f9fa;
@@ -346,11 +348,37 @@
             color: #4dabf7;
         }
 
+        /* 마크다운 스타일링 보완 */
         .article-body {
             font-size: 15px;
             line-height: 1.8;
             color: var(--text-main);
-            white-space: pre-line;
+        }
+
+        .article-body h1, .article-body h2, .article-body h3 {
+            margin-top: 16px;
+            margin-bottom: 8px;
+            color: var(--text-main);
+        }
+
+        .article-body p {
+            margin-bottom: 12px;
+        }
+
+        .article-body ul, .article-body ol {
+            margin-bottom: 12px;
+            padding-left: 20px;
+        }
+
+        .article-body blockquote {
+            border-left: 4px solid var(--primary-color);
+            padding-left: 12px;
+            margin: 12px 0;
+            color: var(--text-sub);
+            background-color: var(--quote-bg);
+            padding-top: 6px;
+            padding-bottom: 6px;
+            border-radius: 0 6px 6px 0;
         }
 
         .memo-container {
@@ -718,13 +746,14 @@
 
         let promptText = "";
         if (level === 'low') {
-            promptText = "창작자의 개성을 살릴 수 있도록 스토리를 직접 작성하지 말고, 아이디어를 연상할 수 있는 핵심 단어 4개와 창작 욕구를 자극할 연상 질문 2개만 짧게 작성해줘. [장르]: " + genres.join(', ') + " / [메모]: " + setting;
+            promptText = "창작자의 개성을 살릴 수 있도록 스토리를 직접 작성하지 말고, 마크다운 문법을 활용하여 아이디어를 연상할 수 있는 핵심 단어 4개와 창작 욕구를 자극할 연상 질문 2개만 짧게 작성해줘. [장르]: " + genres.join(', ') + " / [메모]: " + setting;
         } else {
-            promptText = "창작자에게 영감을 줄 단어 3개, 상황 묘사 2문장, 질문 1개를 완성된 문장 형태로 작성해줘. [장르]: " + genres.join(', ') + " / [메모]: " + setting;
+            promptText = "창작자에게 영감을 줄 단어 3개, 상황 묘사 2문장, 질문 1개를 마크다운 형식을 가미하여 완성된 문장 형태로 작성해줘. [장르]: " + genres.join(', ') + " / [메모]: " + setting;
         }
 
         try {
-            output.innerText = await callGemini(promptText);
+            const resultText = await callGemini(promptText);
+            output.innerHTML = marked.parse(resultText);
         } catch (err) {
             output.innerText = "오류 발생: " + err.message;
         }
@@ -746,13 +775,14 @@
 
         let promptText = "";
         if (level === 'low') {
-            promptText = "제출된 세계관과 상황을 바탕으로 어울리는 창작 주제 3가지를 추천해줘. 구체적인 줄거리 대신 작가가 다양하게 해석할 수 있는 '핵심 키워드 주제'와 '딜레마 중심 테마' 위주로 짧고 명확하게 제시해줘. [세계관]: " + world + " / [상황]: " + situation;
+            promptText = "제출된 세계관과 상황을 바탕으로 어울리는 창작 주제 3가지를 추천해줘. 마크다운 문법을 활용해 보기 좋게 구성해줘. 구체적인 줄거리 대신 작가가 다양하게 해석할 수 있는 '핵심 키워드 주제'와 '딜레마 중심 테마' 위주로 짧고 명확하게 제시해줘. [세계관]: " + world + " / [상황]: " + situation;
         } else {
-            promptText = "제출된 세계관과 상황에 딱 맞는 매력적인 창작 주제 3가지를 제시해줘. 각 주제별로 (1) 주제 제목, (2) 이 주제로 다룰 수 있는 주요 대립 및 갈등 요소(1~2문장), (3) 던질 수 있는 핵심 질문 1개를 구체적으로 작성해줘. [세계관]: " + world + " / [상황]: " + situation;
+            promptText = "제출된 세계관과 상황에 딱 맞는 매력적인 창작 주제 3가지를 마크다운 형식으로 제시해줘. 각 주제별로 (1) 주제 제목, (2) 이 주제로 다룰 수 있는 주요 대립 및 갈등 요소(1~2문장), (3) 던질 수 있는 핵심 질문 1개를 구체적으로 작성해줘. [세계관]: " + world + " / [상황]: " + situation;
         }
 
         try {
-            output.innerText = await callGemini(promptText);
+            const resultText = await callGemini(promptText);
+            output.innerHTML = marked.parse(resultText);
         } catch (err) {
             output.innerText = "오류 발생: " + err.message;
         }
@@ -774,13 +804,14 @@
 
         let promptText = "";
         if (level === 'low') {
-            promptText = "대사는 절대 포함하지 마. 1. 연상 키워드 3개, 2. 인물의 감정 및 분위기 단어 2개, 3. 연출 질문 2개만 리스트로 적어줘. [조건]: " + condition + " / [장소/상황]: " + place;
+            promptText = "대사는 절대 포함하지 마. 마크다운 리스트 형태로 작성해줘. 1. 연상 키워드 3개, 2. 인물의 감정 및 분위기 단어 2개, 3. 연출 질문 2개. [조건]: " + condition + " / [장소/상황]: " + place;
         } else {
-            promptText = "대사는 포함하지 말고 장면과 분위기 위주로 추천해줘. 1. 키워드 연상 (2개), 2. 장면 연출 힌트 (2문장), 3. 분위기 연출 질문 (1개). [조건]: " + condition + " / [장소/상황]: " + place;
+            promptText = "대사는 포함하지 말고 장면과 분위기 위주로 추천해줘. 마크다운으로 구성해줘. 1. 키워드 연상 (2개), 2. 장면 연출 힌트 (2문장), 3. 분위기 연출 질문 (1개). [조건]: " + condition + " / [장소/상황]: " + place;
         }
 
         try {
-            output.innerText = await callGemini(promptText);
+            const resultText = await callGemini(promptText);
+            output.innerHTML = marked.parse(resultText);
         } catch (err) {
             output.innerText = "오류 발생: " + err.message;
         }
@@ -802,13 +833,14 @@
 
         let promptText = "";
         if (level === 'low') {
-            promptText = "완성된 대사를 길게 적지 말고, 대사의 '방향성 힌트' 2개와 이 캐릭터가 할 법한 '핵심 어휘/단어' 3개만 적어줘. [캐릭터 성격/말투]: " + character + " / [장소/상황]: " + situation;
+            promptText = "완성된 대사를 길게 적지 말고, 마크다운 형식으로 대사의 '방향성 힌트' 2개와 이 캐릭터가 할 법한 '핵심 어휘/단어' 3개만 적어줘. [캐릭터 성격/말투]: " + character + " / [장소/상황]: " + situation;
         } else {
-            promptText = "이 상황에서 캐릭터의 성격과 말투가 잘 드러나는 특징적인 대사 힌트 3개만 추천해줘. [캐릭터 성격/말투]: " + character + " / [장소/상황]: " + situation;
+            promptText = "이 상황에서 캐릭터의 성격과 말투가 잘 드러나는 특징적인 대사 힌트 3개만 마크다운 형태(인용구나 목록 활용)로 추천해줘. [캐릭터 성격/말투]: " + character + " / [장소/상황]: " + situation;
         }
 
         try {
-            output.innerText = await callGemini(promptText);
+            const resultText = await callGemini(promptText);
+            output.innerHTML = marked.parse(resultText);
         } catch (err) {
             output.innerText = "오류 발생: " + err.message;
         }
@@ -817,3 +849,4 @@
 
 </body>
 </html>
+
