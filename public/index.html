@@ -69,7 +69,7 @@
     .slider-desc { font-size: 11px; color: var(--accent-color); }
     input[type="range"] { width: 100%; height: 6px; background: var(--input-bg); border: 1px solid var(--border-color); accent-color: var(--accent-color); cursor: pointer; }
     input[type="text"], select, textarea { width: 100%; border: 1px solid var(--border-color); padding: 6px; font-size: 12px; background: var(--input-bg); color: var(--text-color); outline: none; }
-    textarea { height: 90px; resize: vertical; }
+    textarea { height: 75px; resize: vertical; }
 
     .result-box { min-height: 180px; background: var(--input-bg); border: 1px solid var(--border-color); padding: 12px; font-size: 12px; line-height: 1.6; }
     .markdown-body h1, .markdown-body h2, .markdown-body h3 { margin-top: 10px; margin-bottom: 6px; color: var(--accent-color); border-bottom: 1px dashed var(--border-color); padding-bottom: 4px; }
@@ -124,10 +124,11 @@
 
   <main>
     <div class="content-area">
-      <!-- 1. 설정 입력 카드 -->
+      <!-- 설정 입력 카드 -->
       <section class="card" id="inputSection">
         <div class="card-title" id="formTitle">세계관 설정 입력</div>
         
+        <!-- 장르 선택 -->
         <div class="form-group" id="genreGroup">
           <label>장르 / 테마</label>
           <select id="genreSelect">
@@ -139,12 +140,20 @@
           </select>
         </div>
 
-        <div class="form-group">
+        <!-- 기본 프롬프트 입력창 (대사 생성 선택 시: 캐릭터 성격 및 말투) -->
+        <div class="form-group" id="mainPromptGroup">
           <label id="promptLabel">상세 요구사항 / 프롬프트</label>
-          <textarea id="promptInput" placeholder="원하는 스토리 요구사항을 입력하세요..."></textarea>
+          <textarea id="promptInput" placeholder="원하는 분위기나 핵심 소재를 입력해보세요..."></textarea>
         </div>
 
-        <div class="form-group">
+        <!-- 대사 생성 전용 입력창 (상황 및 장소) -->
+        <div class="form-group" id="dialogueExtraGroup" style="display: none;">
+          <label>상황 및 장소 설정</label>
+          <textarea id="dialogueContextInput" placeholder="예: 비 내리는 조용한 골목길, 대립 중인 상황"></textarea>
+        </div>
+
+        <!-- AI 관여도 슬라이더 -->
+        <div class="form-group" id="aiLevelGroup">
           <div class="slider-header">
             <label for="aiLevelInput">AI 관여도 (창의성 Level)</label>
             <span id="aiLevelDesc" class="slider-desc">Lv.3 보통 (적절한 디테일 추가)</span>
@@ -152,15 +161,16 @@
           <input type="range" id="aiLevelInput" min="1" max="5" value="3" oninput="updateAiLevelDesc(this.value)">
         </div>
 
-        <div class="form-group">
+        <!-- 키워드 입력창 -->
+        <div class="form-group" id="keywordGroup">
           <label id="keywordLabel">핵심 키워드 (선택)</label>
-          <input type="text" id="keywordInput" placeholder="미입력 시 맥락에 맞춰 알맞게 구성을 진행합니다.">
+          <input type="text" id="keywordInput" placeholder="예: 시계탑, 비밀, 안개">
         </div>
 
         <button type="button" class="primary-btn" onclick="generateContent()">[ 생성 실행 ]</button>
       </section>
 
-      <!-- 2. 관계도 & 스토리 캔버스 -->
+      <!-- 관계도 & 스토리 캔버스 -->
       <section class="card" id="boardSection" style="display: none;">
         <div class="card-title">RELATIONSHIP & STORY CANVAS</div>
         <div class="board-toolbar">
@@ -185,18 +195,18 @@
           </div>
         </div>
         <div class="form-group" style="margin-top: 10px;">
-          <label>통합 스토리 서술 노트 (자동 저장됨)</label>
-          <textarea id="boardStoryText" placeholder="이야기 흐름 및 연출 아이디어를 자유롭게 메모하세요..."></textarea>
+          <label>통합 스토리 서술 노트</label>
+          <textarea id="boardStoryText" placeholder="아이디어나 전체 스토리 흐름을 자유롭게 정리하세요..."></textarea>
         </div>
       </section>
 
-      <!-- 3. 생성 결과 영역 -->
+      <!-- 생성 결과 영역 -->
       <article class="card" id="resultSection">
         <div class="card-title">생성 결과</div>
         <div id="resultOutput" class="result-box markdown-body">결과가 여기에 표시됩니다.</div>
       </article>
 
-      <!-- 4. 5개 파트로 재정리된 사용 가이드 영역 -->
+      <!-- 사용 가이드 영역 -->
       <section class="card" id="guideSection" style="display: none;">
         <div class="card-title">SYSTEM MANUAL & USER GUIDE</div>
         <div class="result-box markdown-body" style="border: none;">
@@ -204,33 +214,27 @@
           <p>창작자를 위한 서포팅 및 스토리텔링 오프라인 워크스페이스 가이드입니다.</p>
           <hr>
           <h4>1. 시스템 개요 및 기초 사용법</h4>
-          <p>상단 메인 탭을 이용하여 기획하고자 하는 분야(세계관, 캐릭터, 주제, 플롯, 대사)를 선택할 수 있습니다. 입력창에 원하는 키워드나 아이디어를 기재한 후 <strong>[ 생성 실행 ]</strong> 버튼을 누르면 프로젝트 기획안이 생성됩니다.</p>
+          <p>상단 메인 탭을 이용하여 기획하고자 하는 분야(나만의 세상 만들기, 주제 선정, 플롯, 대사)를 선택할 수 있습니다. 입력창에 원하는 설정을 입력한 후 <strong>[ 생성 실행 ]</strong> 버튼을 누르면 프로젝트안이 생성됩니다.</p>
 
-          <h4>2. 탭별 메인 기능 지침</h4>
+          <h4>2. 탭별 기능 지침</h4>
           <ul>
-            <li><strong>나만의 세상 만들기</strong>: 세계관 생성 및 캐릭터 설정을 세부 서브 탭으로 분리하여 체계적인 배경 작성이 가능합니다.</li>
-            <li><strong>주제/플롯/대사 생성</strong>: 이야기의 핵심 갈등, 발단-전개-위기-절정-결말의 기승전결 구조, 인물 간 티키타카 대사 흐름을 템플릿 형태로 렌더링합니다.</li>
+            <li><strong>나만의 세상 만들기</strong>: 입력된 핵심 설정을 토대로 AI가 배경, 법칙, 캐릭터 서사를 풍부하게 완성해 드립니다.</li>
+            <li><strong>주제 선정 (장소/설정 문장 & 단어 전용)</strong>: 등장인물이 등장하지 않는 탭입니다. 관여도 슬라이더(Lv.1~Lv.5)로 AI의 창의적 감수성을 조절하며 공간/상황 어휘와 연출 문장만 추천받습니다.</li>
+            <li><strong>대사 생성</strong>: '캐릭터 성격 및 말투'와 '상황 및 장소'를 독립적으로 입력받아 생생한 구어체 연출 및 대사를 생성합니다.</li>
+            <li><strong>플롯/스토리</strong>: 전체 서사의 기승전결 뼈대와 전환점을 렌더링합니다.</li>
           </ul>
 
           <h4>3. 관계도 & 스토리 캔버스 활용법</h4>
           <ul>
-            <li><strong>드로잉/터치 연동</strong>: 펜 드로잉과 지우개 기능을 통해 지도나 구도를 자유롭게 스케치할 수 있습니다. (모바일/태블릿 터치 디바이스 완벽 지원)</li>
-            <li><strong>화살표 드로잉</strong>: 인물 간 관계 방향(대립, 조력 등)을 화살표 툴로 명확히 표시합니다.</li>
-            <li><strong>오버레이 요소</strong>: <code>+ 카드 추가</code>를 통해 메모 카드를 생성하거나 <code>+ 이미지 첨부</code>로 참고 사진을 올린 후, <strong>[선택/이동]</strong> 모드에서 자유롭게 드래그해 배치할 수 있습니다.</li>
-            <li><strong>되돌리기 (Undo/Redo)</strong>: ↩ 및 ↪ 버튼을 클릭하여 드로잉 실수를 이전 상태로 복원할 수 있습니다.</li>
+            <li><strong>드로잉/터치 연동</strong>: 펜 드로잉과 지우개 기능을 이용해 자유롭게 약도나 구도를 스케치합니다.</li>
+            <li><strong>화살표 드로잉</strong>: 인물 간 관계 및 감정 흐름을 화살표 툴로 연결합니다.</li>
+            <li><strong>오버레이 요소</strong>: 메모 카드 및 이미지를 캔버스 위에 자유롭게 띄워 드래그 이동이 가능합니다.</li>
           </ul>
 
-          <h4>4. AI 및 프롬프트 제어 가이드</h4>
+          <h4>4. AI 사용 출처 표기 및 주의사항 가이드라인</h4>
           <ul>
-            <li><strong>AI 관여도 (창의성 Level)</strong>: Lv.1(입력 내용 유지)부터 Lv.5(자율적 창의 구성)까지 슬라이더로 AI의 개입 정도를 자유롭게 설정할 수 있습니다.</li>
-            <li><strong>명령어 설정 (System Prompt)</strong>: 우측 사이드바의 <i>SETTINGS</i> 메뉴를 열어 AI의 기본 말투, 서법, 문체 및 연출 지침을 직접 커스텀할 수 있습니다.</li>
-            <li><strong>결과물 보완 및 2차 수정</strong>: 생성된 텍스트는 보완용 뼈대이므로, 마크다운 형식으로 작성된 출력 결과를 복사하여 사용자의 구상에 맞춰 직접 수정하는 것이 좋습니다.</li>
-          </ul>
-
-          <h4>5. 데이터 관리 및 기타 주의사항</h4>
-          <ul>
-            <li><strong>데이터 보존</strong>: 작성한 메모 및 스토리 서술 노트는 브라우저 내부 세션에 자동 유지됩니다. 중요 텍스트는 별도로 복사하여 백업해두는 것을 권장합니다.</li>
-            <li><strong>테마 변경</strong>: 우측 상단의 <i>COLOR THEME</i> 콤보 박스로 retro Y2K 감성의 핑크 테마와 클래식 윈도우 테마를 언제든 전환할 수 있습니다.</li>
+            <li><strong>AI 사용 출처 명시 필수</strong>: 본 도구를 활용하여 보완받은 텍스트나 아이디어를 외부 공모전, 출판물, 창작물 발표 등에 사용할 경우 <strong>"AI 도구(Your World Helper)의 보조를 받아 작성됨"</strong>과 같이 AI 사용 출처를 명확히 밝혀야 합니다.</li>
+            <li><strong>독자적 창작 권장</strong>: AI 생성 결과물은 창작을 돕는 아이디어 서포터이므로, 사용자만의 고유한 리라이팅과 2차 가공을 거쳐 완성도를 높이시는 것을 추천합니다.</li>
           </ul>
         </div>
       </section>
@@ -257,14 +261,14 @@
         <div id="settingsContent" class="collapsible-content collapsed">
           <div class="form-group" style="margin-top: 8px;">
             <label>AI 시스템 명령어 (System Prompt)</label>
-            <textarea id="systemPromptInput" style="height: 70px; font-size: 10px;" placeholder="AI 서법 및 연출 지침을 입력하세요...">당신은 스토리 기획 전문 AI 작가입니다. 마크다운 형식을 활용해 풍부한 텍스트를 작성하세요.</textarea>
+            <textarea id="systemPromptInput" style="height: 70px; font-size: 10px;" placeholder="AI 서법 및 말투 지침을 입력하세요...">당신은 스토리 기획 전문 AI 작가입니다. 마크다운 형식을 활용해 풍부한 텍스트를 작성하세요.</textarea>
           </div>
         </div>
       </div>
 
       <div class="card">
         <div class="card-title">MEMO PAD</div>
-        <textarea id="memoInput" placeholder="메모를 입력하세요..." style="height: 90px; font-size: 11px;"></textarea>
+        <textarea id="memoInput" placeholder="간단한 메모를 기록하세요..." style="height: 90px; font-size: 11px;"></textarea>
       </div>
 
       <button class="side-nav-btn" id="relationSideBtn" onclick="selectMainTab('relation', this)">
@@ -295,11 +299,11 @@
   let canvasSnapshot = null;
 
   const aiLevelDescriptions = {
-    "1": "Lv.1 최소 (원문 내용 유지)",
-    "2": "Lv.2 절제 (약간의 보완)",
-    "3": "Lv.3 보통 (적절한 디테일 추가)",
-    "4": "Lv.4 높음 (창의적 스토리 확장)",
-    "5": "Lv.5 최대 (자율 구성)"
+    "1": "Lv.1 최소 (원문 충실)",
+    "2": "Lv.2 절제 (약간의 서술 보완)",
+    "3": "Lv.3 보통 (밸런스 있는 디테일 서술)",
+    "4": "Lv.4 높음 (창의적 설정 확장)",
+    "5": "Lv.5 최대 (자율적 아이디어 파생)"
   };
 
   window.addEventListener('DOMContentLoaded', () => {
@@ -325,12 +329,44 @@
     const resultSection = document.getElementById('resultSection');
     const guideSection = document.getElementById('guideSection');
 
+    const genreGroup = document.getElementById('genreGroup');
+    const dialogueExtraGroup = document.getElementById('dialogueExtraGroup');
+    const promptLabel = document.getElementById('promptLabel');
+    const promptInput = document.getElementById('promptInput');
+
     if (tabType === 'myWorld') {
       subTabContainer.style.display = 'flex';
       inputSection.style.display = 'block';
       boardSection.style.display = 'none';
       resultSection.style.display = 'block';
       guideSection.style.display = 'none';
+      genreGroup.style.display = currentSubTab === 'world' ? 'block' : 'none';
+      dialogueExtraGroup.style.display = 'none';
+      promptLabel.innerText = '상세 요구사항 / 프롬프트';
+      promptInput.placeholder = '원하는 연출이나 세계관 특징을 입력해보세요...';
+      document.getElementById('formTitle').innerText = currentSubTab === 'world' ? '세계관 설정 입력' : '캐릭터 설정 입력';
+    } else if (tabType === 'dialogue') {
+      subTabContainer.style.display = 'none';
+      inputSection.style.display = 'block';
+      boardSection.style.display = 'none';
+      resultSection.style.display = 'block';
+      guideSection.style.display = 'none';
+      genreGroup.style.display = 'none';
+      dialogueExtraGroup.style.display = 'block';
+      promptLabel.innerText = '캐릭터 성격 및 말투 입력';
+      promptInput.placeholder = '예: 냉정하고 차분한 어조, 단정한 말투';
+      document.getElementById('formTitle').innerText = '대사 생성 입력';
+    } else if (tabType === 'topic') {
+      subTabContainer.style.display = 'none';
+      inputSection.style.display = 'block';
+      boardSection.style.display = 'none';
+      resultSection.style.display = 'block';
+      guideSection.style.display = 'none';
+      genreGroup.style.display = 'none';
+      dialogueExtraGroup.style.display = 'none';
+      promptLabel.innerText = '원하는 분위기 / 배경 설정 힌트';
+      promptInput.placeholder = '예: 차가운 새벽 공기, 시간 멈춤';
+      document.getElementById('formTitle').innerText = '주제 선정 (장소/설정 문장 & 단어 추천)';
     } else if (tabType === 'relation') {
       subTabContainer.style.display = 'none';
       inputSection.style.display = 'none';
@@ -350,8 +386,11 @@
       boardSection.style.display = 'none';
       resultSection.style.display = 'block';
       guideSection.style.display = 'none';
-      document.getElementById('genreGroup').style.display = 'none';
-      document.getElementById('formTitle').innerText = element.innerText + ' 입력';
+      genreGroup.style.display = 'block';
+      dialogueExtraGroup.style.display = 'none';
+      promptLabel.innerText = '플롯 구상 프롬프트';
+      promptInput.placeholder = '스토리의 중심 사건이나 갈등 요소를 적어주세요...';
+      document.getElementById('formTitle').innerText = '플롯/스토리 입력';
     }
   }
 
@@ -395,15 +434,9 @@
   function getPos(e) {
     const rect = canvas.getBoundingClientRect();
     if (e.touches && e.touches.length > 0) {
-      return {
-        x: e.touches[0].clientX - rect.left,
-        y: e.touches[0].clientY - rect.top
-      };
+      return { x: e.touches[0].clientX - rect.left, y: e.touches[0].clientY - rect.top };
     }
-    return {
-      x: e.clientX - rect.left,
-      y: e.clientY - rect.top
-    };
+    return { x: e.clientX - rect.left, y: e.clientY - rect.top };
   }
 
   function startDrawing(e) {
@@ -411,10 +444,8 @@
     saveState();
     isDrawing = true;
     const pos = getPos(e);
-    startX = pos.x;
-    startY = pos.y;
-    lastX = pos.x;
-    lastY = pos.y;
+    startX = pos.x; startY = pos.y;
+    lastX = pos.x; lastY = pos.y;
     if (boardTool === 'arrow') {
       canvasSnapshot = ctx.getImageData(0, 0, canvas.width, canvas.height);
     }
@@ -433,8 +464,7 @@
       ctx.lineWidth = boardTool === 'draw' ? 2 : 20;
       ctx.lineCap = 'round';
       ctx.stroke();
-      lastX = pos.x;
-      lastY = pos.y;
+      lastX = pos.x; lastY = pos.y;
     } else if (boardTool === 'arrow') {
       ctx.putImageData(canvasSnapshot, 0, 0);
       drawArrow(startX, startY, pos.x, pos.y);
@@ -460,9 +490,7 @@
     ctx.fill();
   }
 
-  function stopDrawing() {
-    isDrawing = false;
-  }
+  function stopDrawing() { isDrawing = false; }
 
   function initCanvas() {
     resizeCanvas();
@@ -470,7 +498,6 @@
     canvas.addEventListener('mousemove', draw);
     canvas.addEventListener('mouseup', stopDrawing);
     canvas.addEventListener('mouseleave', stopDrawing);
-
     canvas.addEventListener('touchstart', startDrawing, { passive: false });
     canvas.addEventListener('touchmove', draw, { passive: false });
     canvas.addEventListener('touchend', stopDrawing);
@@ -503,7 +530,7 @@
     card.className = 'canvas-node';
     card.style.left = '40px';
     card.style.top = '40px';
-    card.innerHTML = `<div contenteditable="true" style="outline:none; min-width:80px; min-height:30px;">캐릭터/메모 카드</div>`;
+    card.innerHTML = `<div contenteditable="true" style="outline:none; min-width:80px; min-height:30px;">메모 입력</div>`;
     makeDraggable(card);
     viewport.appendChild(card);
   }
@@ -535,8 +562,7 @@
       if (boardTool !== 'select') return;
       const clientX = e.touches ? e.touches[0].clientX : e.clientX;
       const clientY = e.touches ? e.touches[0].clientY : e.clientY;
-      initialX = clientX;
-      initialY = clientY;
+      initialX = clientX; initialY = clientY;
       document.onmouseup = closeDragElement;
       document.onmousemove = elementDrag;
       document.ontouchend = closeDragElement;
@@ -546,19 +572,15 @@
     function elementDrag(e) {
       const clientX = e.touches ? e.touches[0].clientX : e.clientX;
       const clientY = e.touches ? e.touches[0].clientY : e.clientY;
-      posX = initialX - clientX;
-      posY = initialY - clientY;
-      initialX = clientX;
-      initialY = clientY;
+      posX = initialX - clientX; posY = initialY - clientY;
+      initialX = clientX; initialY = clientY;
       element.style.top = (element.offsetTop - posY) + "px";
       element.style.left = (element.offsetLeft - posX) + "px";
     }
 
     function closeDragElement() {
-      document.onmouseup = null;
-      document.onmousemove = null;
-      document.ontouchend = null;
-      document.ontouchmove = null;
+      document.onmouseup = null; document.onmousemove = null;
+      document.ontouchend = null; document.ontouchmove = null;
     }
   }
 
@@ -578,35 +600,102 @@
 
   function generateContent() {
     const promptText = document.getElementById('promptInput').value.trim();
+    const dialogueContextText = document.getElementById('dialogueContextInput').value.trim();
     const keywordText = document.getElementById('keywordInput').value.trim();
-    const aiLevel = document.getElementById('aiLevelInput').value;
+    const aiLevel = parseInt(document.getElementById('aiLevelInput').value);
     const genre = document.getElementById('genreSelect').value;
-    const systemPrompt = document.getElementById('systemPromptInput').value.trim();
     const outputDiv = document.getElementById('resultOutput');
 
-    outputDiv.innerHTML = '<p>스토리 기획안을 구성 중입니다...</p>';
+    outputDiv.innerHTML = '<p>텍스트를 생성 중입니다...</p>';
 
     setTimeout(() => {
-      const coreStory = promptText || "입력된 세부 정보가 없어 선택한 장르 기본 구성안에 맞춰 스토리를 생성합니다.";
-      const keyWords = keywordText || "기본 스토리 키워드";
+      let resultMD = "";
 
-      let resultMD = `## [${genre}] 프로젝트 기획안\n\n`;
-      resultMD += `* **작성 카테고리**: ${currentMainTab} / ${currentSubTab}\n`;
-      resultMD += `* **창의성 설정**: Lv.${aiLevel}\n`;
-      resultMD += `* **적용 명령어 지침**: ${systemPrompt || '기본 지침 적용'}\n`;
-      resultMD += `* **주요 키워드**: ${keyWords}\n\n`;
-      resultMD += `---\n\n`;
-      resultMD += `### 1. 주요 사건 및 세계관 설정\n`;
-      resultMD += `${coreStory}\n\n`;
-      resultMD += `### 2. 등장인물 및 관계도 구상\n`;
-      resultMD += `* **주인공**: 설정된 사건의 전말을 밝히고 해결하고자 하는 핵심 인물\n`;
-      resultMD += `* **대립 세력**: 주인공의 목적을 저지하거나 조직의 목적을 추구하는 인물/집단\n`;
-      resultMD += `* **갈등 및 전개**: 사건이 심화됨에 따라 예상치 못한 비밀이 드러나는 서사 구조\n\n`;
-      resultMD += `### 3. 스토리 연출 가이드\n`;
-      resultMD += `> 해당 입력값으로 정리된 기획안 템플릿입니다. 우측 하단의 **관계도 & 스토리 캔버스**를 이용해 추가 아이디어를 자유롭게 시각화해보세요!`;
+      // 1. 주제 선정 탭
+      if (currentMainTab === 'topic') {
+        resultMD = `## [주제 추천] 장소 & 설정 연출 가이드\n\n`;
+        resultMD += `* **AI 관여도**: Level ${aiLevel}\n`;
+        if (keywordText) resultMD += `* **입력 키워드**: ${keywordText}\n`;
+        resultMD += `\n---\n\n`;
+
+        if (aiLevel <= 2) {
+          resultMD += `### 1. 장소 및 상황 문장 추천 (절제 모드)\n`;
+          resultMD += `* "안개로 덮여 이정표가 보이지 않는 오래된 비포장 갈림길."\n`;
+          resultMD += `* "오랫동안 비어 있던 고층 빌딩의 지하 통제실에서 켜진 작은 전등."\n\n`;
+          resultMD += `### 2. 공간 연출 단어\n`;
+          resultMD += `* **공간**: *고요, 먼지, 정적, 경계선*\n`;
+          resultMD += `* **상태**: *잠김, 왜곡, 낡음, 교차*\n`;
+        } else if (aiLevel === 3) {
+          resultMD += `### 1. 장소 및 상황 문장 추천 (디테일 서술 모드)\n`;
+          resultMD += `* "밀물이 들어올 때마다 외부와 완전히 차단되는 바닷가 절벽 위의 폐가."\n`;
+          resultMD += `* "정해진 시간이 되면 현실의 소음이 모두 사라지고 낯선 진동만 울리는 지하철 역사."\n\n`;
+          resultMD += `### 2. 공간 연출 단어\n`;
+          resultMD += `* **분위기**: *밀폐, 차가운 공기, 이질감, 정적의 깨짐*\n`;
+          resultMD += `* **오감 어휘**: *비린내, 삐걱거림, 점멸하는 붉은 빛, 습기*\n`;
+        } else {
+          resultMD += `### 1. 장소 및 상황 문장 추천 (창의성 확장 모드)\n`;
+          resultMD += `* "중력이 부분적으로 역전되어 천장으로 물건이 떨어지는 폐허가 된 전시장."\n`;
+          resultMD += `* "지도에 존재하지 않는 행선지가 표시되는 밤 11시 59분의 버스 정류장."\n\n`;
+          resultMD += `### 2. 공간 연출 단어\n`;
+          resultMD += `* **시공간 어휘**: *차원 균열, 거꾸로 흐르는 시계, 몽환적 잔상, 경계의 왜곡*\n`;
+          resultMD += `* **상황 어휘**: *비일상의 침범, 봉인 해제, 예고 없는 소멸, 교차하는 신호*\n`;
+        }
+        resultMD += `\n> *※ 본 주제 선정 탭에서는 인물 간 관계나 캐릭터 요소 없이 장소와 상황 어휘만을 독립적으로 추천합니다.*`;
+      } 
+      // 2. 대사 생성 탭
+      else if (currentMainTab === 'dialogue') {
+        const charTone = promptText || "냉정하고 차분한 어조";
+        const contextSituation = dialogueContextText || "어두운 밤, 비가 내리는 골목길";
+
+        resultMD = `## [대사 연출] 스크립트\n\n`;
+        resultMD += `* **캐릭터 성격/말투**: ${charTone}\n`;
+        resultMD += `* **상황 및 장소**: ${contextSituation}\n\n`;
+        resultMD += `---\n\n`;
+        resultMD += `### 1. 대사 스크립트\n\n`;
+        resultMD += `**"...결국 여기까지 따라온 건가."**\n\n`;
+        resultMD += `*(빗소리가 거세지자 빗방울을 쓸어내리며 차가운 눈빛으로 상대를 바라본다.)*\n\n`;
+        resultMD += `**"더 이상 나아가지 마라. 여기서부터는 네가 감당할 수 있는 구역이 아니다."**\n\n`;
+        resultMD += `### 2. 연출 지침\n`;
+        resultMD += `* **목소리 톤**: 낮은 저음, 단호하고 차분한 호흡 유지\n`;
+        resultMD += `* **시선 처리**: 빗속에서도 흔들리지 않는 시선 고정\n`;
+      } 
+      // 3. 나만의 세상 만들기 탭
+      else if (currentMainTab === 'myWorld') {
+        const titleText = promptText ? `'${promptText}' 기반 설정` : `새로운 ${currentSubTab === 'world' ? '세계관' : '캐릭터'} 구상`;
+        resultMD = `## [나만의 세상 만들기] ${titleText}\n\n`;
+        resultMD += `* **구분**: ${currentSubTab === 'world' ? '세계관 세부 서술' : '캐릭터 프로필'}\n`;
+        if (currentSubTab === 'world') resultMD += `* **장르**: ${genre}\n`;
+        resultMD += `* **AI 관여도**: Lv.${aiLevel}\n\n`;
+        resultMD += `---\n\n`;
+
+        if (currentSubTab === 'world') {
+          resultMD += `### 1. AI 세부 설정 서술\n`;
+          resultMD += promptText ? `입력한 프롬프트를 바탕으로 AI가 구체적인 텍스트 서사를 완성합니다.\n\n${promptText}\n\n` : `AI가 설정한 독자적인 배경 서사 및 세계관 규칙이 완성되는 영역입니다.\n\n`;
+          resultMD += `### 2. 지리 및 환경적 특징\n`;
+          resultMD += `* **중심지**: 서사의 주 배경이 되는 거점 도시 및 환경\n`;
+          resultMD += `* **핵심 규칙**: 해당 세계관을 지배하는 물리적/사회적 법칙\n`;
+        } else {
+          resultMD += `### 1. 인물 상세 서술\n`;
+          resultMD += promptText ? `입력된 요구사항에 따라 AI가 캐릭터의 외형, 서사, 외적 갈등 요소를 구성합니다.\n\n${promptText}\n\n` : `AI가 서술하는 인물의 비하인드 스토리 및 외형 묘사 영역입니다.\n\n`;
+          resultMD += `### 2. 인물 특징\n`;
+          resultMD += `* **외형**: 뚜렷하게 대비되는 상징적 요소와 복장\n`;
+          resultMD += `* **신념**: 인물이 행동하는 가장 중요한 내면적 동기\n`;
+        }
+      } 
+      // 4. 플롯/스토리 탭
+      else {
+        resultMD = `## [플롯] 서사 구조 및 사건 전개\n\n`;
+        resultMD += `* **장르**: ${genre}\n`;
+        resultMD += `* **요구사항**: ${promptText || '기본 구조'}\n\n`;
+        resultMD += `---\n\n`;
+        resultMD += `### 1. 발단 (Beginning)\n* 배경의 도입 및 일상적인 상황에 미스터리가 침투하는 단계.\n\n`;
+        resultMD += `### 2. 전개 (Middle)\n* 사건의 갈등이 본격화되고 주인공이 직면한 선택의 기로.\n\n`;
+        resultMD += `### 3. 절정 (Climax)\n* 핵심 비밀이 밝혀지며 일어나는 치열한 대립 현장.\n\n`;
+        resultMD += `### 4. 결말 (Ending)\n* 사건 이후 세계관 및 환경의 변화와 남겨진 여운.\n`;
+      }
 
       outputDiv.innerHTML = marked.parse(resultMD);
-    }, 250);
+    }, 200);
   }
 </script>
 
