@@ -312,6 +312,31 @@
       color: var(--accent-text);
       padding: 4px 8px;
       border: 1px solid var(--border-color);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .card-title-btn {
+      background: var(--card-bg);
+      color: var(--text-color);
+      border: 1px solid var(--border-color);
+      font-size: 10px;
+      padding: 1px 6px;
+      cursor: pointer;
+      line-height: 1.2;
+    }
+
+    .card-title-btn:hover {
+      background: #ffffff;
+    }
+
+    .collapsible-content {
+      display: block;
+    }
+
+    .collapsible-content.collapsed {
+      display: none;
     }
 
     .form-group {
@@ -711,7 +736,7 @@
               <li><b>위치 이동</b>: 우측 사이드바의 '관계도 & 스토리 캔버스' 버튼을 누르면 칠판 모드로 전환됩니다.</li>
               <li><b>터치 지원 및 드로잉</b>: 모바일/패드 기기에서도 손가락이나 펜으로 직접 그림을 그리거나 지울 수 있습니다.</li>
               <li><b>되돌리기 / 다시하기</b>: 툴바 상단의 `↩`, `↪` 아이콘 버튼으로 작업 내역을 이동시킬 수 있으며 단축키(`Ctrl+Z`, `Ctrl+Y`)도 지원됩니다.</li>
-              <li><b>명령어 커스텀 설정</b>: 우측 프로필 하단의 SETTINGS 영역에서 지우개, 펜 드로잉 등 각 명령어의 이름을 자유롭게 변경하고 파일로 저장이 가능합니다.</li>
+              <li><b>명령어 커스텀 설정</b>: 우측 프로필 하단의 SETTINGS 영역에서 지우개, 펜 드로잉 등 각 명령어의 이름을 자유롭게 변경하고 파일로 저장이 가능합니다. (우측 상단 '▼ 접기 / ▲ 열기' 버튼으로 열고 닫을 수 있습니다.)</li>
               <li><b>카드 삭제 및 연결</b>: 카드의 빨간색 'X' 버튼을 누르면 연관된 화살표와 함께 삭제됩니다. '화살표 연결' 버튼 클릭 후 카드 두 개를 순서대로 누르면 방향 화살표가 생성됩니다.</li>
             </ul>
           </div>
@@ -742,55 +767,61 @@
         </div>
       </div>
 
-      <!-- 프로필 밑에 추가된 SETTINGS CARD (명령어 설정) -->
+      <!-- 열고 닫기가 가능한 SETTINGS CARD (명령어 설정) -->
       <div class="card">
-        <div class="card-title">SETTINGS (명령어 설정)</div>
-        <div class="cmd-setting-group">
-          <div class="cmd-item">
-            <label>펜 드로잉</label>
-            <input type="text" id="cmd-draw" value="펜 드로잉">
-          </div>
-          <div class="cmd-item">
-            <label>지우개</label>
-            <input type="text" id="cmd-erase" value="지우개">
-          </div>
-          <div class="cmd-item">
-            <label>선택/이동</label>
-            <input type="text" id="cmd-select" value="선택/이동">
-          </div>
-          <div class="cmd-item">
-            <label>화살표 연결</label>
-            <input type="text" id="cmd-link" value="화살표 연결">
-          </div>
-          <div class="cmd-item">
-            <label>카드 추가</label>
-            <input type="text" id="cmd-add-card" value="+ 카드 추가">
-          </div>
-          <div class="cmd-item">
-            <label>사진 추가</label>
-            <input type="text" id="cmd-add-img" value="+ 사진 추가">
-          </div>
-          <div class="cmd-item">
-            <label>되돌리기</label>
-            <input type="text" id="cmd-undo" value="↩">
-          </div>
-          <div class="cmd-item">
-            <label>다시하기</label>
-            <input type="text" id="cmd-redo" value="↪">
-          </div>
-          <div class="cmd-item">
-            <label>드로잉 초기화</label>
-            <input type="text" id="cmd-reset-draw" value="드로잉 초기화">
-          </div>
+        <div class="card-title">
+          <span>SETTINGS (명령어 설정)</span>
+          <button type="button" class="card-title-btn" id="settingsToggleBtn" onclick="toggleSettingsCard()">▼ 접기</button>
         </div>
+        
+        <div id="settingsContent" class="collapsible-content">
+          <div class="cmd-setting-group">
+            <div class="cmd-item">
+              <label>펜 드로잉</label>
+              <input type="text" id="cmd-draw" value="펜 드로잉">
+            </div>
+            <div class="cmd-item">
+              <label>지우개</label>
+              <input type="text" id="cmd-erase" value="지우개">
+            </div>
+            <div class="cmd-item">
+              <label>선택/이동</label>
+              <input type="text" id="cmd-select" value="선택/이동">
+            </div>
+            <div class="cmd-item">
+              <label>화살표 연결</label>
+              <input type="text" id="cmd-link" value="화살표 연결">
+            </div>
+            <div class="cmd-item">
+              <label>카드 추가</label>
+              <input type="text" id="cmd-add-card" value="+ 카드 추가">
+            </div>
+            <div class="cmd-item">
+              <label>사진 추가</label>
+              <input type="text" id="cmd-add-img" value="+ 사진 추가">
+            </div>
+            <div class="cmd-item">
+              <label>되돌리기</label>
+              <input type="text" id="cmd-undo" value="↩">
+            </div>
+            <div class="cmd-item">
+              <label>다시하기</label>
+              <input type="text" id="cmd-redo" value="↪">
+            </div>
+            <div class="cmd-item">
+              <label>드로잉 초기화</label>
+              <input type="text" id="cmd-reset-draw" value="드로잉 초기화">
+            </div>
+          </div>
 
-        <div style="display: flex; flex-direction: column; gap: 4px;">
-          <button type="button" class="profile-btn" onclick="saveCommandsTemp()">임시저장</button>
-          <button type="button" class="profile-btn" onclick="exportCommandSettings()">설정 파일저장(.json)</button>
-          <label class="profile-btn" style="cursor: pointer; display: flex; align-items: center; justify-content: center;">
-            설정 불러오기
-            <input type="file" accept=".json" style="display: none;" onchange="importCommandSettings(event)">
-          </label>
+          <div style="display: flex; flex-direction: column; gap: 4px;">
+            <button type="button" class="profile-btn" onclick="saveCommandsTemp()">임시저장</button>
+            <button type="button" class="profile-btn" onclick="exportCommandSettings()">설정 파일저장(.json)</button>
+            <label class="profile-btn" style="cursor: pointer; display: flex; align-items: center; justify-content: center;">
+              설정 불러오기
+              <input type="file" accept=".json" style="display: none;" onchange="importCommandSettings(event)">
+            </label>
+          </div>
         </div>
       </div>
 
@@ -867,6 +898,13 @@
     const savedMemo = localStorage.getItem('user_memo');
     if (savedMemo) document.getElementById('memoInput').value = savedMemo;
 
+    // Load Settings Collapsed State
+    const settingsCollapsed = localStorage.getItem('settings_collapsed') === 'true';
+    if (settingsCollapsed) {
+      document.getElementById('settingsContent').classList.add('collapsed');
+      document.getElementById('settingsToggleBtn').innerText = '▲ 열기';
+    }
+
     // Load Commands
     loadCommandSettings();
 
@@ -886,6 +924,22 @@
       }
     });
   });
+
+  /* ---------------- TOGGLE SETTINGS CARD ---------------- */
+  function toggleSettingsCard() {
+    const content = document.getElementById('settingsContent');
+    const btn = document.getElementById('settingsToggleBtn');
+    
+    if (content.classList.contains('collapsed')) {
+      content.classList.remove('collapsed');
+      btn.innerText = '▼ 접기';
+      localStorage.setItem('settings_collapsed', 'false');
+    } else {
+      content.classList.add('collapsed');
+      btn.innerText = '▲ 열기';
+      localStorage.setItem('settings_collapsed', 'true');
+    }
+  }
 
   /* ---------------- COMMAND SETTINGS LOGIC ---------------- */
   function applyCommandUI() {
