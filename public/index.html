@@ -4,38 +4,144 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Your World Helper</title>
-  <!-- 마크다운 렌더링 라이브러리 (marked.js) -->
   <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
   <style>
+    /* CSS 변수를 활용한 동적 테마 시스템 */
+    :root {
+      --bg-color: #f4f4f6;
+      --card-bg: #ffffff;
+      --card-sub-bg: #fafafa;
+      --text-color: #333333;
+      --border-color: #333333;
+      --accent-color: #333333;
+      --accent-text: #ffffff;
+      --input-bg: #ffffff;
+      --dashed-border: #aaaaaa;
+      --preview-bg: #f9f9f9;
+      --footer-text: #666666;
+    }
+
+    /* Theme 1: Retro Classic (기본) */
+    [data-theme="classic"] {
+      --bg-color: #f4f4f6;
+      --card-bg: #ffffff;
+      --card-sub-bg: #fafafa;
+      --text-color: #333333;
+      --border-color: #333333;
+      --accent-color: #333333;
+      --accent-text: #ffffff;
+      --input-bg: #ffffff;
+      --dashed-border: #aaaaaa;
+      --preview-bg: #f9f9f9;
+      --footer-text: #666666;
+    }
+
+    /* Theme 2: Dark Navy */
+    [data-theme="dark"] {
+      --bg-color: #1a1d24;
+      --card-bg: #242832;
+      --card-sub-bg: #2c313e;
+      --text-color: #e0e6ed;
+      --border-color: #4f586b;
+      --accent-color: #3b82f6;
+      --accent-text: #ffffff;
+      --input-bg: #1c2029;
+      --dashed-border: #64748b;
+      --preview-bg: #181b22;
+      --footer-text: #94a3b8;
+    }
+
+    /* Theme 3: Emerald Nature */
+    [data-theme="emerald"] {
+      --bg-color: #eef7f2;
+      --card-bg: #ffffff;
+      --card-sub-bg: #f2f9f5;
+      --text-color: #1c3a27;
+      --border-color: #2e6b46;
+      --accent-color: #2e6b46;
+      --accent-text: #ffffff;
+      --input-bg: #ffffff;
+      --dashed-border: #82bca0;
+      --preview-bg: #e5f3eb;
+      --footer-text: #4a7c59;
+    }
+
+    /* Theme 4: Sunset Crimson */
+    [data-theme="sunset"] {
+      --bg-color: #fdf5f2;
+      --card-bg: #ffffff;
+      --card-sub-bg: #fef8f6;
+      --text-color: #4a1e1b;
+      --border-color: #9e3a33;
+      --accent-color: #c0392b;
+      --accent-text: #ffffff;
+      --input-bg: #ffffff;
+      --dashed-border: #d98880;
+      --preview-bg: #fbeee8;
+      --footer-text: #884ea0;
+    }
+
+    /* Theme 5: Cyber Neon */
+    [data-theme="cyber"] {
+      --bg-color: #0b0c10;
+      --card-bg: #1f2833;
+      --card-sub-bg: #121c24;
+      --text-color: #66fcf1;
+      --border-color: #45a29e;
+      --accent-color: #66fcf1;
+      --accent-text: #0b0c10;
+      --input-bg: #0b0c10;
+      --dashed-border: #45a29e;
+      --preview-bg: #08090c;
+      --footer-text: #c5c6c7;
+    }
+
+    /* Theme 6: Pastel Dream */
+    [data-theme="pastel"] {
+      --bg-color: #f7f3ff;
+      --card-bg: #ffffff;
+      --card-sub-bg: #fbf9ff;
+      --text-color: #4a3e56;
+      --border-color: #a288b8;
+      --accent-color: #9b72cf;
+      --accent-text: #ffffff;
+      --input-bg: #ffffff;
+      --dashed-border: #c6b3d9;
+      --preview-bg: #f0eaf7;
+      --footer-text: #846a9f;
+    }
+
     * {
       box-sizing: border-box;
       margin: 0;
       padding: 0;
       font-family: 'Pretendard', 'Malgun Gothic', sans-serif;
+      transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease;
     }
 
     body {
-      background-color: #f4f4f6;
-      color: #333;
+      background-color: var(--bg-color);
+      color: var(--text-color);
       padding: 20px;
     }
 
     .container {
       max-width: 1080px;
       margin: 0 auto;
-      background: #ffffff;
-      border: 2px solid #333;
+      background: var(--card-bg);
+      border: 2px solid var(--border-color);
       padding: 20px;
     }
 
-    /* 상단 헤더 */
     header {
-      border-bottom: 2px solid #333;
+      border-bottom: 2px solid var(--border-color);
       padding-bottom: 15px;
       margin-bottom: 20px;
       display: flex;
       justify-content: space-between;
       align-items: center;
+      flex-wrap: wrap;
+      gap: 10px;
     }
 
     header h1 {
@@ -43,14 +149,57 @@
       font-weight: bold;
     }
 
-    /* 메인 2단 레이아웃 (Grid) */
+    .theme-selector-box {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .theme-selector-box label {
+      font-size: 13px;
+      font-weight: bold;
+    }
+
+    .theme-selector-box select {
+      padding: 5px 8px;
+      font-size: 12px;
+      border: 1px solid var(--border-color);
+      background-color: var(--input-bg);
+      color: var(--text-color);
+      cursor: pointer;
+    }
+
+    /* 카테고리 탭 */
+    .tab-container {
+      display: flex;
+      gap: 5px;
+      margin-bottom: 15px;
+      border-bottom: 2px solid var(--border-color);
+      padding-bottom: 10px;
+      flex-wrap: wrap;
+    }
+
+    .tab-btn {
+      border: 1px solid var(--border-color);
+      background: var(--card-sub-bg);
+      color: var(--text-color);
+      padding: 8px 14px;
+      font-size: 13px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    .tab-btn.active {
+      background: var(--accent-color);
+      color: var(--accent-text);
+    }
+
     main {
       display: grid;
       grid-template-columns: 1fr 280px;
       gap: 20px;
     }
 
-    /* 왼쪽 콘텐츠 영역 */
     .content-area {
       display: flex;
       flex-direction: column;
@@ -58,8 +207,8 @@
     }
 
     .card {
-      border: 2px solid #333;
-      background: #fafafa;
+      border: 2px solid var(--border-color);
+      background: var(--card-sub-bg);
       padding: 15px;
     }
 
@@ -67,68 +216,82 @@
       font-size: 15px;
       font-weight: bold;
       margin-bottom: 10px;
-      border-bottom: 1px dashed #aaa;
+      border-bottom: 1px dashed var(--dashed-border);
       padding-bottom: 5px;
     }
 
-    textarea {
+    .form-group {
+      margin-bottom: 12px;
+    }
+
+    .form-group label {
+      display: block;
+      font-size: 12px;
+      font-weight: bold;
+      margin-bottom: 4px;
+      opacity: 0.9;
+    }
+
+    input[type="text"], select, textarea {
       width: 100%;
-      height: 100px;
-      border: 1px solid #777;
-      padding: 10px;
+      border: 1px solid var(--border-color);
+      padding: 8px;
+      font-size: 13px;
+      background: var(--input-bg);
+      color: var(--text-color);
+    }
+
+    textarea {
+      height: 90px;
       resize: vertical;
-      font-size: 14px;
-      margin-bottom: 10px;
     }
 
     button.primary-btn {
       width: 100%;
       padding: 10px;
-      background: #333;
-      color: #fff;
+      background: var(--accent-color);
+      color: var(--accent-text);
       border: none;
       font-weight: bold;
       cursor: pointer;
     }
 
     button.primary-btn:hover {
-      background: #555;
+      opacity: 0.85;
     }
 
-    /* 결과 출력 영역 */
     .result-box {
-      min-height: 150px;
-      background: #fff;
-      border: 1px dashed #777;
+      min-height: 180px;
+      background: var(--card-bg);
+      border: 1px dashed var(--dashed-border);
       padding: 15px;
       line-height: 1.6;
     }
 
-    /* 오른쪽 사이드바 영역 */
     sidebar {
       display: flex;
       flex-direction: column;
       gap: 20px;
     }
 
-    /* 프로필 카드 UI */
     .profile-card {
-      border: 2px solid #333;
+      border: 2px solid var(--border-color);
       padding: 15px;
-      background: #ffffff;
+      background: var(--card-bg);
       text-align: center;
     }
 
     .profile-img-box {
       width: 110px;
       height: 110px;
-      border: 1px solid #777;
+      border: 1px solid var(--border-color);
       margin: 0 auto 10px;
       display: flex;
       align-items: center;
       justify-content: center;
-      background: #f9f9f9;
+      background: var(--preview-bg);
       overflow: hidden;
+      position: relative;
     }
 
     .profile-img-box img {
@@ -138,30 +301,64 @@
       display: none;
     }
 
+    .image-mode-select {
+      margin-bottom: 8px;
+    }
+
     .profile-btn {
-      border: 1px solid #333;
-      background: #f0f0f0;
+      border: 1px solid var(--border-color);
+      background: var(--card-sub-bg);
+      color: var(--text-color);
       padding: 6px 12px;
       font-size: 12px;
       cursor: pointer;
       font-weight: bold;
+      width: 100%;
+      margin-top: 4px;
     }
 
-    .profile-btn:hover {
-      background: #e0e0e0;
+    /* 이미지 옵션 입력 레이아웃 */
+    .img-input-group {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      margin-top: 8px;
     }
 
-    /* 하단 푸터 */
+    /* 가이드 아코디언 스타일 */
+    .guide-box {
+      font-size: 12px;
+      line-height: 1.5;
+    }
+
+    .guide-box ul {
+      padding-left: 16px;
+      margin-top: 6px;
+    }
+
+    .guide-box li {
+      margin-bottom: 4px;
+    }
+
+    .guide-section {
+      margin-bottom: 12px;
+    }
+
+    .guide-section-title {
+      font-weight: bold;
+      color: var(--accent-color);
+      margin-bottom: 4px;
+    }
+
     footer {
       margin-top: 20px;
-      border-top: 2px solid #333;
+      border-top: 2px solid var(--border-color);
       padding-top: 15px;
       text-align: center;
       font-size: 12px;
-      color: #666;
+      color: var(--footer-text);
     }
 
-    /* 반응형 스타일 (모바일 환경 고려) */
     @media (max-width: 768px) {
       main {
         grid-template-columns: 1fr;
@@ -169,89 +366,252 @@
     }
   </style>
 </head>
-<body>
+<body data-theme="classic">
 
 <div class="container">
-  <!-- 상단 헤더 -->
   <header>
     <h1>🌐 Your World Helper</h1>
-    <div>
-      <span style="font-size: 13px; color: #666;">2D Flat Retro Style</span>
+    
+    <!-- 테마 변경 드롭다운 -->
+    <div class="theme-selector-box">
+      <label for="themeSelect">🎨 테마 변경:</label>
+      <select id="themeSelect" onchange="changeTheme(this.value)">
+        <option value="classic">Retro Classic (기본)</option>
+        <option value="dark">Dark Navy</option>
+        <option value="emerald">Emerald Nature</option>
+        <option value="sunset">Sunset Crimson</option>
+        <option value="cyber">Cyber Neon</option>
+        <option value="pastel">Pastel Dream</option>
+      </select>
     </div>
   </header>
 
-  <!-- 메인 콘텐츠 영역 -->
+  <!-- 카테고리 선택 탭 -->
+  <div class="tab-container">
+    <button class="tab-btn active" onclick="selectTab('world', this)">🌍 세계관 생성</button>
+    <button class="tab-btn" onclick="selectTab('character', this)">👤 캐릭터 설정</button>
+    <button class="tab-btn" onclick="selectTab('plot', this)">📖 플롯/스토리</button>
+    <button class="tab-btn" onclick="selectTab('dialogue', this)">💬 대사 생성</button>
+    <button class="tab-btn" onclick="selectTab('guide', this)">💡 사용 가이드</button>
+  </div>
+
   <main>
-    <!-- 왼쪽: AI 생성 기능 영역 -->
     <div class="content-area">
-      <section class="card">
-        <div class="card-title">💡 프롬프트 입력</div>
-        <textarea id="promptInput" placeholder="생성할 아이디어나 질문을 입력해 주세요..."></textarea>
+      <!-- 입력 폼 영역 (가이드 탭이 아닐 때 표시) -->
+      <section class="card" id="inputSection">
+        <div class="card-title" id="formTitle">🌍 세계관 설정 입력</div>
+        
+        <div class="form-group">
+          <label>장르 / 테마</label>
+          <select id="genreSelect">
+            <option value="판타지">판타지</option>
+            <option value="SF/사이버펑크">SF / 사이버펑크</option>
+            <option value="현대 로맨스">현대 로맨스</option>
+            <option value="미스터리/스릴러">미스터리 / 스릴러</option>
+            <option value="무협/시대극">무협 / 시대극</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label>핵심 키워드</label>
+          <input type="text" id="keywordInput" placeholder="예: 마법학교, 비밀 조직, 시간여행 등">
+        </div>
+
+        <div class="form-group">
+          <label>상세 요구사항 / 프롬프트</label>
+          <textarea id="promptInput" placeholder="추가로 들어가야 할 세부 내용을 입력해 주세요..."></textarea>
+        </div>
+
         <button type="button" class="primary-btn" onclick="generateContent()">생성하기</button>
       </section>
 
-      <article class="card">
+      <!-- 생성 결과 영역 -->
+      <article class="card" id="resultSection">
         <div class="card-title">📝 생성 결과</div>
         <div id="resultOutput" class="result-box">결과가 여기에 표시됩니다.</div>
       </article>
+
+      <!-- 통합 사용 가이드 영역 (기본 숨김, 가이드 탭 클릭 시 표시) -->
+      <section class="card" id="guideSection" style="display: none;">
+        <div class="card-title">📖 앱 사용 안내 & 매뉴얼</div>
+        <div class="guide-box">
+          <div class="guide-section">
+            <div class="guide-section-title">1. 테마 및 디자인 맞춤 설정</div>
+            <ul>
+              <li>우측 상단의 <b>[🎨 테마 변경]</b> 드롭다운 메뉴를 통해 6가지 테마(Classic, Dark, Emerald, Sunset, Cyber, Pastel) 중 원하는 분위기를 선택할 수 있습니다.</li>
+              <li>선택한 테마는 브라우저에 저장되어 재방문 시에도 계속 유지됩니다.</li>
+            </ul>
+          </div>
+
+          <div class="guide-section">
+            <div class="guide-section-title">2. 프로필/원하는 이미지 설정 가이드</div>
+            <ul>
+              <li>우측 사이드바의 <b>USER PROFILE</b>에서 로컬 이미지 파일 업로드 또는 외부 이미지 URL을 입력할 수 있습니다.</li>
+              <li><b>맞춤 옵션</b>:
+                <ul>
+                  <li><b>Cover (채우기)</b>: 영역을 여백 없이 가득 채웁니다. (기본값)</li>
+                  <li><b>Contain (맞추기)</b>: 이미지 전체 비율을 유지하며 여백에 맞춥니다.</li>
+                </ul>
+              </li>
+            </ul>
+          </div>
+
+          <div class="guide-section">
+            <div class="guide-section-title">📌 참고사항 (Recommendation)</div>
+            <ul>
+              <li><b>권장 이미지 해상도</b>: 정사각형(1:1 비율) 및 300x300px 이상 크기의 이미지를 사용할 때 가장 깔끔하게 표시됩니다.</li>
+              <li><b>권장 파일 형식</b>: `.png`, `.jpg`, `.webp` 등의 표준 웹 이미지 포맷.</li>
+              <li><b>자동 저장 기능</b>: 등록한 프로필 이미지와 선택한 테마는 웹 브라우저의 `localStorage`에 자동 저장되어 페이지를 새로고침해도 유지됩니다.</li>
+            </ul>
+          </div>
+
+          <div class="guide-section">
+            <div class="guide-section-title">⚠️ 주의사항 (Caution)</div>
+            <ul>
+              <li><b>대용량 이미지 파일 지양</b>: 5MB 이상의 너무 큰 이미지 파일을 업로드할 경우 브라우저의 `localStorage` 용량 한계(보통 5~10MB)로 인해 이미지 저장이 실패하거나 작동이 느려질 수 있습니다.</li>
+              <li><b>URL 이미지 사용 시 (CORS/만료 이슈)</b>: 웹 URL 주소로 이미지를 설정할 경우 해당 외부 웹사이트의 차단 정책(CORS) 또는 링크 만료에 의해 이미지가 로드되지 않을 수 있습니다. 차단되는 링크는 직접 파일 다운로드 후 [파일 선택]으로 등록하는 것을 권장합니다.</li>
+              <li><b>개인정보 유의</b>: 공용 PC 사용 시 프로필 이미지나 메모장에 민감한 개인정보를 남기지 않도록 유의하세요.</li>
+            </ul>
+          </div>
+        </div>
+      </section>
     </div>
 
-    <!-- 오른쪽: 사이드바 (프로필 및 추가 정보) -->
+    <!-- 우측 사이드바 -->
     <sidebar>
+      <!-- 커스텀 이미지 프로필 카트 -->
       <div class="profile-card">
         <div class="card-title">USER PROFILE</div>
         <div class="profile-img-box">
           <img id="profilePreview" src="" alt="프로필 사진">
-          <div id="profilePlaceholder" style="color: #888; font-size: 12px;">
+          <div id="profilePlaceholder" style="color: var(--footer-text); font-size: 12px;">
             <span style="font-size: 20px; display: block; margin-bottom: 4px;">🖼️</span>
             이미지 없음
           </div>
         </div>
 
-        <div style="font-weight: bold; font-size: 14px; margin-bottom: 10px;" id="userName">User</div>
+        <div style="font-weight: bold; font-size: 14px; margin-bottom: 8px;">User</div>
 
-        <input type="file" id="profileInput" accept="image/*" style="display: none;" onchange="loadProfileImage(event)">
-        <button type="button" class="profile-btn" onclick="document.getElementById('profileInput').click()">📷 사진 변경</button>
+        <!-- 이미지 표시 방식 설정 -->
+        <div class="image-mode-select">
+          <select id="fitModeSelect" onchange="changeImageFitMode(this.value)" style="font-size: 11px; padding: 3px;">
+            <option value="cover">이미지 방식: Cover (채우기)</option>
+            <option value="contain">이미지 방식: Contain (맞추기)</option>
+          </select>
+        </div>
+
+        <div class="img-input-group">
+          <!-- 1. 파일 업로드 -->
+          <input type="file" id="profileInput" accept="image/*" style="display: none;" onchange="loadProfileImageFromFile(event)">
+          <button type="button" class="profile-btn" onclick="document.getElementById('profileInput').click()">📁 파일 선택</button>
+
+          <!-- 2. URL 입력 -->
+          <button type="button" class="profile-btn" onclick="promptImageUrl()">🔗 URL 입력</button>
+        </div>
       </div>
 
+      <!-- 메모장 -->
       <div class="card">
         <div class="card-title">📌 메모장</div>
-        <p style="font-size: 12px; color: #666; line-height: 1.4;">
-          필요한 메모나 아이디어를 기록해두는 사이드 스페이스입니다.
-        </p>
+        <textarea id="memoInput" placeholder="아이디어를 자유롭게 메모하세요..." style="height: 120px; font-size: 12px;" oninput="saveMemo(this.value)"></textarea>
       </div>
     </sidebar>
   </main>
 
-  <!-- 하단 푸터 -->
   <footer>
     <p>© 2026 yourworldhelper. All rights reserved.</p>
   </footer>
 </div>
 
 <script>
-  // 페이지 로드시 저장된 프로필 이미지 불러오기
+  let currentTab = 'world';
+
+  // 페이지 로드 시 초기화
   window.addEventListener('DOMContentLoaded', () => {
+    // 저장된 테마 불러오기
+    const savedTheme = localStorage.getItem('app_theme') || 'classic';
+    document.getElementById('themeSelect').value = savedTheme;
+    changeTheme(savedTheme);
+
+    // 저장된 이미지 불러오기
     const savedImg = localStorage.getItem('user_profile_img');
-    if (savedImg) {
-      showImage(savedImg);
-    }
+    if (savedImg) showImage(savedImg);
+
+    // 저장된 이미지 핏 방식 불러오기
+    const savedFitMode = localStorage.getItem('user_profile_fit') || 'cover';
+    document.getElementById('fitModeSelect').value = savedFitMode;
+    changeImageFitMode(savedFitMode);
+
+    // 저장된 메모 불러오기
+    const savedMemo = localStorage.getItem('user_memo');
+    if (savedMemo) document.getElementById('memoInput').value = savedMemo;
   });
 
-  // 프로필 이미지 선택 및 저장
-  function loadProfileImage(event) {
+  // 1. 테마 변경 함수
+  function changeTheme(themeName) {
+    document.body.setAttribute('data-theme', themeName);
+    localStorage.setItem('app_theme', themeName);
+  }
+
+  // 2. 탭 변경 함수 (가이드 탭 포함)
+  function selectTab(tabType, element) {
+    currentTab = tabType;
+    document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+    element.classList.add('active');
+
+    const inputSection = document.getElementById('inputSection');
+    const resultSection = document.getElementById('resultSection');
+    const guideSection = document.getElementById('guideSection');
+    const formTitle = document.getElementById('formTitle');
+
+    if (tabType === 'guide') {
+      inputSection.style.display = 'none';
+      resultSection.style.display = 'none';
+      guideSection.style.display = 'block';
+    } else {
+      inputSection.style.display = 'block';
+      resultSection.style.display = 'block';
+      guideSection.style.display = 'none';
+
+      if (tabType === 'world') formTitle.innerText = '🌍 세계관 설정 입력';
+      else if (tabType === 'character') formTitle.innerText = '👤 캐릭터 설정 입력';
+      else if (tabType === 'plot') formTitle.innerText = '📖 플롯/스토리 설정 입력';
+      else if (tabType === 'dialogue') formTitle.innerText = '💬 대사 생성 설정 입력';
+    }
+  }
+
+  // 3. 파일로 이미지 업로드
+  function loadProfileImageFromFile(event) {
     const file = event.target.files[0];
     if (file) {
+      if (file.size > 5 * 1024 * 1024) { // 5MB 제한 경고
+        alert('⚠️ 파일 크기가 너무 큽니다. 5MB 이하의 이미지를 사용해주세요.');
+        return;
+      }
       const reader = new FileReader();
       reader.onload = function(e) {
         const imageData = e.target.result;
         showImage(imageData);
-        localStorage.setItem('user_profile_img', imageData);
+        try {
+          localStorage.setItem('user_profile_img', imageData);
+        } catch (err) {
+          alert('⚠️ 이미지 용량이 커서 브라우저에 저장하지 못했습니다. 더 작은 크기의 이미지를 선택해주세요.');
+        }
       };
       reader.readAsDataURL(file);
     }
   }
 
+  // 4. URL로 이미지 등록
+  function promptImageUrl() {
+    const url = prompt('원하는 이미지 주소(URL)를 입력해 주세요:\n(예: https://example.com/image.jpg)');
+    if (url && url.trim() !== '') {
+      showImage(url.trim());
+      localStorage.setItem('user_profile_img', url.trim());
+    }
+  }
+
+  // 이미지 표출 공통 함수
   function showImage(src) {
     const preview = document.getElementById('profilePreview');
     const placeholder = document.getElementById('profilePlaceholder');
@@ -260,13 +620,29 @@
     placeholder.style.display = 'none';
   }
 
-  // 백엔드 Express API 호출 (/api/generate)
+  // 이미지 채우기 방식 변경
+  function changeImageFitMode(mode) {
+    const preview = document.getElementById('profilePreview');
+    preview.style.objectFit = mode;
+    localStorage.setItem('user_profile_fit', mode);
+  }
+
+  // 메모 자동 저장
+  function saveMemo(text) {
+    localStorage.setItem('user_memo', text);
+  }
+
+  // 5. AI 생성 기능 실행
   async function generateContent() {
+    const genre = document.getElementById('genreSelect').value;
+    const keyword = document.getElementById('keywordInput').value;
     const prompt = document.getElementById('promptInput').value;
     const outputDiv = document.getElementById('resultOutput');
 
-    if (!prompt.trim()) {
-      alert('내용을 입력해 주세요!');
+    const fullPrompt = `[카테고리: ${currentTab}] [장르: ${genre}] [키워드: ${keyword}]\n내용: ${prompt}`;
+
+    if (!keyword.trim() && !prompt.trim()) {
+      alert('키워드나 상세 내용을 입력해 주세요!');
       return;
     }
 
@@ -276,13 +652,12 @@
       const response = await fetch('/api/generate', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ prompt: prompt })
+        body: JSON.stringify({ prompt: fullPrompt })
       });
 
       const data = await response.json();
 
       if (data.result) {
-        // 마크다운 파싱 처리 후 출력
         outputDiv.innerHTML = marked.parse(data.result);
       } else {
         outputDiv.innerHTML = '오류 발생: ' + (data.error || '답변을 불러오지 못했습니다.');
