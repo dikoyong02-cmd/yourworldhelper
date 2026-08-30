@@ -6,7 +6,7 @@
   <title>Your World Helper - Y2K Edition</title>
   <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
   <style>
-    /* Y2K 평면(Flat) 레트로 스타일 변수 */
+    /* Y2K 평면(Flat) 스타일 및 채도 조정된 테마 변수 */
     :root {
       --bg-color: #008080;
       --card-bg: #c0c0c0;
@@ -36,12 +36,12 @@
       --bg-color: #1a1a1a;
       --card-bg: #2d2d2d;
       --card-sub-bg: #3a3a3a;
-      --text-color: #00ff66;
-      --border-color: #00ff66;
-      --accent-color: #ff007f;
+      --text-color: #5cdb95; /* 형광 그린 채도 하향: 눈이 편안한 톤 */
+      --border-color: #5cdb95;
+      --accent-color: #d63484; /* 형광 핑크 채도 하향 */
       --accent-text: #ffffff;
       --input-bg: #121212;
-      --window-title-bg: #ff007f;
+      --window-title-bg: #d63484;
     }
 
     [data-theme="emerald"] {
@@ -68,16 +68,17 @@
       --window-title-bg: #800000;
     }
 
+    /* 네온 테마 채도 낮춤 (Soft Cyber Neon) */
     [data-theme="cyber"] {
-      --bg-color: #000033;
-      --card-bg: #111144;
-      --card-sub-bg: #222266;
-      --text-color: #00ffff;
-      --border-color: #00ffff;
-      --accent-color: #ff00ff;
+      --bg-color: #161925;
+      --card-bg: #232738;
+      --card-sub-bg: #2d3247;
+      --text-color: #70e0d6; /* 쨍한 시안 -> 소프트 시안 */
+      --border-color: #70e0d6;
+      --accent-color: #c77dff; /* 쨍한 핑크네온 -> 톤다운 마젠타/보라 */
       --accent-text: #ffffff;
-      --input-bg: #000022;
-      --window-title-bg: #ff00ff;
+      --input-bg: #10121a;
+      --window-title-bg: #c77dff;
     }
 
     [data-theme="pastel"] {
@@ -90,6 +91,32 @@
       --accent-text: #ffffff;
       --input-bg: #ffffff;
       --window-title-bg: #ba55d3;
+    }
+
+    /* 신규 추가 테마 1: 사이버 매트릭스 (Soft Green Neon) */
+    [data-theme="matrix"] {
+      --bg-color: #0d1b1e;
+      --card-bg: #162a2d;
+      --card-sub-bg: #1f3a3e;
+      --text-color: #80ed99;
+      --border-color: #57cc99;
+      --accent-color: #38a3a5;
+      --accent-text: #ffffff;
+      --input-bg: #081214;
+      --window-title-bg: #22577a;
+    }
+
+    /* 신규 추가 테마 2: Y2K 버블검 파스텔 (Y2K Bubblegum) */
+    [data-theme="bubblegum"] {
+      --bg-color: #ffcbf2;
+      --card-bg: #fde2e4;
+      --card-sub-bg: #ffffff;
+      --text-color: #5c3d51;
+      --border-color: #8e5572;
+      --accent-color: #a3a3f5;
+      --accent-text: #ffffff;
+      --input-bg: #ffffff;
+      --window-title-bg: #a3a3f5;
     }
 
     * {
@@ -105,7 +132,6 @@
       padding: 15px;
     }
 
-    /* 평면적인 Y2K 메인 프레임 */
     .container {
       max-width: 1000px;
       margin: 0 auto;
@@ -151,7 +177,6 @@
       outline: none;
     }
 
-    /* 평면(Flat) 버튼 스타일 */
     .tab-container {
       display: flex;
       gap: 4px;
@@ -210,7 +235,6 @@
       gap: 12px;
     }
 
-    /* 평면 카드 패널 */
     .card {
       border: 1px solid var(--border-color);
       background: var(--card-sub-bg);
@@ -391,8 +415,10 @@
         <option value="dark">Dark Matrix</option>
         <option value="emerald">Emerald 98</option>
         <option value="sunset">Crimson Retro</option>
-        <option value="cyber">Cyber Pink</option>
+        <option value="cyber">Soft Cyber Neon</option>
         <option value="pastel">Pastel Violet</option>
+        <option value="matrix">Cyber Matrix (NEW)</option>
+        <option value="bubblegum">Y2K Bubblegum (NEW)</option>
       </select>
     </div>
   </header>
@@ -458,7 +484,7 @@
             <ul>
               <li><b>나만의 세상 만들기</b>: 메인 탭 선택 시 하단 서브 탭을 통해 [세계관 생성]과 [캐릭터 설정]을 손쉽게 이동할 수 있습니다.</li>
               <li><b>유연한 옵션 구성</b>: '세계관 생성' 탭에서만 장르를 지정하며, 나머지 기능에서는 설정한 세계관에 맞춰 자유롭게 작성합니다.</li>
-              <li><b>테마 및 프로필 설정</b>: 우측 상단에서 6가지 테마를 전환할 수 있으며, 프로필 이미지(파일/URL) 및 Fit 모드를 직접 설정할 수 있습니다.</li>
+              <li><b>테마 및 프로필 설정</b>: 우측 상단에서 8가지 테마를 전환할 수 있으며, 프로필 이미지(파일/URL) 및 Fit 모드를 직접 설정할 수 있습니다.</li>
               <li><b>메모장 기능</b>: 사이드바 메모장에 작성한 내용은 브라우저에 자동 저장됩니다.</li>
             </ul>
           </div>
