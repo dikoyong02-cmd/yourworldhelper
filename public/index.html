@@ -5,10 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Your World Helper - Y2K Edition</title>
   <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Gaegu:wght@400;700&display=swap" rel="stylesheet">
   <style>
     /* Y2K 평면(Flat) 스타일 및 테마 변수 */
     :root {
@@ -22,6 +18,11 @@
       --input-bg: #ffffff;
       --window-title-bg: #000080;
       --footer-text: #404040;
+      
+      /* 캔버스 테마 변수 (기본: Classic) */
+      --canvas-bg: #004d4d;
+      --canvas-grid: rgba(255, 255, 255, 0.1);
+      --canvas-frame: #000080;
     }
 
     [data-theme="classic"] {
@@ -29,5 +30,1110 @@
       --card-bg: #c0c0c0;
       --card-sub-bg: #d4d0c8;
       --text-color: #000000;
-      --border
+      --border-color: #000000;
+      --accent-color: #000080;
+      --accent-text: #ffffff;
+      --input-bg: #ffffff;
+      --window-title-bg: #000080;
+      --canvas-bg: #0b3c3c;
+      --canvas-grid: rgba(255, 255, 255, 0.12);
+      --canvas-frame: #000080;
+    }
 
+    [data-theme="dark"] {
+      --bg-color: #1a1a1a;
+      --card-bg: #2d2d2d;
+      --card-sub-bg: #3a3a3a;
+      --text-color: #5cdb95;
+      --border-color: #5cdb95;
+      --accent-color: #d63484;
+      --accent-text: #ffffff;
+      --input-bg: #121212;
+      --window-title-bg: #d63484;
+      --canvas-bg: #121212;
+      --canvas-grid: rgba(92, 219, 149, 0.15);
+      --canvas-frame: #d63484;
+    }
+
+    [data-theme="emerald"] {
+      --bg-color: #004d40;
+      --card-bg: #b2dfdb;
+      --card-sub-bg: #e0f2f1;
+      --text-color: #00251a;
+      --border-color: #00251a;
+      --accent-color: #00796b;
+      --accent-text: #ffffff;
+      --input-bg: #ffffff;
+      --window-title-bg: #004d40;
+      --canvas-bg: #00332c;
+      --canvas-grid: rgba(178, 223, 219, 0.2);
+      --canvas-frame: #004d40;
+    }
+
+    [data-theme="sunset"] {
+      --bg-color: #800000;
+      --card-bg: #ffcca8;
+      --card-sub-bg: #ffe0cc;
+      --text-color: #4a0000;
+      --border-color: #4a0000;
+      --accent-color: #d32f2f;
+      --accent-text: #ffffff;
+      --input-bg: #ffffff;
+      --window-title-bg: #800000;
+      --canvas-bg: #3a0000;
+      --canvas-grid: rgba(255, 204, 168, 0.2);
+      --canvas-frame: #800000;
+    }
+
+    [data-theme="cyber"] {
+      --bg-color: #161925;
+      --card-bg: #232738;
+      --card-sub-bg: #2d3247;
+      --text-color: #70e0d6;
+      --border-color: #70e0d6;
+      --accent-color: #c77dff;
+      --accent-text: #ffffff;
+      --input-bg: #10121a;
+      --window-title-bg: #c77dff;
+      --canvas-bg: #10121a;
+      --canvas-grid: rgba(112, 224, 214, 0.2);
+      --canvas-frame: #c77dff;
+    }
+
+    [data-theme="pastel"] {
+      --bg-color: #d8bfd8;
+      --card-bg: #f5e6f5;
+      --card-sub-bg: #ffffff;
+      --text-color: #4b0082;
+      --border-color: #4b0082;
+      --accent-color: #ba55d3;
+      --accent-text: #ffffff;
+      --input-bg: #ffffff;
+      --window-title-bg: #ba55d3;
+      --canvas-bg: #faf0fa;
+      --canvas-grid: rgba(75, 0, 130, 0.12);
+      --canvas-frame: #ba55d3;
+    }
+
+    [data-theme="matrix"] {
+      --bg-color: #0d1b1e;
+      --card-bg: #162a2d;
+      --card-sub-bg: #1f3a3e;
+      --text-color: #80ed99;
+      --border-color: #57cc99;
+      --accent-color: #38a3a5;
+      --accent-text: #ffffff;
+      --input-bg: #081214;
+      --window-title-bg: #22577a;
+      --canvas-bg: #050b0c;
+      --canvas-grid: rgba(128, 237, 153, 0.2);
+      --canvas-frame: #38a3a5;
+    }
+
+    [data-theme="bubblegum"] {
+      --bg-color: #ffcbf2;
+      --card-bg: #fde2e4;
+      --card-sub-bg: #ffffff;
+      --text-color: #5c3d51;
+      --border-color: #8e5572;
+      --accent-color: #a3a3f5;
+      --accent-text: #ffffff;
+      --input-bg: #ffffff;
+      --window-title-bg: #a3a3f5;
+      --canvas-bg: #fff5fa;
+      --canvas-grid: rgba(142, 85, 114, 0.15);
+      --canvas-frame: #a3a3f5;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Tahoma', 'Dotum', '굴림', sans-serif;
+    }
+
+    body {
+      background-color: var(--bg-color);
+      color: var(--text-color);
+      padding: 15px;
+    }
+
+    .container {
+      max-width: 1000px;
+      margin: 0 auto;
+      background: var(--card-bg);
+      border: 2px solid var(--border-color);
+      padding: 10px;
+      box-shadow: 4px 4px 0px #000000;
+    }
+
+    header {
+      background: var(--window-title-bg);
+      padding: 6px 10px;
+      margin-bottom: 12px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 10px;
+      border: 1px solid var(--border-color);
+    }
+
+    header h1 {
+      font-size: 14px;
+      font-weight: bold;
+      color: #ffffff;
+      letter-spacing: 1px;
+    }
+
+    .theme-selector-box {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      color: #ffffff;
+      font-size: 11px;
+    }
+
+    .theme-selector-box select {
+      padding: 3px 6px;
+      font-size: 11px;
+      border: 1px solid var(--border-color);
+      background-color: var(--input-bg);
+      color: var(--text-color);
+      outline: none;
+    }
+
+    .tab-btn, 
+    .sub-tab-btn, 
+    button.primary-btn, 
+    .profile-btn,
+    .board-tool-btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      height: 28px;
+      padding: 0 12px;
+      border: 1px solid var(--border-color);
+      background: var(--card-bg);
+      color: var(--text-color);
+      font-size: 11px;
+      font-weight: bold;
+      text-align: center;
+      cursor: pointer;
+      outline: none;
+      box-sizing: border-box;
+      transition: background-color 0.1s, color 0.1s;
+    }
+
+    .tab-btn:active, 
+    .sub-tab-btn:active, 
+    button.primary-btn:active, 
+    .profile-btn:active,
+    .board-tool-btn:active {
+      background: var(--accent-color) !important;
+      color: var(--accent-text) !important;
+    }
+
+    .tab-btn.active, 
+    .sub-tab-btn.active,
+    .board-tool-btn.active {
+      background: var(--accent-color);
+      color: var(--accent-text);
+    }
+
+    button.primary-btn {
+      width: 100%;
+    }
+
+    .profile-btn {
+      width: 100%;
+    }
+
+    .tab-container {
+      display: flex;
+      gap: 4px;
+      margin-bottom: 8px;
+      flex-wrap: wrap;
+    }
+
+    .sub-tab-container {
+      display: flex;
+      gap: 4px;
+      margin-bottom: 12px;
+      padding-left: 2px;
+    }
+
+    main {
+      display: grid;
+      grid-template-columns: 1fr 260px;
+      gap: 12px;
+    }
+
+    .content-area {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .card {
+      border: 1px solid var(--border-color);
+      background: var(--card-sub-bg);
+      padding: 12px;
+    }
+
+    .card-title {
+      font-size: 12px;
+      font-weight: bold;
+      margin-bottom: 10px;
+      background: var(--accent-color);
+      color: var(--accent-text);
+      padding: 4px 8px;
+      border: 1px solid var(--border-color);
+    }
+
+    .form-group {
+      margin-bottom: 10px;
+    }
+
+    .form-group label {
+      display: block;
+      font-size: 11px;
+      font-weight: bold;
+      margin-bottom: 4px;
+    }
+
+    .slider-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .slider-desc {
+      font-size: 11px;
+      font-weight: normal;
+      color: var(--accent-color);
+    }
+
+    input[type="range"] {
+      width: 100%;
+      height: 6px;
+      background: var(--input-bg);
+      border: 1px solid var(--border-color);
+      outline: none;
+      accent-color: var(--accent-color);
+      cursor: pointer;
+    }
+
+    input[type="text"], select, textarea {
+      width: 100%;
+      border: 1px solid var(--border-color);
+      padding: 6px;
+      font-size: 12px;
+      background: var(--input-bg);
+      color: var(--text-color);
+      outline: none;
+    }
+
+    textarea {
+      height: 80px;
+      resize: vertical;
+    }
+
+    .result-box {
+      min-height: 160px;
+      background: var(--input-bg);
+      border: 1px solid var(--border-color);
+      padding: 10px;
+      font-size: 12px;
+      line-height: 1.5;
+    }
+
+    /* ---------------------------------------------------- */
+    /* 테마 연동형 캔버스 보드 커스텀 스타일 (칠판 느낌 제거) */
+    /* ---------------------------------------------------- */
+    .board-container {
+      position: relative;
+      width: 100%;
+      height: 480px;
+      background-color: var(--canvas-bg);
+      background-image: 
+        linear-gradient(var(--canvas-grid) 1px, transparent 1px),
+        linear-gradient(90deg, var(--canvas-grid) 1px, transparent 1px);
+      background-size: 20px 20px;
+      border: 2px solid var(--canvas-frame);
+      overflow: hidden;
+      user-select: none;
+    }
+
+    .board-toolbar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-bottom: 8px;
+      align-items: center;
+      justify-content: space-between;
+      background: var(--card-bg);
+      padding: 6px;
+      border: 1px solid var(--border-color);
+    }
+
+    .board-tool-group {
+      display: flex;
+      gap: 4px;
+      align-items: center;
+    }
+
+    .node-card {
+      position: absolute;
+      background: var(--card-sub-bg);
+      border: 1px solid var(--border-color);
+      padding: 6px;
+      width: 180px;
+      box-shadow: 2px 2px 0px rgba(0,0,0,0.3);
+      cursor: move;
+      z-index: 20;
+    }
+
+    .node-card.selected {
+      border: 2px solid var(--accent-color);
+    }
+
+    .node-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 4px;
+      padding-bottom: 2px;
+      border-bottom: 1px solid var(--border-color);
+    }
+
+    .node-header input {
+      font-weight: bold;
+      font-size: 11px;
+      padding: 2px;
+      border: none;
+      background: transparent;
+    }
+
+    .node-close-btn {
+      background: none;
+      border: none;
+      cursor: pointer;
+      font-size: 10px;
+      font-weight: bold;
+      color: var(--text-color);
+    }
+
+    sidebar {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .profile-card {
+      border: 1px solid var(--border-color);
+      padding: 12px;
+      background: var(--card-sub-bg);
+      text-align: center;
+    }
+
+    .profile-img-box {
+      width: 90px;
+      height: 90px;
+      border: 1px solid var(--border-color);
+      margin: 0 auto 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: var(--input-bg);
+      overflow: hidden;
+    }
+
+    .profile-img-box img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: none;
+    }
+
+    .image-mode-select {
+      margin-bottom: 6px;
+    }
+
+    .img-input-group {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .guide-box {
+      font-size: 11px;
+      line-height: 1.5;
+    }
+
+    .guide-section {
+      margin-bottom: 12px;
+      padding-bottom: 8px;
+      border-bottom: 1px dashed var(--border-color);
+    }
+
+    .guide-section:last-child {
+      border-bottom: none;
+      margin-bottom: 0;
+      padding-bottom: 0;
+    }
+
+    .guide-section-title {
+      font-weight: bold;
+      font-size: 11px;
+      margin-bottom: 4px;
+      text-decoration: underline;
+    }
+
+    .guide-box ul {
+      padding-left: 16px;
+    }
+
+    .guide-box li {
+      margin-bottom: 3px;
+    }
+
+    footer {
+      margin-top: 15px;
+      border-top: 1px solid var(--border-color);
+      padding-top: 8px;
+      text-align: center;
+      font-size: 11px;
+      color: var(--footer-text);
+    }
+
+    @media (max-width: 768px) {
+      main {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body data-theme="classic">
+
+<div class="container">
+  <header>
+    <h1>YOUR WORLD HELPER (v2.0)</h1>
+    
+    <div class="theme-selector-box">
+      <label for="themeSelect">COLOR THEME:</label>
+      <select id="themeSelect" onchange="changeTheme(this.value)">
+        <option value="classic">Classic Teal</option>
+        <option value="dark">Dark Matrix</option>
+        <option value="emerald">Emerald 98</option>
+        <option value="sunset">Crimson Retro</option>
+        <option value="cyber">Soft Cyber Neon</option>
+        <option value="pastel">Pastel Violet</option>
+        <option value="matrix">Cyber Matrix (NEW)</option>
+        <option value="bubblegum">Y2K Bubblegum (NEW)</option>
+      </select>
+    </div>
+  </header>
+
+  <div class="tab-container">
+    <button class="tab-btn active" id="myWorldBtn" onclick="selectMainTab('myWorld', this)">나만의 세상 만들기</button>
+    <button class="tab-btn" onclick="selectMainTab('relation', this)">관계도 & 스토리 캔버스</button>
+    <button class="tab-btn" onclick="selectMainTab('topic', this)">주제 선정</button>
+    <button class="tab-btn" onclick="selectMainTab('plot', this)">플롯/스토리</button>
+    <button class="tab-btn" onclick="selectMainTab('dialogue', this)">대사 생성</button>
+    <button class="tab-btn" onclick="selectMainTab('guide', this)">사용 가이드</button>
+  </div>
+
+  <div class="sub-tab-container" id="subTabContainer">
+    <button class="sub-tab-btn active" onclick="selectSubTab('world', this)">세계관 생성</button>
+    <button class="sub-tab-btn" onclick="selectSubTab('character', this)">캐릭터 설정</button>
+  </div>
+
+  <main>
+    <div class="content-area">
+      <section class="card" id="inputSection">
+        <div class="card-title" id="formTitle">세계관 설정 입력</div>
+        
+        <div class="form-group" id="genreGroup">
+          <label>장르 / 테마</label>
+          <select id="genreSelect">
+            <option value="판타지">판타지</option>
+            <option value="SF/사이버펑크">SF / 사이버펑크</option>
+            <option value="현대 로맨스">현대 로맨스</option>
+            <option value="미스터리/스릴러">미스터리 / 스릴러</option>
+            <option value="무협/시대극">무협 / 시대극</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label id="keywordLabel">핵심 키워드</label>
+          <input type="text" id="keywordInput" placeholder="예: 마법학교, 비밀 조직, 시간여행 등">
+        </div>
+
+        <div class="form-group">
+          <div class="slider-header">
+            <label for="aiLevelInput">AI 관여도 (창의성 Level)</label>
+            <span id="aiLevelDesc" class="slider-desc">Lv.3 보통 (적절한 디테일 추가)</span>
+          </div>
+          <input type="range" id="aiLevelInput" min="1" max="5" value="3" oninput="updateAiLevelDesc(this.value)">
+        </div>
+
+        <div class="form-group">
+          <label id="promptLabel">상세 요구사항 / 프롬프트 (선택)</label>
+          <textarea id="promptInput" placeholder="추가로 들어가야 할 세부 내용을 입력해 주세요..."></textarea>
+        </div>
+
+        <button type="button" class="primary-btn" onclick="generateContent()">[ 생성 실행 ]</button>
+      </section>
+
+      <section class="card" id="boardSection" style="display: none;">
+        <div class="card-title">RELATIONSHIP & STORY CANVAS</div>
+        
+        <div class="board-toolbar">
+          <div class="board-tool-group">
+            <button class="board-tool-btn active" id="tool-select" onclick="setBoardTool('select')">선택/이동</button>
+            <button class="board-tool-btn" id="tool-draw" onclick="setBoardTool('draw')">펜 드로잉</button>
+            <button class="board-tool-btn" id="tool-erase" onclick="setBoardTool('erase')">지우개</button>
+            <button class="board-tool-btn" id="tool-link" onclick="setBoardTool('link')">관계선 연결</button>
+          </div>
+
+          <div class="board-tool-group">
+            <button class="board-tool-btn" onclick="addBoardNode('text')">+ 카드 추가</button>
+            <label class="board-tool-btn" style="cursor: pointer;">
+              + 사진 추가
+              <input type="file" id="boardImgUpload" accept="image/*" style="display: none;" onchange="addBoardImage(event)">
+            </label>
+            <button class="board-tool-btn" onclick="exportBoardData()">파일 저장(.json)</button>
+            <label class="board-tool-btn" style="cursor: pointer;">
+              불러오기
+              <input type="file" accept=".json" style="display: none;" onchange="importBoardData(event)">
+            </label>
+          </div>
+        </div>
+
+        <div class="board-container" id="boardContainer">
+          <canvas id="drawingCanvas" style="position: absolute; inset: 0; z-index: 1;"></canvas>
+          <svg id="svgLayer" style="position: absolute; inset: 0; width: 100%; height: 100%; z-index: 2; pointer-events: none;"></svg>
+          <div id="nodesContainer" style="position: absolute; inset: 0; z-index: 3; pointer-events: none;"></div>
+        </div>
+
+        <div class="form-group" style="margin-top: 10px;">
+          <label>통합 스토리 서술 노트 (자동 저장됨)</label>
+          <textarea id="boardStoryText" placeholder="캔버스 상의 관계도를 기반으로 전체 이야기 흐름 및 사건 전개를 서술해 주세요..." style="height: 100px;" oninput="saveBoardState()"></textarea>
+        </div>
+      </section>
+
+      <article class="card" id="resultSection">
+        <div class="card-title">생성 결과</div>
+        <div id="resultOutput" class="result-box">결과가 여기에 표시됩니다.</div>
+      </article>
+
+      <section class="card" id="guideSection" style="display: none;">
+        <div class="card-title">SYSTEM MANUAL</div>
+        <div class="guide-box">
+          <div class="guide-section">
+            <div class="guide-section-title">SECTION 1. 테마 연동 스토리 캔버스</div>
+            <ul>
+              <li><b>칠판 디자인 탈피</b>: 선택한 컬러 테마(Teal, Matrix, Pastel 등)에 맞춰 캔버스 배경 및 요소 색상이 자동으로 변경됩니다.</li>
+              <li><b>자동 저장 및 파일 내보내기</b>: 캔버스 작업 내용과 서술 노트는 브라우저에 임시 저장되며, JSON 파일로 저장/불러오기가 가능합니다.</li>
+            </ul>
+          </div>
+          <div class="guide-section">
+            <div class="guide-section-title">SECTION 2. AI 관여도 레벨 안내</div>
+            <ul>
+              <li><b>Lv.1~Lv.5 슬라이더</b>: 최소 다듬기부터 파격적인 스토리 확장까지 AI 개입 수준을 조절할 수 있습니다.</li>
+            </ul>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <sidebar>
+      <div class="profile-card">
+        <div class="card-title">USER PROFILE</div>
+        <div class="profile-img-box">
+          <img id="profilePreview" src="" alt="프로필 사진">
+          <div id="profilePlaceholder" style="font-size: 11px;">NO IMAGE</div>
+        </div>
+        <div style="font-weight: bold; font-size: 12px; margin-bottom: 6px;">User_01</div>
+        <div class="image-mode-select">
+          <select id="fitModeSelect" onchange="changeImageFitMode(this.value)" style="font-size: 10px; padding: 2px;">
+            <option value="cover">Fit: Cover</option>
+            <option value="contain">Fit: Contain</option>
+          </select>
+        </div>
+        <div class="img-input-group">
+          <input type="file" id="profileInput" accept="image/*" style="display: none;" onchange="loadProfileImageFromFile(event)">
+          <button type="button" class="profile-btn" onclick="document.getElementById('profileInput').click()">파일 선택</button>
+          <button type="button" class="profile-btn" onclick="promptImageUrl()">URL 입력</button>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">MEMO PAD</div>
+        <textarea id="memoInput" placeholder="메모를 입력하세요..." style="height: 110px; font-size: 11px;" oninput="saveMemo(this.value)"></textarea>
+      </div>
+    </sidebar>
+  </main>
+
+  <footer>
+    <p>Copyright (c) 2026 yourworldhelper. All rights reserved.</p>
+  </footer>
+</div>
+
+<script>
+  let currentMainTab = 'myWorld';
+  let currentSubTab = 'world';
+
+  // Board Canvas Variables
+  let boardTool = 'select';
+  let isDrawing = false;
+  let lastX = 0, lastY = 0;
+  let boardNodes = [];
+  let boardLinks = [];
+  let selectedNodeId = null;
+  let linkStartNodeId = null;
+
+  const canvas = document.getElementById('drawingCanvas');
+  const ctx = canvas.getContext('2d');
+
+  const aiLevelDescriptions = {
+    "1": "Lv.1 최소 (입력 내용 및 키워드 유지, 다듬기)",
+    "2": "Lv.2 절제 (약간의 설정 보완)",
+    "3": "Lv.3 보통 (적절한 디테일 추가)",
+    "4": "Lv.4 높음 (창의적 요소 적극 추가)",
+    "5": "Lv.5 최대 (자유롭고 파격적인 스토리 확장)"
+  };
+
+  window.addEventListener('DOMContentLoaded', () => {
+    const savedTheme = localStorage.getItem('app_theme') || 'classic';
+    document.getElementById('themeSelect').value = savedTheme;
+    changeTheme(savedTheme);
+
+    const savedImg = localStorage.getItem('user_profile_img');
+    if (savedImg) showImage(savedImg);
+
+    const savedFitMode = localStorage.getItem('user_profile_fit') || 'cover';
+    document.getElementById('fitModeSelect').value = savedFitMode;
+    changeImageFitMode(savedFitMode);
+
+    const savedMemo = localStorage.getItem('user_memo');
+    if (savedMemo) document.getElementById('memoInput').value = savedMemo;
+
+    initCanvas();
+    loadBoardState();
+  });
+
+  function changeTheme(themeName) {
+    document.body.setAttribute('data-theme', themeName);
+    localStorage.setItem('app_theme', themeName);
+    renderBoardLinks();
+  }
+
+  function updateAiLevelDesc(val) {
+    document.getElementById('aiLevelDesc').innerText = aiLevelDescriptions[val];
+  }
+
+  function selectMainTab(tabType, element) {
+    currentMainTab = tabType;
+    document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+    element.classList.add('active');
+
+    const subTabContainer = document.getElementById('subTabContainer');
+    const inputSection = document.getElementById('inputSection');
+    const boardSection = document.getElementById('boardSection');
+    const resultSection = document.getElementById('resultSection');
+    const guideSection = document.getElementById('guideSection');
+
+    if (tabType === 'myWorld') {
+      subTabContainer.style.display = 'flex';
+      inputSection.style.display = 'block';
+      boardSection.style.display = 'none';
+      resultSection.style.display = 'block';
+      guideSection.style.display = 'none';
+      selectSubTab(currentSubTab, document.querySelector('.sub-tab-btn.active'));
+    } else if (tabType === 'relation') {
+      subTabContainer.style.display = 'none';
+      inputSection.style.display = 'none';
+      boardSection.style.display = 'block';
+      resultSection.style.display = 'none';
+      guideSection.style.display = 'none';
+      resizeCanvas();
+    } else if (tabType === 'guide') {
+      subTabContainer.style.display = 'none';
+      inputSection.style.display = 'none';
+      boardSection.style.display = 'none';
+      resultSection.style.display = 'none';
+      guideSection.style.display = 'block';
+    } else {
+      subTabContainer.style.display = 'none';
+      inputSection.style.display = 'block';
+      boardSection.style.display = 'none';
+      resultSection.style.display = 'block';
+      guideSection.style.display = 'none';
+      document.getElementById('genreGroup').style.display = 'none';
+    }
+  }
+
+  function selectSubTab(subType, element) {
+    currentSubTab = subType;
+    document.querySelectorAll('.sub-tab-btn').forEach(btn => btn.classList.remove('active'));
+    if (element) element.classList.add('active');
+
+    if (subType === 'world') {
+      document.getElementById('genreGroup').style.display = 'block';
+      updateFormText('세계관 설정 입력', '예: 마법학교, 비밀 조직 등', '세부 내용을 입력해 주세요...');
+    } else {
+      document.getElementById('genreGroup').style.display = 'none';
+      updateFormText('캐릭터 설정 입력', '예: 주연 이름, 역할 등', '캐릭터 외형 및 배경 스토리를 입력해 주세요...');
+    }
+  }
+
+  function updateFormText(title, keyPlaceholder, promptPlaceholder) {
+    document.getElementById('formTitle').innerText = title;
+    document.getElementById('keywordInput').placeholder = keyPlaceholder;
+    document.getElementById('promptInput').placeholder = promptPlaceholder;
+  }
+
+  /* ---------------- CANVAS & BOARD SYSTEM ---------------- */
+  function initCanvas() {
+    canvas.addEventListener('mousedown', startDrawing);
+    canvas.addEventListener('mousemove', draw);
+    canvas.addEventListener('mouseup', stopDrawing);
+    canvas.addEventListener('mouseleave', stopDrawing);
+  }
+
+  function resizeCanvas() {
+    const container = document.getElementById('boardContainer');
+    canvas.width = container.clientWidth;
+    canvas.height = container.clientHeight;
+  }
+
+  function setBoardTool(tool) {
+    boardTool = tool;
+    document.querySelectorAll('.board-tool-btn').forEach(b => {
+      if (b.id && b.id.startsWith('tool-')) b.classList.remove('active');
+    });
+    const activeBtn = document.getElementById(`tool-${tool}`);
+    if (activeBtn) activeBtn.classList.add('active');
+  }
+
+  function startDrawing(e) {
+    if (boardTool !== 'draw' && boardTool !== 'erase') return;
+    isDrawing = true;
+    const rect = canvas.getBoundingClientRect();
+    lastX = e.clientX - rect.left;
+    lastY = e.clientY - rect.top;
+  }
+
+  function draw(e) {
+    if (!isDrawing) return;
+    const rect = canvas.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
+
+    ctx.beginPath();
+    ctx.moveTo(lastX, lastY);
+    ctx.lineTo(x, y);
+
+    const style = getComputedStyle(document.body);
+    const textColor = style.getPropertyValue('--text-color').trim() || '#000000';
+
+    if (boardTool === 'draw') {
+      ctx.strokeStyle = textColor;
+      ctx.lineWidth = 2;
+      ctx.globalCompositeOperation = 'source-over';
+    } else if (boardTool === 'erase') {
+      ctx.lineWidth = 20;
+      ctx.globalCompositeOperation = 'destination-out';
+    }
+
+    ctx.stroke();
+    lastX = x;
+    lastY = y;
+  }
+
+  function stopDrawing() {
+    if (isDrawing) {
+      isDrawing = false;
+      saveBoardState();
+    }
+  }
+
+  function addBoardNode(type, x = 40, y = 40, title = '카드 요소', desc = '') {
+    const id = 'node_' + Date.now();
+    boardNodes.push({ id, type, x, y, title, desc });
+    renderBoardNodes();
+    saveBoardState();
+  }
+
+  function addBoardImage(e) {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = function(evt) {
+      const id = 'node_' + Date.now();
+      boardNodes.push({ id, type: 'image', x: 60, y: 60, title: file.name, imgSrc: evt.target.result });
+      renderBoardNodes();
+      saveBoardState();
+    };
+    reader.readAsDataURL(file);
+    e.target.value = '';
+  }
+
+  function renderBoardNodes() {
+    const container = document.getElementById('nodesContainer');
+    container.innerHTML = '';
+
+    boardNodes.forEach(node => {
+      const card = document.createElement('div');
+      card.className = `node-card ${selectedNodeId === node.id ? 'selected' : ''}`;
+      card.style.left = node.x + 'px';
+      card.style.top = node.y + 'px';
+
+      card.onmousedown = (e) => onNodeMouseDown(e, node.id);
+
+      let bodyHtml = '';
+      if (node.type === 'text') {
+        bodyHtml = `<textarea onchange="updateNodeDesc('${node.id}', this.value)" style="height: 60px; font-size: 11px;">${node.desc || ''}</textarea>`;
+      } else if (node.type === 'image') {
+        bodyHtml = `<img src="${node.imgSrc}" style="width: 100%; height: 90px; object-fit: cover;">`;
+      }
+
+      card.innerHTML = `
+        <div class="node-header">
+          <input type="text" value="${node.title}" onchange="updateNodeTitle('${node.id}', this.value)">
+          <button class="node-close-btn" onclick="deleteNode('${node.id}')">X</button>
+        </div>
+        ${bodyHtml}
+      `;
+
+      container.appendChild(card);
+    });
+    renderBoardLinks();
+  }
+
+  let dragNodeId = null, dragOffsetX = 0, dragOffsetY = 0;
+
+  function onNodeMouseDown(e, id) {
+    if (boardTool === 'link') {
+      handleLinkNodes(id);
+      return;
+    }
+    if (boardTool !== 'select') return;
+
+    dragNodeId = id;
+    selectedNodeId = id;
+    const node = boardNodes.find(n => n.id === id);
+    dragOffsetX = e.clientX - node.x;
+    dragOffsetY = e.clientY - node.y;
+
+    document.addEventListener('mousemove', onNodeMouseMove);
+    document.addEventListener('mouseup', onNodeMouseUp);
+    renderBoardNodes();
+  }
+
+  function onNodeMouseMove(e) {
+    if (!dragNodeId) return;
+    const node = boardNodes.find(n => n.id === dragNodeId);
+    if (node) {
+      node.x = e.clientX - dragOffsetX;
+      node.y = e.clientY - dragOffsetY;
+      renderBoardNodes();
+    }
+  }
+
+  function onNodeMouseUp() {
+    dragNodeId = null;
+    document.removeEventListener('mousemove', onNodeMouseMove);
+    document.removeEventListener('mouseup', onNodeMouseUp);
+    saveBoardState();
+  }
+
+  function handleLinkNodes(id) {
+    if (!linkStartNodeId) {
+      linkStartNodeId = id;
+    } else if (linkStartNodeId !== id) {
+      const label = prompt('관계 레이블 입력:', '연결');
+      boardLinks.push({ id: 'link_' + Date.now(), from: linkStartNodeId, to: id, label: label || '' });
+      linkStartNodeId = null;
+      renderBoardNodes();
+      saveBoardState();
+    } else {
+      linkStartNodeId = null;
+    }
+  }
+
+  function renderBoardLinks() {
+    const svg = document.getElementById('svgLayer');
+    svg.innerHTML = '';
+
+    const style = getComputedStyle(document.body);
+    const strokeColor = style.getPropertyValue('--border-color').trim() || '#000000';
+
+    boardLinks.forEach(link => {
+      const fromNode = boardNodes.find(n => n.id === link.from);
+      const toNode = boardNodes.find(n => n.id === link.to);
+      if (!fromNode || !toNode) return;
+
+      const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+      line.setAttribute('x1', fromNode.x + 90);
+      line.setAttribute('y1', fromNode.y + 40);
+      line.setAttribute('x2', toNode.x + 90);
+      line.setAttribute('y2', toNode.y + 40);
+      line.setAttribute('stroke', strokeColor);
+      line.setAttribute('stroke-width', '2');
+      line.setAttribute('stroke-dasharray', '4,4');
+
+      svg.appendChild(line);
+    });
+  }
+
+  function updateNodeTitle(id, val) {
+    const node = boardNodes.find(n => n.id === id);
+    if (node) { node.title = val; saveBoardState(); }
+  }
+
+  function updateNodeDesc(id, val) {
+    const node = boardNodes.find(n => n.id === id);
+    if (node) { node.desc = val; saveBoardState(); }
+  }
+
+  function deleteNode(id) {
+    boardNodes = boardNodes.filter(n => n.id !== id);
+    boardLinks = boardLinks.filter(l => l.from !== id && l.to !== id);
+    renderBoardNodes();
+    saveBoardState();
+  }
+
+  function saveBoardState() {
+    const state = {
+      nodes: boardNodes,
+      links: boardLinks,
+      story: document.getElementById('boardStoryText').value,
+      canvasImg: canvas.toDataURL()
+    };
+    localStorage.setItem('user_board_state', JSON.stringify(state));
+  }
+
+  function loadBoardState() {
+    const saved = localStorage.getItem('user_board_state');
+    if (!saved) return;
+    try {
+      const data = JSON.parse(saved);
+      boardNodes = data.nodes || [];
+      boardLinks = data.links || [];
+      document.getElementById('boardStoryText').value = data.story || '';
+
+      if (data.canvasImg) {
+        const img = new Image();
+        img.onload = () => ctx.drawImage(img, 0, 0);
+        img.src = data.canvasImg;
+      }
+      renderBoardNodes();
+    } catch (e) {
+      console.error(e);
+    }
+  }
+
+  function exportBoardData() {
+    saveBoardState();
+    const dataStr = localStorage.getItem('user_board_state');
+    const blob = new Blob([dataStr], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'story_canvas_data.json';
+    a.click();
+    URL.revokeObjectURL(url);
+  }
+
+  function importBoardData(e) {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = function(evt) {
+      try {
+        const data = JSON.parse(evt.target.result);
+        boardNodes = data.nodes || [];
+        boardLinks = data.links || [];
+        document.getElementById('boardStoryText').value = data.story || '';
+        renderBoardNodes();
+        saveBoardState();
+      } catch (err) {
+        alert('올바르지 않은 JSON 파일입니다.');
+      }
+    };
+    reader.readAsText(file);
+    e.target.value = '';
+  }
+
+  /* ---------------- COMMON UTILS ---------------- */
+  function loadProfileImageFromFile(event) {
+    const file = event.target.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        showImage(e.target.result);
+        localStorage.setItem('user_profile_img', e.target.result);
+      };
+      reader.readAsDataURL(file);
+    }
+  }
+
+  function promptImageUrl() {
+    const url = prompt('이미지 URL을 입력하세요:');
+    if (url) {
+      showImage(url);
+      localStorage.setItem('user_profile_img', url);
+    }
+  }
+
+  function showImage(src) {
+    const preview = document.getElementById('profilePreview');
+    const placeholder = document.getElementById('profilePlaceholder');
+    preview.src = src;
+    preview.style.display = 'block';
+    placeholder.style.display = 'none';
+  }
+
+  function changeImageFitMode(mode) {
+    document.getElementById('profilePreview').style.objectFit = mode;
+    localStorage.setItem('user_profile_fit', mode);
+  }
+
+  function saveMemo(text) {
+    localStorage.setItem('user_memo', text);
+  }
+
+  async function generateContent() {
+    const keyword = document.getElementById('keywordInput').value;
+    const prompt = document.getElementById('promptInput').value;
+    const aiLevel = document.getElementById('aiLevelInput').value;
+    const outputDiv = document.getElementById('resultOutput');
+
+    if (!keyword.trim() && !prompt.trim()) {
+      alert('키워드를 입력해 주세요!');
+      return;
+    }
+
+    outputDiv.innerHTML = '생성 중...';
+
+    try {
+      const response = await fetch('/api/generate', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ prompt: `[키워드: ${keyword}] [Lv.${aiLevel}] ${prompt}` })
+      });
+      const data = await response.json();
+      outputDiv.innerHTML = data.result ? marked.parse(data.result) : '오류 발생';
+    } catch (err) {
+      outputDiv.innerHTML = '통신 오류가 발생했습니다.';
+    }
+  }
+</script>
+
+</body>
+</html>
