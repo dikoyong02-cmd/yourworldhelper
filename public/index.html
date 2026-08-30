@@ -237,12 +237,24 @@
       color: var(--accent-text) !important;
     }
 
+    .tab-btn:active svg,
+    .sub-tab-btn:active svg,
+    .board-tool-btn:active svg {
+      stroke: var(--accent-text) !important;
+    }
+
     .tab-btn.active, 
     .sub-tab-btn.active,
     .board-tool-btn.active,
     .side-nav-btn.active {
       background: var(--accent-color);
       color: var(--accent-text);
+    }
+
+    .tab-btn.active svg,
+    .sub-tab-btn.active svg,
+    .board-tool-btn.active svg {
+      stroke: var(--accent-text);
     }
 
     .icon-btn {
@@ -623,6 +635,7 @@
     </div>
   </header>
 
+  <!-- 메인 탭 영역 -->
   <div class="tab-container">
     <button class="tab-btn active" id="myWorldBtn" onclick="selectMainTab('myWorld', this)">나만의 세상 만들기</button>
     <button class="tab-btn" onclick="selectMainTab('topic', this)">주제 선정</button>
@@ -631,6 +644,7 @@
     <button class="tab-btn" onclick="selectMainTab('guide', this)">사용 가이드</button>
   </div>
 
+  <!-- 서브 탭 영역 -->
   <div class="sub-tab-container" id="subTabContainer">
     <button class="sub-tab-btn active" onclick="selectSubTab('world', this)">세계관 생성</button>
     <button class="sub-tab-btn" onclick="selectSubTab('character', this)">캐릭터 설정</button>
@@ -638,6 +652,7 @@
 
   <main>
     <div class="content-area">
+      <!-- 1. 입력 Form Section -->
       <section class="card" id="inputSection">
         <div class="card-title" id="formTitle">세계관 설정 입력</div>
         
@@ -673,6 +688,7 @@
         <button type="button" class="primary-btn" onclick="generateContent()">[ 생성 실행 ]</button>
       </section>
 
+      <!-- 2. 관계도 & 스토리 캔버스 Section -->
       <section class="card" id="boardSection" style="display: none;">
         <div class="card-title">RELATIONSHIP & STORY CANVAS</div>
         
@@ -682,8 +698,22 @@
             <button class="board-tool-btn" id="tool-draw" onclick="setBoardTool('draw')">펜 드로잉</button>
             <button class="board-tool-btn" id="tool-erase" onclick="setBoardTool('erase')">지우개</button>
             <button class="board-tool-btn" id="tool-link" onclick="setBoardTool('link')">화살표 연결</button>
-            <button class="board-tool-btn icon-btn" id="tool-undo" onclick="undoCanvas()" title="되돌리기 (Ctrl+Z)">Ctrl+Z</button>
-            <button class="board-tool-btn icon-btn" id="tool-redo" onclick="redoCanvas()" title="다시하기 (Ctrl+Y)">Ctrl+Y</button>
+
+            <!-- 되돌리기 (Undo) SVG 아이콘 -->
+            <button class="board-tool-btn icon-btn" id="tool-undo" onclick="undoCanvas()" title="되돌리기 (Ctrl+Z)">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M9 14L4 9l5-5"/>
+                <path d="M4 9h10.5a5.5 5.5 0 0 1 5.5 5.5v0a5.5 5.5 0 0 1-5.5 5.5H11"/>
+              </svg>
+            </button>
+
+            <!-- 다시실행 (Redo) SVG 아이콘 -->
+            <button class="board-tool-btn icon-btn" id="tool-redo" onclick="redoCanvas()" title="다시하기 (Ctrl+Y)">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M15 14l5-5-5-5"/>
+                <path d="M20 9H9.5A5.5 5.5 0 0 0 4 14.5v0A5.5 5.5 0 0 0 9.5 20H13"/>
+              </svg>
+            </button>
           </div>
 
           <div class="board-tool-group">
@@ -721,18 +751,22 @@
         </div>
       </section>
 
+      <!-- 생성 결과 표시 영역 -->
       <article class="card" id="resultSection">
         <div class="card-title">생성 결과</div>
         <div id="resultOutput" class="result-box markdown-body">결과가 여기에 표시됩니다.</div>
       </article>
 
+      <!-- 3. 마크다운 적용 확장 매뉴얼 및 가이드 영역 -->
       <section class="card" id="guideSection" style="display: none;">
         <div class="card-title">SYSTEM MANUAL (사용 가이드)</div>
         <div class="markdown-body" id="guideContent"></div>
       </section>
     </div>
 
+    <!-- 우측 사이드바 -->
     <sidebar>
+      <!-- USER PROFILE CARD -->
       <div class="profile-card">
         <div class="card-title">USER PROFILE</div>
         <div class="profile-img-box">
@@ -753,6 +787,7 @@
         </div>
       </div>
 
+      <!-- SETTINGS CARD (명령어 설정) -->
       <div class="card">
         <div class="card-title">
           <span>SETTINGS (명령어 설정)</span>
@@ -815,6 +850,7 @@
         <textarea id="memoInput" placeholder="메모를 입력하세요..." style="height: 80px; font-size: 11px;" oninput="saveMemo(this.value)"></textarea>
       </div>
 
+      <!-- 우측 하단 관계도 & 스토리 캔버스 버튼 -->
       <button class="side-nav-btn" id="relationSideBtn" onclick="selectMainTab('relation', this)">
         ★ 관계도 & 스토리 캔버스
       </button>
@@ -838,7 +874,7 @@
 ### SECTION 2. 스토리 캔버스 및 칠판 기능
 * **페이지 전환**: 우측 사이드바 하단의 \`★ 관계도 & 스토리 캔버스\` 버튼 클릭 시 칠판 화면으로 이동합니다.
 * **터치 및 드로잉 지원**: 모바일/태블릿 PC 환경에서도 펜이나 손가락 터치 제스처로 스케치가 가능합니다.
-* **작업 되돌리기/다시실행**: 툴바의 \`Ctrl+Z\`, \`Ctrl+Y\` 버튼 또는 키보드 단축키를 사용할 수 있습니다.
+* **작업 되돌리기/다시실행**: 툴바의 화살표 버튼 또는 키보드 단축키(\`Ctrl+Z\`, \`Ctrl+Y\`)를 사용할 수 있습니다.
 * **노드 연결**: \`L (연결)\` 툴 선택 후 기준 카드와 대상 카드를 차례로 클릭하면 화살표 연결선이 추가됩니다.
 * **카드 관리**: \`+Card\`로 메모 카드를 생성하며, 우측 상단 \`X\` 버튼으로 삭제할 수 있습니다.
 
@@ -960,7 +996,6 @@
 
   /* ---------------- COMMAND SETTINGS LOGIC ---------------- */
   function applyCommandUI() {
-    // 상단 캔버스 버튼 이름은 한글로 고정하고, SETTINGS 입력창 값만 유지합니다.
     document.getElementById('cmd-draw').value = commandSettings.draw;
     document.getElementById('cmd-erase').value = commandSettings.erase;
     document.getElementById('cmd-select').value = commandSettings.select;
