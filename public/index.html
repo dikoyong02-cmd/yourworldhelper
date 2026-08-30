@@ -82,6 +82,10 @@
     .board-toolbar { display: flex; flex-wrap: wrap; gap: 4px; margin-bottom: 8px; align-items: center; justify-content: space-between; background: var(--card-bg); padding: 6px; border: 1px solid var(--border-color); }
     .board-tool-group { display: flex; gap: 4px; align-items: center; flex-wrap: wrap; }
 
+    /* 캔버스 위 오버레이 카드 및 이미지 요소 스타일 */
+    .canvas-node { position: absolute; background: var(--input-bg); border: 1px solid var(--border-color); padding: 6px; font-size: 11px; box-shadow: 2px 2px 0px rgba(0,0,0,0.2); cursor: move; user-select: none; }
+    .canvas-node img { max-width: 120px; max-height: 120px; display: block; pointer-events: none; }
+
     sidebar { display: flex; flex-direction: column; gap: 12px; }
     .profile-card { border: 1px solid var(--border-color); padding: 12px; background: var(--card-sub-bg); text-align: center; }
     .profile-img-box { width: 90px; height: 90px; border: 1px solid var(--border-color); margin: 0 auto 8px; display: flex; align-items: center; justify-content: center; background: var(--input-bg); overflow: hidden; }
@@ -157,23 +161,27 @@
         <button type="button" class="primary-btn" onclick="generateContent()">[ 생성 실행 ]</button>
       </section>
 
-      <!-- 2. 관계도 & 스토리 캔버스 (터치 지원 및 Undo/Redo 반영) -->
+      <!-- 2. 관계도 & 스토리 캔버스 (확장 툴바 적용) -->
       <section class="card" id="boardSection" style="display: none;">
         <div class="card-title">RELATIONSHIP & STORY CANVAS</div>
         <div class="board-toolbar">
           <div class="board-tool-group">
             <button class="board-tool-btn" id="tool-select" onclick="setBoardTool('select')">선택/이동</button>
             <button class="board-tool-btn active" id="tool-draw" onclick="setBoardTool('draw')">펜 드로잉</button>
+            <button class="board-tool-btn" id="tool-arrow" onclick="setBoardTool('arrow')">화살표</button>
             <button class="board-tool-btn" id="tool-erase" onclick="setBoardTool('erase')">지우개</button>
           </div>
           <div class="board-tool-group">
+            <button class="small-btn" onclick="addTextCard()">+ 카드 추가</button>
+            <button class="small-btn" onclick="document.getElementById('canvasImageInput').click()">+ 이미지 첨부</button>
+            <input type="file" id="canvasImageInput" accept="image/*" style="display:none;" onchange="addCanvasImage(event)">
             <button class="small-btn" onclick="undoCanvas()" title="되돌리기">↩</button>
             <button class="small-btn" onclick="redoCanvas()" title="다시실행">↪</button>
             <button class="small-btn" onclick="clearCanvasDrawing()">초기화</button>
           </div>
         </div>
         <div class="board-container" id="boardContainer">
-          <div class="board-viewport">
+          <div class="board-viewport" id="boardViewport">
             <canvas id="drawingCanvas"></canvas>
           </div>
         </div>
@@ -189,18 +197,31 @@
         <div id="resultOutput" class="result-box markdown-body">결과가 여기에 표시됩니다.</div>
       </article>
 
-      <!-- 4. 사용 가이드 영역 -->
+      <!-- 4. 확장 사용 가이드 영역 (기존 복원) -->
       <section class="card" id="guideSection" style="display: none;">
         <div class="card-title">SYSTEM MANUAL & USER GUIDE</div>
         <div class="result-box markdown-body" style="border: none;">
           <h3>Your World Helper v2.0 매뉴얼</h3>
-          <p>창작자를 위한 서포팅 툴입니다.</p>
+          <p>창작자를 위한 서포팅 및 스토리텔링 오프라인 워크스페이스입니다.</p>
           <hr>
-          <h4>1. 주요 사용 팁</h4>
+          <h4>1. 주요 기능 가이드</h4>
           <ul>
-            <li><strong>나만의 세상 만들기</strong>: 핵심 요구사항 및 키워드를 입력하여 스토리 설정집을 렌더링합니다.</li>
-            <li><strong>관계도 & 스토리 캔버스</strong>: 터치 및 펜 드로잉으로 관계도나 맵을 직접 시각화할 수 있습니다. ↩(Undo) / ↪(Redo) 아이콘으로 드로잉을 수정하세요.</li>
-            <li><strong>명령어 설정 (System Prompt)</strong>: 우측 SETTINGS에서 AI의 기본 서법 및 명령어를 자유롭게 지정할 수 있습니다.</li>
+            <li><strong>나만의 세상 만들기</strong>: 세계관, 캐릭터 설정 등 개별 탭의 요구사항과 키워드를 바탕으로 스토리 기획안을 자동 작성합니다.</li>
+            <li><strong>주제/플롯/대사 생성</strong>: 특정 서사 구조나 인물 대사 조합이 필요한 경우 해당 탭에서 맞춤 템플릿 생성이 가능합니다.</li>
+            <li><strong>관계도 & 스토리 캔버스</strong>: 펜 드로잉, 화살표 연결선, 텍스트 메모 카드, 사진/이미지 첨부를 활용해 관계도와 맵을 자유롭게 구상할 수 있습니다.</li>
+            <li><strong>AI 관여도 설정</strong>: 레벨(Lv.1~Lv.5)을 조정하여 입력 프롬프트의 반영률 및 생성 창의성 정도를 제어합니다.</li>
+          </ul>
+          <hr>
+          <h4>2. AI 생성결과 참고 및 수정 팁</h4>
+          <ul>
+            <li><strong>수정 및 보완 방식</strong>: 생성된 기획안 텍스트는 보완용 뼈대입니다. 마크다운 형식으로 렌더링되므로 결과를 복사하거나 본인의 구상에 맞춰 수정을 진행하세요.</li>
+            <li><strong>명령어 활용법 (Settings)</strong>: 우측 사이드바의 <i>SETTINGS</i>를 열어 AI의 말투, 서법, 상세 요구 가이드라인(System Prompt)을 지정하면 템플릿 생성 기준에 자동 반영됩니다.</li>
+          </ul>
+          <hr>
+          <h4>3. 주의사항</h4>
+          <ul>
+            <li>모든 작업 데이터(메모, 스토리 노트)는 사용 중인 브라우저 메모리에 유지됩니다. 필요시 복사하여 별도 보관하세요.</li>
+            <li>캔버스에 올려둔 카드나 이미지는 [선택/이동] 도구 모드에서 드래그하여 배치할 수 있습니다.</li>
           </ul>
         </div>
       </section>
@@ -219,7 +240,6 @@
         <input type="file" id="profileInput" accept="image/*" style="display: none;" onchange="loadProfileImageFromFile(event)">
       </div>
 
-      <!-- SETTINGS (명령어 / System Prompt 설정) -->
       <div class="card">
         <div class="card-title">
           <span>SETTINGS (명령어 설정)</span>
@@ -255,14 +275,16 @@
   let boardTool = 'draw';
   let isDrawing = false;
   let lastX = 0, lastY = 0;
+  let startX = 0, startY = 0;
 
-  // Undo / Redo 히스토리 스택
+  // Undo / Redo 스택
   let undoStack = [];
   let redoStack = [];
   const MAX_HISTORY = 20;
 
   const canvas = document.getElementById('drawingCanvas');
   const ctx = canvas.getContext('2d');
+  let canvasSnapshot = null;
 
   const aiLevelDescriptions = {
     "1": "Lv.1 최소 (원문 내용 유지)",
@@ -381,8 +403,13 @@
     saveState();
     isDrawing = true;
     const pos = getPos(e);
+    startX = pos.x;
+    startY = pos.y;
     lastX = pos.x;
     lastY = pos.y;
+    if (boardTool === 'arrow') {
+      canvasSnapshot = ctx.getImageData(0, 0, canvas.width, canvas.height);
+    }
   }
 
   function draw(e) {
@@ -390,16 +417,39 @@
     e.preventDefault();
     const pos = getPos(e);
 
+    if (boardTool === 'draw' || boardTool === 'erase') {
+      ctx.beginPath();
+      ctx.moveTo(lastX, lastY);
+      ctx.lineTo(pos.x, pos.y);
+      ctx.strokeStyle = boardTool === 'draw' ? '#8e5572' : '#ffffff';
+      ctx.lineWidth = boardTool === 'draw' ? 2 : 20;
+      ctx.lineCap = 'round';
+      ctx.stroke();
+      lastX = pos.x;
+      lastY = pos.y;
+    } else if (boardTool === 'arrow') {
+      ctx.putImageData(canvasSnapshot, 0, 0);
+      drawArrow(startX, startY, pos.x, pos.y);
+    }
+  }
+
+  function drawArrow(fromx, fromy, tox, toy) {
+    const headlen = 10;
+    const angle = Math.atan2(toy - fromy, tox - fromx);
     ctx.beginPath();
-    ctx.moveTo(lastX, lastY);
-    ctx.lineTo(pos.x, pos.y);
-    ctx.strokeStyle = boardTool === 'draw' ? '#8e5572' : '#ffffff';
-    ctx.lineWidth = boardTool === 'draw' ? 2 : 20;
-    ctx.lineCap = 'round';
+    ctx.moveTo(fromx, fromy);
+    ctx.lineTo(tox, toy);
+    ctx.strokeStyle = '#8e5572';
+    ctx.lineWidth = 2;
     ctx.stroke();
 
-    lastX = pos.x;
-    lastY = pos.y;
+    ctx.beginPath();
+    ctx.moveTo(tox, toy);
+    ctx.lineTo(tox - headlen * Math.cos(angle - Math.PI / 6), toy - headlen * Math.sin(angle - Math.PI / 6));
+    ctx.lineTo(tox - headlen * Math.cos(angle + Math.PI / 6), toy - headlen * Math.sin(angle + Math.PI / 6));
+    ctx.lineTo(tox, toy);
+    ctx.fillStyle = '#8e5572';
+    ctx.fill();
   }
 
   function stopDrawing() {
@@ -408,13 +458,11 @@
 
   function initCanvas() {
     resizeCanvas();
-    // 마우스 이벤트
     canvas.addEventListener('mousedown', startDrawing);
     canvas.addEventListener('mousemove', draw);
     canvas.addEventListener('mouseup', stopDrawing);
     canvas.addEventListener('mouseleave', stopDrawing);
 
-    // 모바일/태블릿 터치 이벤트 연동
     canvas.addEventListener('touchstart', startDrawing, { passive: false });
     canvas.addEventListener('touchmove', draw, { passive: false });
     canvas.addEventListener('touchend', stopDrawing);
@@ -437,6 +485,76 @@
   function clearCanvasDrawing() {
     saveState();
     ctx.clearRect(0, 0, canvas.width, canvas.height);
+    const viewport = document.getElementById('boardViewport');
+    document.querySelectorAll('.canvas-node').forEach(node => viewport.removeChild(node));
+  }
+
+  // 텍스트 카드를 캔버스에 추가
+  function addTextCard() {
+    const viewport = document.getElementById('boardViewport');
+    const card = document.createElement('div');
+    card.className = 'canvas-node';
+    card.style.left = '40px';
+    card.style.top = '40px';
+    card.innerHTML = `<div contenteditable="true" style="outline:none; min-width:80px; min-height:30px;">캐릭터/메모 카드</div>`;
+    makeDraggable(card);
+    viewport.appendChild(card);
+  }
+
+  // 이미지를 캔버스에 추가
+  function addCanvasImage(event) {
+    const file = event.target.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        const viewport = document.getElementById('boardViewport');
+        const card = document.createElement('div');
+        card.className = 'canvas-node';
+        card.style.left = '60px';
+        card.style.top = '60px';
+        card.innerHTML = `<img src="${e.target.result}" alt="카드 이미지">`;
+        makeDraggable(card);
+        viewport.appendChild(card);
+      };
+      reader.readAsDataURL(file);
+    }
+  }
+
+  // 캔버스 내 노드 드래그앤드롭 이동 처리
+  function makeDraggable(element) {
+    let posX = 0, posY = 0, initialX = 0, initialY = 0;
+    element.onmousedown = dragMouseDown;
+    element.ontouchstart = dragMouseDown;
+
+    function dragMouseDown(e) {
+      if (boardTool !== 'select') return;
+      const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+      const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+      initialX = clientX;
+      initialY = clientY;
+      document.onmouseup = closeDragElement;
+      document.onmousemove = elementDrag;
+      document.ontouchend = closeDragElement;
+      document.ontouchmove = elementDrag;
+    }
+
+    function elementDrag(e) {
+      const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+      const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+      posX = initialX - clientX;
+      posY = initialY - clientY;
+      initialX = clientX;
+      initialY = clientY;
+      element.style.top = (element.offsetTop - posY) + "px";
+      element.style.left = (element.offsetLeft - posX) + "px";
+    }
+
+    function closeDragElement() {
+      document.onmouseup = null;
+      document.onmousemove = null;
+      document.ontouchend = null;
+      document.ontouchmove = null;
+    }
   }
 
   function loadProfileImageFromFile(event) {
