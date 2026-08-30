@@ -1,850 +1,297 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>yourworldhelper - 창작 영감 도우미</title>
-    <!-- 마크다운 파서 라이브러리 (marked.js) 추가 -->
-    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
-    <style>
-        :root {
-            --bg-color: #f8f9fa;
-            --card-bg: #ffffff;
-            --text-main: #212529;
-            --text-sub: #495057;
-            --border-color: #e9ecef;
-            --input-bg: #f8f9fa;
-            --primary-color: #12b886;
-            --primary-hover: #0ca678;
-            --quote-bg: #f1f3f5;
-            --quote-border: #20c997;
-            --copy-btn-bg: #e9ecef;
-            --copy-btn-text: #495057;
-            --memo-bg: #fff9db;
-            --memo-border: #fab005;
-            --guide-bg: #eebefa15;
-            --guide-border: #ae3ec9;
-        }
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Your World Helper</title>
+  <!-- 마크다운 렌더링 라이브러리 (marked.js) -->
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Pretendard', 'Malgun Gothic', sans-serif;
+    }
 
-        [data-theme="dark"] {
-            --bg-color: #121212;
-            --card-bg: #1e1e1e;
-            --text-main: #eceff1;
-            --text-sub: #adb5bd;
-            --border-color: #2b2b2b;
-            --input-bg: #252525;
-            --primary-color: #20c997;
-            --primary-hover: #12b886;
-            --quote-bg: #252525;
-            --quote-border: #20c997;
-            --copy-btn-bg: #343a40;
-            --copy-btn-text: #dee2e6;
-            --memo-bg: #2c2a1e;
-            --memo-border: #fcc419;
-            --guide-bg: #3a1d40;
-            --guide-border: #d0bfff;
-        }
+    body {
+      background-color: #f4f4f6;
+      color: #333;
+      padding: 20px;
+    }
 
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-            transition: background-color 0.2s, color 0.2s;
-        }
+    .container {
+      max-width: 1080px;
+      margin: 0 auto;
+      background: #ffffff;
+      border: 2px solid #333;
+      padding: 20px;
+    }
 
-        body {
-            background-color: var(--bg-color);
-            color: var(--text-main);
-            display: flex;
-            justify-content: center;
-            padding: 40px 20px;
-            min-height: 100vh;
-        }
+    /* 상단 헤더 */
+    header {
+      border-bottom: 2px solid #333;
+      padding-bottom: 15px;
+      margin-bottom: 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
 
-        .blog-container {
-            width: 100%;
-            max-width: 720px;
-        }
+    header h1 {
+      font-size: 20px;
+      font-weight: bold;
+    }
 
-        .header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 20px;
-            padding-bottom: 16px;
-            border-bottom: 1px solid var(--border-color);
-        }
+    /* 메인 2단 레이아웃 (Grid) */
+    main {
+      display: grid;
+      grid-template-columns: 1fr 280px;
+      gap: 20px;
+    }
 
-        .header-controls {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
+    /* 왼쪽 콘텐츠 영역 */
+    .content-area {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
 
-        .site-title {
-            font-size: 24px;
-            font-weight: 800;
-            color: var(--primary-color);
-            letter-spacing: -0.5px;
-        }
+    .card {
+      border: 2px solid #333;
+      background: #fafafa;
+      padding: 15px;
+    }
 
-        .theme-toggle {
-            background: none;
-            border: none;
-            font-size: 20px;
-            cursor: pointer;
-        }
+    .card-title {
+      font-size: 15px;
+      font-weight: bold;
+      margin-bottom: 10px;
+      border-bottom: 1px dashed #aaa;
+      padding-bottom: 5px;
+    }
 
-        .guide-card {
-            background: var(--guide-bg);
-            border: 1px dashed var(--guide-border);
-            border-radius: 12px;
-            padding: 20px;
-            margin-bottom: 24px;
-        }
+    textarea {
+      width: 100%;
+      height: 100px;
+      border: 1px solid #777;
+      padding: 10px;
+      resize: vertical;
+      font-size: 14px;
+      margin-bottom: 10px;
+    }
 
-        .guide-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
+    button.primary-btn {
+      width: 100%;
+      padding: 10px;
+      background: #333;
+      color: #fff;
+      border: none;
+      font-weight: bold;
+      cursor: pointer;
+    }
 
-        .guide-title {
-            font-size: 15px;
-            font-weight: 700;
-            color: var(--text-main);
-        }
+    button.primary-btn:hover {
+      background: #555;
+    }
 
-        .guide-toggle-btn {
-            background: none;
-            border: 1px solid var(--guide-border);
-            color: var(--text-main);
-            padding: 4px 10px;
-            border-radius: 12px;
-            font-size: 12px;
-            font-weight: 600;
-            cursor: pointer;
-        }
+    /* 결과 출력 영역 */
+    .result-box {
+      min-height: 150px;
+      background: #fff;
+      border: 1px dashed #777;
+      padding: 15px;
+      line-height: 1.6;
+    }
 
-        .guide-body {
-            margin-top: 12px;
-        }
+    /* 오른쪽 사이드바 영역 */
+    sidebar {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
 
-        .guide-body.hidden {
-            display: none;
-        }
+    /* 프로필 카드 UI */
+    .profile-card {
+      border: 2px solid #333;
+      padding: 15px;
+      background: #ffffff;
+      text-align: center;
+    }
 
-        .guide-text {
-            font-size: 13px;
-            line-height: 1.6;
-            color: var(--text-sub);
-        }
+    .profile-img-box {
+      width: 110px;
+      height: 110px;
+      border: 1px solid #777;
+      margin: 0 auto 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #f9f9f9;
+      overflow: hidden;
+    }
 
-        .guide-list {
-            margin-top: 10px;
-            padding-left: 18px;
-            font-size: 13px;
-            color: var(--text-sub);
-            line-height: 1.6;
-        }
+    .profile-img-box img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: none;
+    }
 
-        .tab-menu {
-            display: flex;
-            gap: 12px;
-            margin-bottom: 28px;
-            flex-wrap: wrap;
-        }
+    .profile-btn {
+      border: 1px solid #333;
+      background: #f0f0f0;
+      padding: 6px 12px;
+      font-size: 12px;
+      cursor: pointer;
+      font-weight: bold;
+    }
 
-        .tab-btn {
-            padding: 8px 16px;
-            background: var(--card-bg);
-            border: 1px solid var(--border-color);
-            border-radius: 20px;
-            font-size: 14px;
-            font-weight: 600;
-            color: var(--text-sub);
-            cursor: pointer;
-        }
+    .profile-btn:hover {
+      background: #e0e0e0;
+    }
 
-        .tab-btn.active {
-            background: var(--primary-color);
-            color: #ffffff;
-            border-color: var(--primary-color);
-        }
+    /* 하단 푸터 */
+    footer {
+      margin-top: 20px;
+      border-top: 2px solid #333;
+      padding-top: 15px;
+      text-align: center;
+      font-size: 12px;
+      color: #666;
+    }
 
-        .tab-content {
-            display: none;
-        }
-
-        .tab-content.active {
-            display: block;
-        }
-
-        .form-card {
-            background: var(--card-bg);
-            padding: 28px;
-            border-radius: 12px;
-            border: 1px solid var(--border-color);
-            margin-bottom: 30px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.03);
-        }
-
-        .form-title {
-            font-size: 18px;
-            font-weight: 700;
-            margin-bottom: 6px;
-        }
-
-        .form-desc {
-            font-size: 13px;
-            color: var(--text-sub);
-            margin-bottom: 20px;
-        }
-
-        .section {
-            margin-bottom: 18px;
-        }
-
-        label {
-            display: block;
-            font-weight: 600;
-            font-size: 13px;
-            margin-bottom: 6px;
-        }
-
-        input[type="text"], textarea {
-            width: 100%;
-            padding: 12px;
-            border: 1px solid var(--border-color);
-            border-radius: 8px;
-            background: var(--input-bg);
-            color: var(--text-main);
-            font-size: 14px;
-            outline: none;
-        }
-
-        input[type="text"]:focus, textarea:focus {
-            border-color: var(--primary-color);
-        }
-
-        textarea {
-            height: 80px;
-            resize: vertical;
-        }
-
-        .btn-group-select {
-            display: flex;
-            gap: 8px;
-        }
-
-        .select-btn {
-            flex: 1;
-            padding: 8px;
-            border: 1px solid var(--border-color);
-            border-radius: 8px;
-            background: var(--input-bg);
-            color: var(--text-sub);
-            font-size: 13px;
-            font-weight: 600;
-            cursor: pointer;
-        }
-
-        .select-btn.active {
-            background: var(--primary-color);
-            color: #fff;
-            border-color: var(--primary-color);
-        }
-
-        .genre-group {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 6px;
-        }
-
-        .genre-btn {
-            padding: 6px 12px;
-            border: 1px solid var(--border-color);
-            border-radius: 16px;
-            background: var(--input-bg);
-            color: var(--text-sub);
-            font-size: 12px;
-            cursor: pointer;
-        }
-
-        .genre-btn.active {
-            background: var(--primary-color);
-            color: #fff;
-            border-color: var(--primary-color);
-        }
-
-        .submit-btn {
-            width: 100%;
-            padding: 12px;
-            background: var(--primary-color);
-            color: #fff;
-            border: none;
-            border-radius: 8px;
-            font-weight: 700;
-            font-size: 14px;
-            cursor: pointer;
-            margin-top: 10px;
-        }
-
-        .submit-btn:hover {
-            background: var(--primary-hover);
-        }
-
-        .article-card {
-            background: var(--card-bg);
-            padding: 32px;
-            border-radius: 12px;
-            border: 1px solid var(--border-color);
-            display: none;
-            box-shadow: 0 4px 16px rgba(0,0,0,0.04);
-            margin-bottom: 24px;
-        }
-
-        .article-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding-bottom: 12px;
-            border-bottom: 2px solid var(--border-color);
-            margin-bottom: 20px;
-        }
-
-        .article-meta {
-            font-size: 12px;
-            font-weight: 700;
-            color: var(--primary-color);
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-
-        .btn-group {
-            display: flex;
-            gap: 8px;
-        }
-
-        .copy-btn, .add-memo-btn {
-            background: var(--copy-btn-bg);
-            color: var(--copy-btn-text);
-            border: none;
-            padding: 6px 12px;
-            font-size: 12px;
-            font-weight: 600;
-            border-radius: 6px;
-            cursor: pointer;
-        }
-
-        .add-memo-btn {
-            background: #e7f5ff;
-            color: #1c7ed6;
-        }
-
-        [data-theme="dark"] .add-memo-btn {
-            background: #183144;
-            color: #4dabf7;
-        }
-
-        /* 마크다운 스타일링 보완 */
-        .article-body {
-            font-size: 15px;
-            line-height: 1.8;
-            color: var(--text-main);
-        }
-
-        .article-body h1, .article-body h2, .article-body h3 {
-            margin-top: 16px;
-            margin-bottom: 8px;
-            color: var(--text-main);
-        }
-
-        .article-body p {
-            margin-bottom: 12px;
-        }
-
-        .article-body ul, .article-body ol {
-            margin-bottom: 12px;
-            padding-left: 20px;
-        }
-
-        .article-body blockquote {
-            border-left: 4px solid var(--primary-color);
-            padding-left: 12px;
-            margin: 12px 0;
-            color: var(--text-sub);
-            background-color: var(--quote-bg);
-            padding-top: 6px;
-            padding-bottom: 6px;
-            border-radius: 0 6px 6px 0;
-        }
-
-        .memo-container {
-            margin-bottom: 20px;
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
-        }
-
-        .memo-card {
-            background: var(--memo-bg);
-            border: 1px solid var(--memo-border);
-            border-radius: 8px;
-            padding: 16px;
-        }
-
-        .memo-card-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 10px;
-        }
-
-        .memo-card-title {
-            font-size: 12px;
-            font-weight: 700;
-            color: var(--memo-border);
-        }
-
-        .memo-card textarea {
-            width: 100%;
-            height: 80px;
-            background: transparent;
-            border: none;
-            outline: none;
-            font-size: 14px;
-            color: var(--text-main);
-            resize: vertical;
-        }
-    </style>
+    /* 반응형 스타일 (모바일 환경 고려) */
+    @media (max-width: 768px) {
+      main {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
 </head>
 <body>
 
-<div class="blog-container">
-    <div class="header">
-        <div class="site-title">yourworldhelper</div>
-        <div class="header-controls">
-            <button class="add-memo-btn" onclick="addGlobalMemo()">📝 메모장 만들기</button>
-            <button class="theme-toggle" onclick="toggleTheme()" id="themeBtn">🌙</button>
-        </div>
+<div class="container">
+  <!-- 상단 헤더 -->
+  <header>
+    <h1>🌐 Your World Helper</h1>
+    <div>
+      <span style="font-size: 13px; color: #666;">2D Flat Retro Style</span>
+    </div>
+  </header>
+
+  <!-- 메인 콘텐츠 영역 -->
+  <main>
+    <!-- 왼쪽: AI 생성 기능 영역 -->
+    <div class="content-area">
+      <section class="card">
+        <div class="card-title">💡 프롬프트 입력</div>
+        <textarea id="promptInput" placeholder="생성할 아이디어나 질문을 입력해 주세요..."></textarea>
+        <button type="button" class="primary-btn" onclick="generateContent()">생성하기</button>
+      </section>
+
+      <article class="card">
+        <div class="card-title">📝 생성 결과</div>
+        <div id="resultOutput" class="result-box">결과가 여기에 표시됩니다.</div>
+      </article>
     </div>
 
-    <div class="guide-card">
-        <div class="guide-header">
-            <div class="guide-title">📖 이용 안내 및 튜토리얼</div>
-            <button class="guide-toggle-btn" id="guideToggleBtn" onclick="toggleGuide()">접기 ▲</button>
-        </div>
-        <div class="guide-body" id="guideBody">
-            <p class="guide-text">
-                이 사이트는 스토리 구상과 설정 정리에 어려움을 겪는 작가님들을 위한 핀포인트 창작 도우미입니다.
-            </p>
-            <ul class="guide-list">
-                <li><strong>기능 탭 안내:</strong> 
-                    <strong>세계관 영감</strong>(기초 구상), 
-                    <strong>창작 주제 추천</strong>(맞춤형 글감 주제 제시), 
-                    <strong>소재 스파크</strong>(장면/분위기 힌트), 
-                    <strong>대사 스파크</strong>(캐릭터 어조/대사 힌트) 탭을 선택해 사용하세요.
-                </li>
-                <li><strong>관여도 선택:</strong> AI의 개입 수준을 조절할 수 있습니다. <b>'낮음'</b>을 선택하면 창작 주도권을 지킬 수 있는 연상 단어와 핵심 질문 위주로 제공됩니다.</li>
-                <li><strong>메모장 활용:</strong> 우측 상단의 <code>📝 메모장 만들기</code> 버튼으로 언제든 아이디어를 받아적고 정리해 보세요.</li>
-                <li>본 사이트는 AI를 기반으로 제작되었습니다. 생성된 글감을 바탕으로 공개 작품을 만드실 때에는 <strong>AI 활용 사실을 밝혀주시거나, 일부 내용을 수정하여 사용</strong>해 주시기를 권장합니다.</li>
-                <li><strong>참고사항:</strong> 개인 프로젝트로 제작되어 추가적인 버그 수정이나 아이디어 제안은 아쉽게도 따로 반영해 드리기 어렵습니다. 모쪼록 즐겁게 사용해 주세요!</li>
-            </ul>
-        </div>
-    </div>
-
-    <div id="memoContainer" class="memo-container"></div>
-
-    <div class="tab-menu">
-        <button class="tab-btn active" onclick="openTab('worldTab', this)">🌐 세계관 영감</button>
-        <button class="tab-btn" onclick="openTab('topicTab', this)">🎯 창작 주제 추천</button>
-        <button class="tab-btn" onclick="openTab('sparkTab', this)">💡 소재 & 영감 스파크</button>
-        <button class="tab-btn" onclick="openTab('dialogueTab', this)">💬 대사 스파크</button>
-    </div>
-
-    <!-- 탭 1: 세계관 영감 -->
-    <div id="worldTab" class="tab-content active">
-        <div class="form-card">
-            <div class="form-title">세계관 영감 도우미</div>
-            <div class="form-desc">상상력을 자극할 수 있는 단어와 상황 힌트를 제공합니다.</div>
-            
-            <div class="section">
-                <label>AI 관여도 선택</label>
-                <div class="btn-group-select">
-                    <button type="button" class="select-btn active" data-level="low" onclick="selectLevel('worldLevel', this)">낮음 (단어/질문 위주)</button>
-                    <button type="button" class="select-btn" data-level="high" onclick="selectLevel('worldLevel', this)">높음 (문장/완성 글감)</button>
-                </div>
-            </div>
-
-            <div class="section">
-                <label>생각 중인 키워드 / 메모</label>
-                <textarea id="world-setting" placeholder="아이디어 메모를 적어주세요..."></textarea>
-            </div>
-            <div class="section">
-                <label>장르 선택</label>
-                <div class="genre-group">
-                    <button type="button" class="genre-btn" onclick="toggleGenre(this)">액션</button>
-                    <button type="button" class="genre-btn" onclick="toggleGenre(this)">일상</button>
-                    <button type="button" class="genre-btn" onclick="toggleGenre(this)">다크판타지</button>
-                    <button type="button" class="genre-btn" onclick="toggleGenre(this)">로맨스</button>
-                    <button type="button" class="genre-btn" onclick="toggleGenre(this)">SF</button>
-                </div>
-            </div>
-            <button type="button" class="submit-btn" onclick="startWorldHelper()">영감 포스트 생성하기</button>
+    <!-- 오른쪽: 사이드바 (프로필 및 추가 정보) -->
+    <sidebar>
+      <div class="profile-card">
+        <div class="card-title">USER PROFILE</div>
+        <div class="profile-img-box">
+          <img id="profilePreview" src="" alt="프로필 사진">
+          <div id="profilePlaceholder" style="color: #888; font-size: 12px;">
+            <span style="font-size: 20px; display: block; margin-bottom: 4px;">🖼️</span>
+            이미지 없음
+          </div>
         </div>
 
-        <div class="article-card" id="worldResultCard">
-            <div class="article-header">
-                <span class="article-meta">IDEAS & INSPIRATION</span>
-                <div class="btn-group">
-                    <button class="copy-btn" onclick="copyResult('worldOutput', this)">복사하기</button>
-                </div>
-            </div>
-            <div class="article-body" id="worldOutput"></div>
-        </div>
-    </div>
+        <div style="font-weight: bold; font-size: 14px; margin-bottom: 10px;" id="userName">User</div>
 
-    <!-- 탭 2: 창작 주제 추천 -->
-    <div id="topicTab" class="tab-content">
-        <div class="form-card">
-            <div class="form-title">창작 주제 추천</div>
-            <div class="form-desc">제출하신 세계관과 상황을 기반으로 어울리는 창작 주제를 내드립니다.</div>
-            
-            <div class="section">
-                <label>AI 관여도 선택</label>
-                <div class="btn-group-select">
-                    <button type="button" class="select-btn active" data-level="low" onclick="selectLevel('topicLevel', this)">낮음 (단어 / 핵심 테마 위주)</button>
-                    <button type="button" class="select-btn" data-level="high" onclick="selectLevel('topicLevel', this)">높음 (문장 / 구체적 사건 주제)</button>
-                </div>
-            </div>
+        <input type="file" id="profileInput" accept="image/*" style="display: none;" onchange="loadProfileImage(event)">
+        <button type="button" class="profile-btn" onclick="document.getElementById('profileInput').click()">📷 사진 변경</button>
+      </div>
 
-            <div class="section">
-                <label>1. 제출할 세계관 / 설정</label>
-                <textarea id="topicWorld" placeholder="예: 마법과 과학이 공존하는 디스토피아 도시, 감정을 느끼지 못하는 기사단 등..."></textarea>
-            </div>
-            <div class="section">
-                <label>2. 원하는 상황 / 연출 (미입력/아무거나/없음 입력 시 세계관 기반 자동 연출)</label>
-                <textarea id="topicSituation" placeholder="예: 비밀 임무 중 옛 동료와 마주친 상황 (작성을 하지 않거나 '아무거나', '없음' 입력 시 대표 연출을 자동 생성합니다)"></textarea>
-            </div>
-            <button type="button" class="submit-btn" onclick="generateTopic()">어울리는 주제 추천받기</button>
-        </div>
+      <div class="card">
+        <div class="card-title">📌 메모장</div>
+        <p style="font-size: 12px; color: #666; line-height: 1.4;">
+          필요한 메모나 아이디어를 기록해두는 사이드 스페이스입니다.
+        </p>
+      </div>
+    </sidebar>
+  </main>
 
-        <div class="article-card" id="topicResultCard">
-            <div class="article-header">
-                <span class="article-meta">CREATIVE TOPIC RECOMMENDATION</span>
-                <div class="btn-group">
-                    <button class="copy-btn" onclick="copyResult('topicOutput', this)">복사하기</button>
-                </div>
-            </div>
-            <div class="article-body" id="topicOutput"></div>
-        </div>
-    </div>
-
-    <!-- 탭 3: 소재 & 영감 스파크 -->
-    <div id="sparkTab" class="tab-content">
-        <div class="form-card">
-            <div class="form-title">소재 & 영감 스파크</div>
-            <div class="form-desc">분위기와 장소, 감정 중심의 연출 글감을 구성해 드립니다.</div>
-            
-            <div class="section">
-                <label>AI 관여도 선택</label>
-                <div class="btn-group-select">
-                    <button type="button" class="select-btn active" data-level="low" onclick="selectLevel('sparkLevel', this)">낮음 (단어/질문 위주)</button>
-                    <button type="button" class="select-btn" data-level="high" onclick="selectLevel('sparkLevel', this)">높음 (문장/완성 글감)</button>
-                </div>
-            </div>
-
-            <div class="section">
-                <label>1. 분위기 / 키워드</label>
-                <input type="text" id="sparkCondition" placeholder="예: 비밀스러운, 긴장감 넘치는 등">
-            </div>
-            <div class="section">
-                <label>2. 장소 / 상황</label>
-                <input type="text" id="sparkPlace" placeholder="예: 비 내리는 정류장, 오래된 서점 등 ('없음' 시 자동 제안)">
-            </div>
-            <button type="button" class="submit-btn" onclick="generateSpark()">영감 스파크 당기기</button>
-        </div>
-
-        <div class="article-card" id="sparkResultCard">
-            <div class="article-header">
-                <span class="article-meta">STORY SPARK POST</span>
-                <div class="btn-group">
-                    <button class="copy-btn" onclick="copyResult('sparkOutput', this)">복사하기</button>
-                </div>
-            </div>
-            <div class="article-body" id="sparkOutput"></div>
-        </div>
-    </div>
-
-    <!-- 탭 4: 대사 스파크 -->
-    <div id="dialogueTab" class="tab-content">
-        <div class="form-card">
-            <div class="form-title">대사 스파크</div>
-            <div class="form-desc">캐릭터의 성격과 상황에 어울리는 영감용 대사를 생성합니다.</div>
-            
-            <div class="section">
-                <label>AI 관여도 선택</label>
-                <div class="btn-group-select">
-                    <button type="button" class="select-btn active" data-level="low" onclick="selectLevel('dialogueLevel', this)">낮음 (핵심 키워드/상황 힌트)</button>
-                    <button type="button" class="select-btn" data-level="high" onclick="selectLevel('dialogueLevel', this)">높음 (예시 대사 추천)</button>
-                </div>
-            </div>
-
-            <div class="section">
-                <label>1. 캐릭터 성격 / 말투</label>
-                <input type="text" id="dialChar" placeholder="예: 차가운 반말, 까칠하지만 속은 따뜻함, 엉뚱한 어조 등">
-            </div>
-            <div class="section">
-                <label>2. 장소 / 상황</label>
-                <input type="text" id="dialSituation" placeholder="예: 비 내리는 편의점 앞, 오해가 풀어지는 순간 등 ('없음' 시 자동 제안)">
-            </div>
-            <button type="button" class="submit-btn" onclick="generateDialogue()">대사 스파크 당기기</button>
-        </div>
-
-        <div class="article-card" id="dialogueResultCard">
-            <div class="article-header">
-                <span class="article-meta">DIALOGUE SPARK POST</span>
-                <div class="btn-group">
-                    <button class="copy-btn" onclick="copyResult('dialogueOutput', this)">복사하기</button>
-                </div>
-            </div>
-            <div class="article-body" id="dialogueOutput"></div>
-        </div>
-    </div>
+  <!-- 하단 푸터 -->
+  <footer>
+    <p>© 2026 yourworldhelper. All rights reserved.</p>
+  </footer>
 </div>
 
 <script>
-    let memoCount = 0;
-    const selectedLevels = {
-        worldLevel: 'low',
-        topicLevel: 'low',
-        sparkLevel: 'low',
-        dialogueLevel: 'low'
-    };
+  // 페이지 로드시 저장된 프로필 이미지 불러오기
+  window.addEventListener('DOMContentLoaded', () => {
+    const savedImg = localStorage.getItem('user_profile_img');
+    if (savedImg) {
+      showImage(savedImg);
+    }
+  });
 
-    const nullKeywords = ['아무거나', '없음', '랜덤', '상관없음', '무관', '없어', ''];
+  // 프로필 이미지 선택 및 저장
+  function loadProfileImage(event) {
+    const file = event.target.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        const imageData = e.target.result;
+        showImage(imageData);
+        localStorage.setItem('user_profile_img', imageData);
+      };
+      reader.readAsDataURL(file);
+    }
+  }
 
-    function toggleGuide() {
-        const guideBody = document.getElementById('guideBody');
-        const toggleBtn = document.getElementById('guideToggleBtn');
-        if (guideBody.classList.contains('hidden')) {
-            guideBody.classList.remove('hidden');
-            toggleBtn.innerText = '접기 ▲';
-        } else {
-            guideBody.classList.add('hidden');
-            toggleBtn.innerText = '더 보기 ▼';
-        }
+  function showImage(src) {
+    const preview = document.getElementById('profilePreview');
+    const placeholder = document.getElementById('profilePlaceholder');
+    preview.src = src;
+    preview.style.display = 'block';
+    placeholder.style.display = 'none';
+  }
+
+  // 백엔드 Express API 호출 (/api/generate)
+  async function generateContent() {
+    const prompt = document.getElementById('promptInput').value;
+    const outputDiv = document.getElementById('resultOutput');
+
+    if (!prompt.trim()) {
+      alert('내용을 입력해 주세요!');
+      return;
     }
 
-    function selectLevel(group, btn) {
-        const parent = btn.parentElement;
-        parent.querySelectorAll('.select-btn').forEach(b => b.classList.remove('active'));
-        btn.classList.add('active');
-        selectedLevels[group] = btn.getAttribute('data-level');
+    outputDiv.innerHTML = '생성 중...';
+
+    try {
+      const response = await fetch('/api/generate', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ prompt: prompt })
+      });
+
+      const data = await response.json();
+
+      if (data.result) {
+        // 마크다운 파싱 처리 후 출력
+        outputDiv.innerHTML = marked.parse(data.result);
+      } else {
+        outputDiv.innerHTML = '오류 발생: ' + (data.error || '답변을 불러오지 못했습니다.');
+      }
+    } catch (err) {
+      console.error(err);
+      outputDiv.innerHTML = '서버 통신 오류가 발생했습니다.';
     }
-
-    function toggleTheme() {
-        const body = document.body;
-        const btn = document.getElementById('themeBtn');
-        if (body.getAttribute('data-theme') === 'dark') {
-            body.removeAttribute('data-theme');
-            btn.innerText = '🌙';
-        } else {
-            body.setAttribute('data-theme', 'dark');
-            btn.innerText = '☀️';
-        }
-    }
-
-    function openTab(tabId, element) {
-        document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
-        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-        document.getElementById(tabId).classList.add('active');
-        element.classList.add('active');
-    }
-
-    function toggleGenre(btn) {
-        btn.classList.toggle('active');
-    }
-
-    function addGlobalMemo() {
-        memoCount++;
-        const container = document.getElementById('memoContainer');
-        const memoId = "memoText_" + memoCount;
-
-        const memoCard = document.createElement('div');
-        memoCard.className = 'memo-card';
-        memoCard.id = "memoCard_" + memoCount;
-
-        memoCard.innerHTML = '<div class="memo-card-header">' +
-            '<span class="memo-card-title">📌 아이디어 메모 #' + memoCount + '</span>' +
-            '<div class="btn-group">' +
-            '<button class="copy-btn" onclick="copyMemo(\'' + memoId + '\', this)">메모 복사</button>' +
-            '<button class="copy-btn" style="background:#ffc9c9; color:#c92a2a;" onclick="deleteMemo(\'memoCard_' + memoCount + '\')">삭제</button>' +
-            '</div></div>' +
-            '<textarea id="' + memoId + '" placeholder="떠오르는 아이디어를 즉시 기록하세요..."></textarea>';
-
-        container.appendChild(memoCard);
-    }
-
-    function deleteMemo(cardId) {
-        document.getElementById(cardId).remove();
-    }
-
-    function copyResult(elementId, btnElement) {
-        const targetElement = document.getElementById(elementId);
-        const textToCopy = targetElement.innerText;
-
-        if (!textToCopy || textToCopy.includes("불러오는 중")) return;
-
-        navigator.clipboard.writeText(textToCopy).then(() => {
-            btnElement.innerText = "복사됨!";
-            setTimeout(() => btnElement.innerText = "복사하기", 1500);
-        });
-    }
-
-    function copyMemo(memoId, btnElement) {
-        const memoText = document.getElementById(memoId).value;
-
-        if (!memoText.trim()) {
-            alert("복사할 메모 내용이 없습니다.");
-            return;
-        }
-
-        navigator.clipboard.writeText(memoText).then(() => {
-            btnElement.innerText = "복사됨!";
-            setTimeout(() => btnElement.innerText = "메모 복사", 1500);
-        });
-    }
-
-    async function callGemini(promptText) {
-        const response = await fetch('/api/generate', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ prompt: promptText })
-        });
-
-        if (!response.ok) {
-            const errData = await response.json().catch(() => ({}));
-            throw new Error(errData.error || "서버 요청 실패");
-        }
-
-        const data = await response.json();
-        return data.result;
-    }
-
-    async function startWorldHelper() {
-        const setting = document.getElementById('world-setting').value;
-        const genres = Array.from(document.querySelectorAll('.genre-btn.active')).map(b => b.innerText);
-        const card = document.getElementById('worldResultCard');
-        const output = document.getElementById('worldOutput');
-        const level = selectedLevels.worldLevel;
-
-        output.innerText = "영감 포스트를 작성하는 중입니다...";
-        card.style.display = "block";
-
-        let promptText = "";
-        if (level === 'low') {
-            promptText = "창작자의 개성을 살릴 수 있도록 스토리를 직접 작성하지 말고, 마크다운 문법을 활용하여 아이디어를 연상할 수 있는 핵심 단어 4개와 창작 욕구를 자극할 연상 질문 2개만 짧게 작성해줘. [장르]: " + genres.join(', ') + " / [메모]: " + setting;
-        } else {
-            promptText = "창작자에게 영감을 줄 단어 3개, 상황 묘사 2문장, 질문 1개를 마크다운 형식을 가미하여 완성된 문장 형태로 작성해줘. [장르]: " + genres.join(', ') + " / [메모]: " + setting;
-        }
-
-        try {
-            const resultText = await callGemini(promptText);
-            output.innerHTML = marked.parse(resultText);
-        } catch (err) {
-            output.innerText = "오류 발생: " + err.message;
-        }
-    }
-
-    async function generateTopic() {
-        const world = document.getElementById('topicWorld').value;
-        let situation = document.getElementById('topicSituation').value.trim();
-        const card = document.getElementById('topicResultCard');
-        const output = document.getElementById('topicOutput');
-        const level = selectedLevels.topicLevel;
-
-        if (nullKeywords.includes(situation)) {
-            situation = "지정된 입력이 없거나 '아무거나' 상태입니다. 위 제출된 세계관 설정을 바탕으로 가장 잘 어울리고 극적인 갈등을 자극할 수 있는 대표적인 상황 및 연출을 직접 임의로 만들어 활용해주세요.";
-        }
-
-        output.innerText = "어울리는 창작 주제를 생각하는 중입니다...";
-        card.style.display = "block";
-
-        let promptText = "";
-        if (level === 'low') {
-            promptText = "제출된 세계관과 상황을 바탕으로 어울리는 창작 주제 3가지를 추천해줘. 마크다운 문법을 활용해 보기 좋게 구성해줘. 구체적인 줄거리 대신 작가가 다양하게 해석할 수 있는 '핵심 키워드 주제'와 '딜레마 중심 테마' 위주로 짧고 명확하게 제시해줘. [세계관]: " + world + " / [상황]: " + situation;
-        } else {
-            promptText = "제출된 세계관과 상황에 딱 맞는 매력적인 창작 주제 3가지를 마크다운 형식으로 제시해줘. 각 주제별로 (1) 주제 제목, (2) 이 주제로 다룰 수 있는 주요 대립 및 갈등 요소(1~2문장), (3) 던질 수 있는 핵심 질문 1개를 구체적으로 작성해줘. [세계관]: " + world + " / [상황]: " + situation;
-        }
-
-        try {
-            const resultText = await callGemini(promptText);
-            output.innerHTML = marked.parse(resultText);
-        } catch (err) {
-            output.innerText = "오류 발생: " + err.message;
-        }
-    }
-
-    async function generateSpark() {
-        const condition = document.getElementById('sparkCondition').value;
-        let place = document.getElementById('sparkPlace').value.trim();
-        const card = document.getElementById('sparkResultCard');
-        const output = document.getElementById('sparkOutput');
-        const level = selectedLevels.sparkLevel;
-
-        if (nullKeywords.includes(place)) {
-            place = "조건에 가장 매력적으로 어울리는 창작 장소와 상황을 직접 하나 선정해서 활용해줘.";
-        }
-
-        output.innerText = "스파크 포스트를 생성하는 중입니다...";
-        card.style.display = "block";
-
-        let promptText = "";
-        if (level === 'low') {
-            promptText = "대사는 절대 포함하지 마. 마크다운 리스트 형태로 작성해줘. 1. 연상 키워드 3개, 2. 인물의 감정 및 분위기 단어 2개, 3. 연출 질문 2개. [조건]: " + condition + " / [장소/상황]: " + place;
-        } else {
-            promptText = "대사는 포함하지 말고 장면과 분위기 위주로 추천해줘. 마크다운으로 구성해줘. 1. 키워드 연상 (2개), 2. 장면 연출 힌트 (2문장), 3. 분위기 연출 질문 (1개). [조건]: " + condition + " / [장소/상황]: " + place;
-        }
-
-        try {
-            const resultText = await callGemini(promptText);
-            output.innerHTML = marked.parse(resultText);
-        } catch (err) {
-            output.innerText = "오류 발생: " + err.message;
-        }
-    }
-
-    async function generateDialogue() {
-        const character = document.getElementById('dialChar').value;
-        let situation = document.getElementById('dialSituation').value.trim();
-        const card = document.getElementById('dialogueResultCard');
-        const output = document.getElementById('dialogueOutput');
-        const level = selectedLevels.dialogueLevel;
-
-        if (nullKeywords.includes(situation)) {
-            situation = "이 캐릭터의 성격과 말투가 가장 잘 드러날 수 있는 상징적인 상황과 장소를 직접 만들어서 연출해줘.";
-        }
-
-        output.innerText = "대사 포스트를 생성하는 중입니다...";
-        card.style.display = "block";
-
-        let promptText = "";
-        if (level === 'low') {
-            promptText = "완성된 대사를 길게 적지 말고, 마크다운 형식으로 대사의 '방향성 힌트' 2개와 이 캐릭터가 할 법한 '핵심 어휘/단어' 3개만 적어줘. [캐릭터 성격/말투]: " + character + " / [장소/상황]: " + situation;
-        } else {
-            promptText = "이 상황에서 캐릭터의 성격과 말투가 잘 드러나는 특징적인 대사 힌트 3개만 마크다운 형태(인용구나 목록 활용)로 추천해줘. [캐릭터 성격/말투]: " + character + " / [장소/상황]: " + situation;
-        }
-
-        try {
-            const resultText = await callGemini(promptText);
-            output.innerHTML = marked.parse(resultText);
-        } catch (err) {
-            output.innerText = "오류 발생: " + err.message;
-        }
-    }
+  }
 </script>
 
 </body>
