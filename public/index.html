@@ -961,8 +961,10 @@
     const genre = document.getElementById('genreSelect').value;
     const outputDiv = document.getElementById('resultOutput');
 
+    // 1. 토큰을 안 적었을 때 (누락 처리)
     if (!hfToken) {
       alert("API 토큰이 설정되지 않았습니다. [SETTINGS] 탭에서 토큰을 입력 후 [저장] 버튼을 눌러주세요.");
+      outputDiv.innerHTML = '<p style="color:red;"><strong>인증 오류:</strong> 토큰이 누락되었습니다. [SETTINGS] 메뉴에서 토큰을 입력해 주세요.</p>';
       return;
     }
 
@@ -1010,9 +1012,17 @@
         })
       });
 
+      // 2. 토큰이 틀렸거나 기타 서버/인증 오류 발생 시 처리
       if (!response.ok) {
         const errorData = await response.json().catch(() => null);
-        throw new Error(errorData?.error || `통신 에러: HTTP ${response.status}`);
+        let errorMsg = errorData?.error || `HTTP Status Code: ${response.status}`;
+        
+        // HTTP 401: Unauthorized 처리
+        if (response.status === 401) {
+          errorMsg = "유효하지 않거나 잘못된 API 토큰입니다. 올바른 Hugging Face Token(Read 권한)을 입력해 주세요.";
+        }
+        
+        throw new Error(errorMsg);
       }
 
       const data = await response.json();
@@ -1021,7 +1031,7 @@
       outputDiv.innerHTML = marked.parse(aiResponseText);
 
     } catch (error) {
-      console.error(error);
+      console.error("오류 상세 내용:", error);
       outputDiv.innerHTML = `<p style="color:red;"><strong>생성 실패:</strong> ${error.message}<br><small>(Hugging Face 토큰 권한 및 입력 여부를 확인해 주세요)</small></p>`;
     }
   }
