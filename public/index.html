@@ -1042,11 +1042,10 @@
     const tempValue = 0.3 + (aiLevel - 1) * 0.15;
 
     try {
-      // CORS 우회를 위한 corsproxy.io 프록시 적용
-      const originalApiUrl = "https://api-inference.huggingface.co/models/Qwen/Qwen2.5-72B-Instruct/v1/chat/completions";
-      const targetUrl = "https://corsproxy.io/?" + encodeURIComponent(originalApiUrl);
+      // 최신 Router Endpoint 주소로 직접 호출
+      const apiUrl = "https://router.huggingface.co/hf-inference/v1/chat/completions";
 
-      const response = await fetch(targetUrl, {
+      const response = await fetch(apiUrl, {
         method: "POST",
         headers: {
           "Authorization": `Bearer ${hfToken}`,
@@ -1065,10 +1064,10 @@
 
       if (!response.ok) {
         const errorData = await response.json().catch(() => null);
-        let errorMsg = errorData?.error || `HTTP Status Code: ${response.status}`;
+        let errorMsg = errorData?.error?.message || errorData?.error || `HTTP Status Code: ${response.status}`;
         
         if (response.status === 401) {
-          errorMsg = "유효하지 않거나 잘못된 API 토큰입니다. 올바른 Hugging Face Token(Read 권한)을 입력해 주세요.";
+          errorMsg = "유효하지 않거나 권한이 없는 API 토큰입니다. Hugging Face에서 Fine-grained 또는 Read 권한 토큰을 새로 발급받아 확인해주세요.";
         }
         
         throw new Error(errorMsg);
@@ -1081,7 +1080,7 @@
 
     } catch (error) {
       console.error("오류 상세 내용:", error);
-      outputDiv.innerHTML = `<p style="color:red;"><strong>생성 실패:</strong> ${error.message}<br><small>(Hugging Face 토큰 권한 및 입력 여부를 확인해 주세요)</small></p>`;
+      outputDiv.innerHTML = `<p style="color:red;"><strong>생성 실패:</strong> ${error.message}<br><small>(SETTINGS 탭에서 Hugging Face 토큰 권한 및 입력 상태를 확인해 주세요)</small></p>`;
     }
   }
 </script>
