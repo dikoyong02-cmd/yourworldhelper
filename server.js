@@ -1,6 +1,5 @@
 const express = require('express');
 const path = require('path');
-const { GoogleGenerativeAI } = require('@google/generative-ai');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -8,33 +7,58 @@ const PORT = process.env.PORT || 3000;
 app.use(express.json());
 app.use(express.static(path.join(__dirname, 'public')));
 
-// Gemini API 초기화
-const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || '');
-
 app.post('/api/generate', async (req, res) => {
   try {
     const { prompt } = req.body;
+    const hfToken = process.env.HF_TOKEN;
 
-    if (!process.env.GEMINI_API_KEY) {
-      return res.status(500).json({ error: 'GEMINI_API_KEY 설정이 필요합니다.' });
+    if (!hfToken) {
+      console.error('HF_TOKEN이 설정되지 않았습니다.');
+      return res.status(500).json({ error: '서버 환경 변수(HF_TOKEN)가 설정되지 않았습니다.' });
     }
 
-    // Gemini 1.5 Flash 모델 사용
-    const model = genAI.getGenerativeAIModel({ model: 'gemini-1.5-flash' });
+    // Hugging Face 무료 한국어/영문 고성능 모델 호출
+    const response = await fetch(
+      "https://api-inference.huggingface.co/models/Qwen/Qwen2.5-7B-Instruct",
+      {
+        method: "POST",
+        headers: {
+          "Authorization": `Bearer ${hfToken}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          inputs: `<|im_start|>system\n당신은 스토리 기획 전문 AI 작가입니다. 요구사항에 맞춰 깔끔한 마크다운 문서로 답변하세요.<|im_end|>\n<|im_start|>user\n${prompt}<|im_end|>\n<|im_start|>assistant\n`,
+          parameters: {
+            max_new_tokens: 700,
+            temperature: 0.7,
+            return_full_text: false
+          }
+        }),
+      }
+    );
 
-    const systemInstruction = `
-당신은 웹소설 및 스토리 기획을 돕는 전문 AI 보조작가입니다.
-입력된 프롬프트와 지침을 바탕으로 가독성이 뛰어난 마크다운(Markdown) 서식으로 완성된 소설/세계관 설정 및 대사를 출력해 주세요.
-프롬프트 내용이나 지침 태그([지침: ...], [메인 카테고리: ...] 등)를 그대로 복사해서 출력하지 말고, 오직 완성된 최종 마크다운 스토리 결과물만 출력하세요.
-    `;
+    const data = await response.json();
 
-    const result = await model.generateContent([systemInstruction, prompt]);
-    const responseText = result.response.text();
+    if (!response.ok) {
+      console.error('Hugging Face API 에러:', data);
+      return res.status(500).json({ error: data.error || 'AI 응답 생성 실패' });
+    }
 
-    res.json({ result: responseText });
+    // 결과 텍스트 추출
+    let resultText = "";
+    if (Array.isArray(data) && data.length > 0) {
+      resultText = data[0].generated_text;
+    } else if (data.generated_text) {
+      resultText = data.generated_text;
+    } else {
+      resultText = "결과를 생성할 수 없습니다.";
+    }
+
+    res.json({ result: resultText });
+
   } catch (error) {
-    console.error('API Error:', error);
-    res.status(500).json({ error: 'AI 생성 중 오류가 발생했습니다.' });
+    console.error('서버 오류:', error);
+    res.status(500).json({ error: 'AI 생성 처리 중 오류가 발생했습니다.' });
   }
 });
 
