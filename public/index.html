@@ -6,7 +6,6 @@
   <title>Your World Helper - Y2K Edition</title>
   <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
   <style>
-    /* Y2K 평면(Flat) 스타일 및 8종 테마 변수 */
     :root {
       --bg-color: #008080;
       --card-bg: #c0c0c0;
@@ -208,12 +207,13 @@
     button.primary-btn, 
     .profile-btn,
     .board-tool-btn,
-    .side-nav-btn {
+    .side-nav-btn,
+    .small-btn {
       display: inline-flex;
       align-items: center;
       justify-content: center;
       height: 28px;
-      padding: 0 12px;
+      padding: 0 10px;
       border: 1px solid var(--border-color);
       background: var(--card-bg);
       color: var(--text-color);
@@ -231,7 +231,8 @@
     button.primary-btn:active, 
     .profile-btn:active,
     .board-tool-btn:active,
-    .side-nav-btn:active {
+    .side-nav-btn:active,
+    .small-btn:active {
       background: var(--accent-color) !important;
       color: var(--accent-text) !important;
     }
@@ -242,6 +243,17 @@
     .side-nav-btn.active {
       background: var(--accent-color);
       color: var(--accent-text);
+    }
+
+    .icon-btn {
+      padding: 0 8px;
+      font-size: 11px;
+    }
+
+    .small-btn {
+      height: 20px;
+      padding: 0 6px;
+      font-size: 10px;
     }
 
     .side-nav-btn {
@@ -389,6 +401,7 @@
       display: flex;
       gap: 4px;
       align-items: center;
+      flex-wrap: wrap;
     }
 
     .node-card {
@@ -479,6 +492,36 @@
       display: flex;
       flex-direction: column;
       gap: 4px;
+    }
+
+    .cmd-setting-group {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      margin-bottom: 10px;
+      max-height: 220px;
+      overflow-y: auto;
+      padding-right: 2px;
+    }
+
+    .cmd-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 6px;
+    }
+
+    .cmd-item label {
+      font-size: 10px;
+      font-weight: bold;
+      white-space: nowrap;
+      width: 70px;
+    }
+
+    .cmd-item input {
+      padding: 2px 4px;
+      font-size: 11px;
+      height: 22px;
     }
 
     .guide-box {
@@ -613,15 +656,16 @@
             <button class="board-tool-btn" id="tool-draw" onclick="setBoardTool('draw')">펜 드로잉</button>
             <button class="board-tool-btn" id="tool-erase" onclick="setBoardTool('erase')">지우개</button>
             <button class="board-tool-btn" id="tool-link" onclick="setBoardTool('link')">화살표 연결</button>
+            <button class="board-tool-btn icon-btn" id="tool-undo" onclick="undoCanvas()" title="되돌리기 (Ctrl+Z)">↩</button>
+            <button class="board-tool-btn icon-btn" id="tool-redo" onclick="redoCanvas()" title="다시하기 (Ctrl+Y)">↪</button>
           </div>
 
           <div class="board-tool-group">
-            <button class="board-tool-btn" onclick="addBoardNode('text')">+ 카드 추가</button>
-            <label class="board-tool-btn" style="cursor: pointer;">
+            <button class="board-tool-btn" id="btn-add-card" onclick="addBoardNode('text')">+ 카드 추가</button>
+            <label class="board-tool-btn" id="btn-add-img" style="cursor: pointer;">
               + 사진 추가
               <input type="file" id="boardImgUpload" accept="image/*" style="display: none;" onchange="addBoardImage(event)">
             </label>
-            <button class="board-tool-btn" onclick="clearCanvasDrawing()">드로잉 초기화</button>
             <button class="board-tool-btn" onclick="exportBoardData()">파일 저장(.json)</button>
             <label class="board-tool-btn" style="cursor: pointer;">
               불러오기
@@ -643,7 +687,10 @@
         </div>
 
         <div class="form-group" style="margin-top: 10px;">
-          <label>통합 스토리 서술 노트 (자동 저장됨)</label>
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
+            <label style="margin-bottom: 0;">통합 스토리 서술 노트 (자동 저장됨)</label>
+            <button class="small-btn" id="btn-reset-draw" onclick="clearCanvasDrawing()">드로잉 초기화</button>
+          </div>
           <textarea id="boardStoryText" placeholder="캔버스 상의 관계도를 기반으로 전체 이야기 흐름 및 사건 전개를 서술해 주세요..." style="height: 80px;" oninput="saveBoardState()"></textarea>
         </div>
       </section>
@@ -663,14 +710,9 @@
             <ul>
               <li><b>위치 이동</b>: 우측 사이드바의 '관계도 & 스토리 캔버스' 버튼을 누르면 칠판 모드로 전환됩니다.</li>
               <li><b>터치 지원 및 드로잉</b>: 모바일/패드 기기에서도 손가락이나 펜으로 직접 그림을 그리거나 지울 수 있습니다.</li>
+              <li><b>되돌리기 / 다시하기</b>: 툴바 상단의 `↩`, `↪` 아이콘 버튼으로 작업 내역을 이동시킬 수 있으며 단축키(`Ctrl+Z`, `Ctrl+Y`)도 지원됩니다.</li>
+              <li><b>명령어 커스텀 설정</b>: 우측 프로필 하단의 SETTINGS 영역에서 지우개, 펜 드로잉 등 각 명령어의 이름을 자유롭게 변경하고 파일로 저장이 가능합니다.</li>
               <li><b>카드 삭제 및 연결</b>: 카드의 빨간색 'X' 버튼을 누르면 연관된 화살표와 함께 삭제됩니다. '화살표 연결' 버튼 클릭 후 카드 두 개를 순서대로 누르면 방향 화살표가 생성됩니다.</li>
-              <li><b>자동 저장 및 내보내기</b>: JSON 파일로 내보내거나 불러올 수 있습니다.</li>
-            </ul>
-          </div>
-          <div class="guide-section">
-            <div class="guide-section-title">SECTION 2. AI 관여도 레벨 안내</div>
-            <ul>
-              <li><b>Lv.1~Lv.5 슬라이더</b>: 최소 다듬기부터 파격적인 스토리 확장까지 AI 개입 수준을 조절할 수 있습니다.</li>
             </ul>
           </div>
         </div>
@@ -679,6 +721,7 @@
 
     <!-- 우측 사이드바 -->
     <sidebar>
+      <!-- USER PROFILE CARD -->
       <div class="profile-card">
         <div class="card-title">USER PROFILE</div>
         <div class="profile-img-box">
@@ -699,9 +742,61 @@
         </div>
       </div>
 
+      <!-- 프로필 밑에 추가된 SETTINGS CARD (명령어 설정) -->
+      <div class="card">
+        <div class="card-title">SETTINGS (명령어 설정)</div>
+        <div class="cmd-setting-group">
+          <div class="cmd-item">
+            <label>펜 드로잉</label>
+            <input type="text" id="cmd-draw" value="펜 드로잉">
+          </div>
+          <div class="cmd-item">
+            <label>지우개</label>
+            <input type="text" id="cmd-erase" value="지우개">
+          </div>
+          <div class="cmd-item">
+            <label>선택/이동</label>
+            <input type="text" id="cmd-select" value="선택/이동">
+          </div>
+          <div class="cmd-item">
+            <label>화살표 연결</label>
+            <input type="text" id="cmd-link" value="화살표 연결">
+          </div>
+          <div class="cmd-item">
+            <label>카드 추가</label>
+            <input type="text" id="cmd-add-card" value="+ 카드 추가">
+          </div>
+          <div class="cmd-item">
+            <label>사진 추가</label>
+            <input type="text" id="cmd-add-img" value="+ 사진 추가">
+          </div>
+          <div class="cmd-item">
+            <label>되돌리기</label>
+            <input type="text" id="cmd-undo" value="↩">
+          </div>
+          <div class="cmd-item">
+            <label>다시하기</label>
+            <input type="text" id="cmd-redo" value="↪">
+          </div>
+          <div class="cmd-item">
+            <label>드로잉 초기화</label>
+            <input type="text" id="cmd-reset-draw" value="드로잉 초기화">
+          </div>
+        </div>
+
+        <div style="display: flex; flex-direction: column; gap: 4px;">
+          <button type="button" class="profile-btn" onclick="saveCommandsTemp()">임시저장</button>
+          <button type="button" class="profile-btn" onclick="exportCommandSettings()">설정 파일저장(.json)</button>
+          <label class="profile-btn" style="cursor: pointer; display: flex; align-items: center; justify-content: center;">
+            설정 불러오기
+            <input type="file" accept=".json" style="display: none;" onchange="importCommandSettings(event)">
+          </label>
+        </div>
+      </div>
+
       <div class="card">
         <div class="card-title">MEMO PAD</div>
-        <textarea id="memoInput" placeholder="메모를 입력하세요..." style="height: 100px; font-size: 11px;" oninput="saveMemo(this.value)"></textarea>
+        <textarea id="memoInput" placeholder="메모를 입력하세요..." style="height: 80px; font-size: 11px;" oninput="saveMemo(this.value)"></textarea>
       </div>
 
       <!-- 우측 하단 관계도 & 스토리 캔버스 버튼 -->
@@ -728,8 +823,26 @@
   let boardLinks = [];
   let linkStartNodeId = null;
 
+  // Undo/Redo History Stacks
+  let undoStack = [];
+  let redoStack = [];
+  const MAX_HISTORY = 20;
+
   const canvas = document.getElementById('drawingCanvas');
   const ctx = canvas.getContext('2d');
+
+  // Default Command Dictionary
+  let commandSettings = {
+    draw: "펜 드로잉",
+    erase: "지우개",
+    select: "선택/이동",
+    link: "화살표 연결",
+    addCard: "+ 카드 추가",
+    addImg: "+ 사진 추가",
+    undo: "↩",
+    redo: "↪",
+    resetDraw: "드로잉 초기화"
+  };
 
   const aiLevelDescriptions = {
     "1": "Lv.1 최소 (입력 내용 및 키워드 유지, 다듬기)",
@@ -754,9 +867,114 @@
     const savedMemo = localStorage.getItem('user_memo');
     if (savedMemo) document.getElementById('memoInput').value = savedMemo;
 
+    // Load Commands
+    loadCommandSettings();
+
     initCanvas();
     loadBoardState();
+
+    // 단축키 (Ctrl+Z, Ctrl+Y) 바인딩
+    window.addEventListener('keydown', (e) => {
+      if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'z') {
+        if (e.shiftKey) {
+          redoCanvas();
+        } else {
+          undoCanvas();
+        }
+      } else if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'y') {
+        redoCanvas();
+      }
+    });
   });
+
+  /* ---------------- COMMAND SETTINGS LOGIC ---------------- */
+  function applyCommandUI() {
+    document.getElementById('tool-draw').innerText = commandSettings.draw;
+    document.getElementById('tool-erase').innerText = commandSettings.erase;
+    document.getElementById('tool-select').innerText = commandSettings.select;
+    document.getElementById('tool-link').innerText = commandSettings.link;
+    document.getElementById('btn-add-card').innerText = commandSettings.addCard;
+    
+    // 사진 추가 (내부 file input 포함)
+    const imgBtn = document.getElementById('btn-add-img');
+    imgBtn.childNodes[0].nodeValue = commandSettings.addImg + ' ';
+    
+    document.getElementById('tool-undo').innerText = commandSettings.undo;
+    document.getElementById('tool-redo').innerText = commandSettings.redo;
+    document.getElementById('btn-reset-draw').innerText = commandSettings.resetDraw;
+
+    // 설정 입력 폼 값 매핑
+    document.getElementById('cmd-draw').value = commandSettings.draw;
+    document.getElementById('cmd-erase').value = commandSettings.erase;
+    document.getElementById('cmd-select').value = commandSettings.select;
+    document.getElementById('cmd-link').value = commandSettings.link;
+    document.getElementById('cmd-add-card').value = commandSettings.addCard;
+    document.getElementById('cmd-add-img').value = commandSettings.addImg;
+    document.getElementById('cmd-undo').value = commandSettings.undo;
+    document.getElementById('cmd-redo').value = commandSettings.redo;
+    document.getElementById('cmd-reset-draw').value = commandSettings.resetDraw;
+  }
+
+  function readCommandInputs() {
+    commandSettings.draw = document.getElementById('cmd-draw').value;
+    commandSettings.erase = document.getElementById('cmd-erase').value;
+    commandSettings.select = document.getElementById('cmd-select').value;
+    commandSettings.link = document.getElementById('cmd-link').value;
+    commandSettings.addCard = document.getElementById('cmd-add-card').value;
+    commandSettings.addImg = document.getElementById('cmd-add-img').value;
+    commandSettings.undo = document.getElementById('cmd-undo').value;
+    commandSettings.redo = document.getElementById('cmd-redo').value;
+    commandSettings.resetDraw = document.getElementById('cmd-reset-draw').value;
+  }
+
+  function saveCommandsTemp() {
+    readCommandInputs();
+    localStorage.setItem('user_command_settings', JSON.stringify(commandSettings));
+    applyCommandUI();
+    alert('명령어 설정이 임시저장 및 적용되었습니다.');
+  }
+
+  function loadCommandSettings() {
+    const saved = localStorage.getItem('user_command_settings');
+    if (saved) {
+      try {
+        commandSettings = { ...commandSettings, ...JSON.parse(saved) };
+      } catch (e) { console.error(e); }
+    }
+    applyCommandUI();
+  }
+
+  function exportCommandSettings() {
+    readCommandInputs();
+    const dataStr = JSON.stringify(commandSettings, null, 2);
+    const blob = new Blob([dataStr], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'command_settings.json';
+    a.click();
+    URL.revokeObjectURL(url);
+  }
+
+  function importCommandSettings(e) {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = function(evt) {
+      try {
+        const imported = JSON.parse(evt.target.result);
+        commandSettings = { ...commandSettings, ...imported };
+        localStorage.setItem('user_command_settings', JSON.stringify(commandSettings));
+        applyCommandUI();
+        alert('명령어 설정을 파일에서 불러왔습니다.');
+      } catch (err) {
+        alert('올바르지 않은 설정 JSON 파일입니다.');
+      }
+    };
+    reader.readAsText(file);
+    e.target.value = '';
+  }
 
   function changeTheme(themeName) {
     document.body.setAttribute('data-theme', themeName);
@@ -881,6 +1099,7 @@
 
   function startDrawing(e) {
     if (boardTool !== 'draw' && boardTool !== 'erase') return;
+    saveSnapshot();
     isDrawing = true;
     const pos = getPos(e);
     lastX = pos.x;
@@ -922,12 +1141,68 @@
   }
 
   function clearCanvasDrawing() {
+    saveSnapshot();
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     saveBoardState();
   }
 
-  /* ---------------- NODES (CARDS/IMAGES) & ARROWS ---------------- */
+  /* ---------------- UNDO / REDO LOGIC ---------------- */
+  function saveSnapshot() {
+    const state = {
+      nodes: JSON.parse(JSON.stringify(boardNodes)),
+      links: JSON.parse(JSON.stringify(boardLinks)),
+      canvasImg: canvas.toDataURL()
+    };
+    undoStack.push(state);
+    if (undoStack.length > MAX_HISTORY) undoStack.shift();
+    redoStack = [];
+  }
+
+  function undoCanvas() {
+    if (undoStack.length === 0) return;
+
+    const currentState = {
+      nodes: JSON.parse(JSON.stringify(boardNodes)),
+      links: JSON.parse(JSON.stringify(boardLinks)),
+      canvasImg: canvas.toDataURL()
+    };
+    redoStack.push(currentState);
+
+    const prev = undoStack.pop();
+    applyState(prev);
+  }
+
+  function redoCanvas() {
+    if (redoStack.length === 0) return;
+
+    const currentState = {
+      nodes: JSON.parse(JSON.stringify(boardNodes)),
+      links: JSON.parse(JSON.stringify(boardLinks)),
+      canvasImg: canvas.toDataURL()
+    };
+    undoStack.push(currentState);
+
+    const next = redoStack.pop();
+    applyState(next);
+  }
+
+  function applyState(state) {
+    boardNodes = state.nodes || [];
+    boardLinks = state.links || [];
+    
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    if (state.canvasImg) {
+      const img = new Image();
+      img.onload = () => ctx.drawImage(img, 0, 0);
+      img.src = state.canvasImg;
+    }
+    renderBoardNodes();
+    saveBoardState();
+  }
+
+  /* ---------------- NODES & ARROWS ---------------- */
   function addBoardNode(type, x = 30, y = 30, title = '카드 요소', desc = '') {
+    saveSnapshot();
     const id = 'node_' + Date.now();
     boardNodes.push({ id, type, x, y, title, desc });
     renderBoardNodes();
@@ -940,6 +1215,7 @@
 
     const reader = new FileReader();
     reader.onload = function(evt) {
+      saveSnapshot();
       const id = 'node_' + Date.now();
       boardNodes.push({ id, type: 'image', x: 50, y: 50, title: '사진 카드', imgSrc: evt.target.result });
       renderBoardNodes();
@@ -995,6 +1271,7 @@
 
       if (boardTool !== 'select') return;
 
+      saveSnapshot();
       isDragging = true;
       const clientX = e.touches ? e.touches[0].clientX : e.clientX;
       const clientY = e.touches ? e.touches[0].clientY : e.clientY;
@@ -1035,6 +1312,7 @@
 
   function deleteNode(e, id) {
     e.stopPropagation();
+    saveSnapshot();
     boardNodes = boardNodes.filter(n => n.id !== id);
     boardLinks = boardLinks.filter(l => l.from !== id && l.to !== id);
     renderBoardNodes();
@@ -1046,6 +1324,7 @@
       linkStartNodeId = id;
       alert('연결할 대상 카드를 선택하세요.');
     } else if (linkStartNodeId !== id) {
+      saveSnapshot();
       boardLinks.push({ id: 'link_' + Date.now(), from: linkStartNodeId, to: id });
       linkStartNodeId = null;
       renderBoardNodes();
@@ -1094,7 +1373,7 @@
     if (node) { node.desc = val; saveBoardState(); }
   }
 
-  /* ---------------- SAVE / IMPORT / EXPORT ---------------- */
+  /* ---------------- BOARD SAVE / IMPORT / EXPORT ---------------- */
   function saveBoardState() {
     const state = {
       nodes: boardNodes,
@@ -1144,6 +1423,7 @@
     const reader = new FileReader();
     reader.onload = function(evt) {
       try {
+        saveSnapshot();
         const data = JSON.parse(evt.target.result);
         boardNodes = data.nodes || [];
         boardLinks = data.links || [];
