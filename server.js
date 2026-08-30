@@ -20,9 +20,9 @@ app.post('/api/generate', async (req, res) => {
       return res.status(500).json({ error: 'HF_TOKEN 환경 변수가 설정되지 않았습니다.' });
     }
 
-    // 무료 라우터에서 광범위하게 지원하는 Llama 3.2 모델로 교체
+    // Hugging Face Direct Serverless Inference API 호출
     const response = await fetch(
-      "https://router.huggingface.co/v1/chat/completions",
+      "https://api-inference.huggingface.co/models/Qwen/Qwen2.5-7B-Instruct",
       {
         method: "POST",
         headers: {
@@ -30,13 +30,12 @@ app.post('/api/generate', async (req, res) => {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          model: "meta-llama/Llama-3.2-3B-Instruct",
-          messages: [
-            { role: "system", content: "당신은 스토리 기획 전문 AI 작가입니다. 마크다운 형식으로 풍부하고 깔끔하게 작성하세요." },
-            { role: "user", content: prompt }
-          ],
-          max_tokens: 700,
-          temperature: 0.7
+          inputs: `<|im_start|>system\n당신은 스토리 기획 전문 AI 작가입니다. 마크다운 형식으로 작성하세요.<|im_end|>\n<|im_start|>user\n${prompt}<|im_end|>\n<|im_start|>assistant\n`,
+          parameters: {
+            max_new_tokens: 700,
+            temperature: 0.7,
+            return_full_text: false
+          }
         }),
       }
     );
@@ -45,10 +44,18 @@ app.post('/api/generate', async (req, res) => {
 
     if (!response.ok) {
       console.error('API Error Response:', data);
-      return res.status(500).json({ error: data.error?.message || 'AI 생성 실패' });
+      return res.status(500).json({ error: data.error || 'AI 응답 생성 실패' });
     }
 
-    const resultText = data.choices?.[0]?.message?.content || "결과를 생성할 수 없습니다.";
+    let resultText = "";
+    if (Array.isArray(data) && data.length > 0) {
+      resultText = data[0].generated_text;
+    } else if (data.generated_text) {
+      resultText = data.generated_text;
+    } else {
+      resultText = "결과를 생성할 수 없습니다.";
+    }
+
     res.json({ result: resultText });
 
   } catch (error) {
