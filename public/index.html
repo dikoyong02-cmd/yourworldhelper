@@ -1341,14 +1341,18 @@
     submitBtn.innerText = "[ 생성 처리 중... ]";
     outputDiv.innerHTML = '<p style="color:var(--accent-color);">⏳ AI가 입력을 분석하여 생성 중입니다...</p>';
 
-    let tempValue = 0.3;
+    // 온도(temperature) 최적화: 토큰 루프 방지를 위해 최소 온도를 0.3으로 설정
+    let tempValue = 0.5;
     let levelInstruction = "사용자의 요청에 맞춰 완성도 있게 작성해 주세요.";
 
     if (selectedAiLevel === 'low') {
-      tempValue = 0.1;
+      tempValue = 0.3; // 0.1에서 0.3으로 상향 조정하여 외계어/무한루프 현상 방지
       levelInstruction = "입력한 내용을 바탕으로 원문에 충실하게 가공 및 정리만 해주세요.";
-    } else if (selectedAiLevel === 'high') {
+    } else if (selectedAiLevel === 'mid') {
       tempValue = 0.5;
+      levelInstruction = "사용자의 요청에 맞춰 적절한 창의성을 보태어 작성해 주세요.";
+    } else if (selectedAiLevel === 'high') {
+      tempValue = 0.8;
       levelInstruction = "입력한 내용을 바탕으로 풍부하고 창의적인 아이디어를 적극적으로 살 붙여 전개하세요.";
     }
 
