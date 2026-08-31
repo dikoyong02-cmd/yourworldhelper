@@ -306,8 +306,7 @@
         <div class="form-group" id="aiLevelGroup">
           <label>AI 관여도 (창의성 Level)</label>
           <div class="level-btn-group">
-            <button type="button" class="level-btn" id="lvlBtn-low" onclick="setAiLevel('low')">낮음 (충실)</button>
-            <button type="button" class="level-btn active" id="lvlBtn-mid" onclick="setAiLevel('mid')">보통 (적절)</button>
+            <button type="button" class="level-btn active" id="lvlBtn-low" onclick="setAiLevel('low')">낮음 (적절)</button>
             <button type="button" class="level-btn" id="lvlBtn-high" onclick="setAiLevel('high')">높음 (창의적)</button>
           </div>
         </div>
@@ -511,7 +510,7 @@
   let currentLineWidth = 2;
   let canvasScale = 1.0;
   let rawMarkdownResult = "";
-  let selectedAiLevel = 'mid';
+  let selectedAiLevel = 'low';
 
   let isDrawing = false;
   let lastX = 0, lastY = 0;
@@ -1346,9 +1345,6 @@
     let levelInstruction = "사용자의 요청에 맞춰 완성도 있게 작성해 주세요.";
 
     if (selectedAiLevel === 'low') {
-      tempValue = 0.3; // 0.1에서 0.3으로 상향 조정하여 외계어/무한루프 현상 방지
-      levelInstruction = "입력한 내용을 바탕으로 원문에 충실하게 가공 및 정리만 해주세요.";
-    } else if (selectedAiLevel === 'mid') {
       tempValue = 0.5;
       levelInstruction = "사용자의 요청에 맞춰 적절한 창의성을 보태어 작성해 주세요.";
     } else if (selectedAiLevel === 'high') {
