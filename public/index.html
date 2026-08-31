@@ -227,6 +227,7 @@
       <ol>
         <li>백엔드 연동을 통해 사용자가 별도의 API Key를 입력하지 않고 무료로 창작 기능을 사용할 수 있습니다.</li>
         <li>출력 텍스트 릴리스 시스템이 개선되어 특수 키워드 및 언어 오류 없이 자연스럽게 작동합니다.</li>
+        <li><strong>데이터 파일 저장 기능 안내:</strong> 오른쪽 사이드바의 [DATA MANAGEMENT] 메뉴를 통해 작업 중인 프로필, 단축키 설정, 입력 데이터를 JSON 파일로 다운로드하여 백업하거나 불러올 수 있습니다.</li>
       </ol>
     </div>
   </div>
@@ -554,8 +555,8 @@
     if (saved) {
       try {
         const data = JSON.parse(saved);
-        if (data.prompt) document.getElementById('promptInput').value = data.prompt;
-        if (data.keyword) document.getElementById('keywordInput').value = data.keyword;
+        if (data.prompt !== undefined) document.getElementById('promptInput').value = data.prompt;
+        if (data.keyword !== undefined) document.getElementById('keywordInput').value = data.keyword;
         if (data.genre) document.getElementById('genreSelect').value = data.genre;
         if (data.language) document.getElementById('languageSelect').value = data.language;
         if (data.memo) document.getElementById('memoInput').value = data.memo;
@@ -865,8 +866,21 @@
 
   function selectMainTab(tabType, element) {
     if (currentMainTab !== tabType) {
+      // 1. DOM 요소 비우기
       document.getElementById('promptInput').value = '';
       document.getElementById('keywordInput').value = '';
+
+      // 2. 로컬 스토리지 상의 입력 데이터도 명확히 비우고 저장
+      const saved = localStorage.getItem('user_draft_data');
+      if (saved) {
+        try {
+          let draftData = JSON.parse(saved);
+          draftData.prompt = '';
+          draftData.keyword = '';
+          localStorage.setItem('user_draft_data', JSON.stringify(draftData));
+        } catch (e) {}
+      }
+      
       triggerAutoSave();
     }
 
