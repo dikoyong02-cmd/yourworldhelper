@@ -3,1270 +3,261 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Your World Helper - Retro Edition</title>
+  <title>스토리 창작 보조 도구</title>
+  <!-- Markdown 파싱용 라이브러리 (Marked.js) -->
   <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
   <style>
     :root {
-      --bg-color: #008080;
-      --card-bg: #c0c0c0;
-      --card-sub-bg: #c0c0c0;
-      --text-color: #000000;
-      --border-color: #000000;
-      --accent-color: #000080;
-      --accent-text: #ffffff;
-      --input-bg: #ffffff;
-      --window-title-bg: #000080;
-      --footer-text: #ffffff;
-      --canvas-bg: #ffffff;
-      --canvas-grid: rgba(0, 0, 0, 0.15);
-      --canvas-frame: #808080;
-    }
-
-    [data-theme="bubblegum"] {
-      --bg-color: #ffcbf2;
-      --card-bg: #fde2e4;
-      --card-sub-bg: #ffffff;
-      --text-color: #5c3d51;
-      --border-color: #8e5572;
-      --accent-color: #a3a3f5;
-      --accent-text: #ffffff;
-      --input-bg: #ffffff;
-      --window-title-bg: #a3a3f5;
-      --footer-text: #404040;
-      --canvas-bg: #fff5fa;
-      --canvas-grid: rgba(142, 85, 114, 0.15);
-      --canvas-frame: #a3a3f5;
-    }
-
-    [data-theme="classic-teal"] {
-      --bg-color: #0b3c3c;
-      --card-bg: #1f4e4e;
-      --card-sub-bg: #2b5e5e;
-      --text-color: #e0f2f1;
-      --border-color: #4db6ac;
-      --accent-color: #80cbc4;
-      --accent-text: #004d40;
-      --input-bg: #143737;
-      --window-title-bg: #004d40;
-      --footer-text: #80cbc4;
-      --canvas-bg: #072626;
-      --canvas-grid: rgba(77, 182, 172, 0.2);
-      --canvas-frame: #80cbc4;
-    }
-
-    [data-theme="cyberpunk"] {
-      --bg-color: #0d0221;
-      --card-bg: #190934;
-      --card-sub-bg: #260f4c;
-      --text-color: #00f0ff;
-      --border-color: #ff007f;
-      --accent-color: #ff007f;
-      --accent-text: #ffffff;
-      --input-bg: #05010d;
-      --window-title-bg: #ff007f;
-      --footer-text: #ff007f;
-      --canvas-bg: #0a0318;
-      --canvas-grid: rgba(0, 240, 255, 0.2);
-      --canvas-frame: #00f0ff;
-    }
-
-    [data-theme="dark"] {
-      --bg-color: #121212;
-      --card-bg: #1e1e1e;
-      --card-sub-bg: #2d2d2d;
+      --bg-color: #1a1a1a;
+      --card-bg: #2a2a2a;
       --text-color: #e0e0e0;
-      --border-color: #444444;
-      --accent-color: #bb86fc;
-      --accent-text: #000000;
-      --input-bg: #121212;
-      --window-title-bg: #272727;
-      --footer-text: #aaaaaa;
-      --canvas-bg: #181818;
-      --canvas-grid: rgba(255, 255, 255, 0.1);
-      --canvas-frame: #bb86fc;
+      --accent-color: #4da6ff;
+      --border-color: #444;
+      --btn-hover: #3582d4;
     }
 
-    [data-theme="lavender"] {
-      --bg-color: #1e1b2e;
-      --card-bg: #2a2438;
-      --card-sub-bg: #352f44;
-      --text-color: #e0d7f5;
-      --border-color: #5c5470;
-      --accent-color: #b9a7ea;
-      --accent-text: #1e1b2e;
-      --input-bg: #191624;
-      --window-title-bg: #5c5470;
-      --footer-text: #b9a7ea;
-      --canvas-bg: #151221;
-      --canvas-grid: rgba(185, 167, 234, 0.15);
-      --canvas-frame: #b9a7ea;
+    body {
+      background-color: var(--bg-color);
+      color: var(--text-color);
+      font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, Roboto, sans-serif;
+      margin: 0;
+      padding: 20px;
+      display: flex;
+      justify-content: center;
     }
 
-    [data-theme="matrix"] {
-      --bg-color: #020b05;
-      --card-bg: #081a0e;
-      --card-sub-bg: #0e2917;
-      --text-color: #00ff66;
-      --border-color: #008033;
-      --accent-color: #00ff66;
-      --accent-text: #000000;
-      --input-bg: #030f07;
-      --window-title-bg: #004d1f;
-      --footer-text: #00ff66;
-      --canvas-bg: #010502;
-      --canvas-grid: rgba(0, 255, 102, 0.2);
-      --canvas-frame: #00ff66;
+    .container {
+      width: 100%;
+      max-width: 900px;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
     }
 
-    [data-theme="sunset"] {
-      --bg-color: #2b1e1e;
-      --card-bg: #3d2b2b;
-      --card-sub-bg: #4a3535;
-      --text-color: #f7d6c8;
-      --border-color: #a35d4d;
-      --accent-color: #e07a5f;
-      --accent-text: #ffffff;
-      --input-bg: #241919;
-      --window-title-bg: #8d493a;
-      --footer-text: #e07a5f;
-      --canvas-bg: #1c1313;
-      --canvas-grid: rgba(224, 122, 95, 0.2);
-      --canvas-frame: #e07a5f;
+    .card {
+      background-color: var(--card-bg);
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      padding: 20px;
     }
 
-    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Tahoma', 'Dotum', '굴림', sans-serif; }
-    html, body { width: 100%; overflow-x: hidden; }
-    body { background-color: var(--bg-color); color: var(--text-color); padding: 15px; touch-action: manipulation; }
-    .container { max-width: 1000px; width: 100%; margin: 0 auto; background: var(--card-bg); border: 2px solid var(--border-color); padding: 10px; box-shadow: 4px 4px 0px #000000; position: relative; overflow: hidden; }
-    
-    .save-badge { position: absolute; top: 12px; right: 15px; font-size: 10px; padding: 2px 6px; background: var(--input-bg); border: 1px solid var(--border-color); font-weight: bold; }
-
-    .notice-card { background: var(--card-sub-bg); border: 1px solid var(--border-color); margin-bottom: 10px; font-size: 11px; width: 100%; }
-    .notice-header { background: var(--accent-color); color: var(--accent-text); padding: 4px 8px; font-weight: bold; display: flex; justify-content: space-between; align-items: center; cursor: pointer; }
-    .notice-toggle-btn { background: var(--card-bg); color: var(--text-color); border: 1px solid var(--border-color); font-size: 10px; padding: 1px 6px; cursor: pointer; }
-    .notice-body { padding: 10px; line-height: 1.5; }
-    .notice-body ol { margin-left: 18px; }
-    .notice-body li { margin-bottom: 4px; }
-
-    header { background: var(--window-title-bg); padding: 6px 10px; margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center; border: 1px solid var(--border-color); flex-wrap: wrap; gap: 8px; }
-    header h1 { font-size: 14px; font-weight: bold; color: #ffffff; }
-    .theme-selector-box { display: flex; align-items: center; gap: 6px; color: #ffffff; font-size: 11px; }
-    .theme-selector-box select { padding: 3px 6px; font-size: 11px; border: 1px solid var(--border-color); background-color: var(--input-bg); color: var(--text-color); }
-    
-    .tab-btn, .sub-tab-btn, button.primary-btn, .profile-btn, .board-tool-btn, .side-nav-btn, .small-btn {
-      display: inline-flex; align-items: center; justify-content: center; height: 28px; padding: 0 10px;
-      border: 1px solid var(--border-color); background: var(--card-bg); color: var(--text-color);
-      font-size: 11px; font-weight: bold; cursor: pointer; outline: none; user-select: none; flex-shrink: 0;
+    .tab-group {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 15px;
+      border-bottom: 1px solid var(--border-color);
+      padding-bottom: 10px;
     }
-    .tab-btn.active, .sub-tab-btn.active, .board-tool-btn.active, .side-nav-btn.active { background: var(--accent-color); color: var(--accent-text); }
-    .side-nav-btn { width: 100%; height: 36px; font-size: 11px; border: 1px solid var(--border-color); }
-    button.primary-btn, .profile-btn { width: 100%; }
 
-    .tab-container { display: flex; gap: 4px; margin-bottom: 8px; overflow-x: auto; padding-bottom: 4px; -webkit-overflow-scrolling: touch; }
-    .sub-tab-container { display: flex; gap: 4px; margin-bottom: 12px; padding-left: 2px; overflow-x: auto; padding-bottom: 4px; -webkit-overflow-scrolling: touch; }
-    
-    main { display: grid; grid-template-columns: 1fr 260px; gap: 12px; width: 100%; }
-    .content-area { display: flex; flex-direction: column; gap: 12px; min-width: 0; }
-    .card { border: 1px solid var(--border-color); background: var(--card-sub-bg); padding: 12px; width: 100%; box-sizing: border-box; }
-    .card-title { font-size: 12px; font-weight: bold; margin-bottom: 10px; background: var(--accent-color); color: var(--accent-text); padding: 4px 8px; border: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 4px; }
-    .card-title-btn { background: var(--card-bg); color: var(--text-color); border: 1px solid var(--border-color); font-size: 10px; padding: 1px 6px; cursor: pointer; }
+    .tab-btn {
+      background: none;
+      border: none;
+      color: #888;
+      font-size: 16px;
+      font-weight: bold;
+      cursor: pointer;
+      padding: 8px 16px;
+      border-radius: 4px;
+    }
 
-    .form-group { margin-bottom: 10px; width: 100%; }
-    .form-group label { display: block; font-size: 11px; font-weight: bold; margin-bottom: 4px; }
-    input[type="text"], input[type="password"], select, textarea { width: 100%; border: 1px solid var(--border-color); padding: 6px; font-size: 12px; background: var(--input-bg); color: var(--text-color); outline: none; box-sizing: border-box; }
-    textarea { height: 100px; resize: vertical; }
+    .tab-btn.active {
+      color: #fff;
+      background-color: var(--accent-color);
+    }
 
-    .tool-label-grid, .shortcut-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
-    .shortcut-input { text-align: center; font-weight: bold; cursor: pointer; background-color: var(--input-bg); }
-    .shortcut-input:focus { border-color: var(--accent-color); background-color: #fffde7; color: #000; }
+    .sub-tab-group {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 15px;
+    }
 
-    .result-box { min-height: 180px; width: 100%; background: var(--input-bg); border: 1px solid var(--border-color); padding: 12px; font-size: 12px; line-height: 1.6; word-break: break-all; overflow-wrap: break-word; overflow-x: auto; }
-    .markdown-body { width: 100%; word-break: break-all; overflow-wrap: break-word; }
-    .markdown-body h1, .markdown-body h2, .markdown-body h3 { margin-top: 10px; margin-bottom: 6px; color: var(--accent-color); border-bottom: 1px dashed var(--border-color); padding-bottom: 4px; word-break: break-all; }
-    .markdown-body p { margin-bottom: 8px; word-break: break-all; }
-    .markdown-body ul, .markdown-body ol { margin-left: 20px; margin-bottom: 8px; word-break: break-all; }
-    .markdown-body blockquote { border-left: 3px solid var(--accent-color); padding-left: 8px; margin: 8px 0; color: var(--text-color); word-break: break-all; }
-    .markdown-body table { width: 100%; border-collapse: collapse; margin-bottom: 8px; display: block; overflow-x: auto; }
-    .markdown-body table th, .markdown-body table td { border: 1px solid var(--border-color); padding: 4px 8px; }
+    .sub-tab-btn {
+      background-color: #333;
+      border: 1px solid var(--border-color);
+      color: #ccc;
+      padding: 6px 12px;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 14px;
+    }
 
-    .board-container { position: relative; width: 100%; height: 450px; background-color: var(--canvas-bg); border: 2px solid var(--canvas-frame); overflow: hidden; touch-action: none; }
-    .board-viewport { position: absolute; width: 100%; height: 100%; background-image: linear-gradient(var(--canvas-grid) 1px, transparent 1px), linear-gradient(90deg, var(--canvas-grid) 1px, transparent 1px); background-size: 20px 20px; transform-origin: 0 0; }
-    .board-toolbar { display: flex; flex-wrap: wrap; gap: 4px; margin-bottom: 8px; align-items: center; justify-content: space-between; background: var(--card-bg); padding: 6px; border: 1px solid var(--border-color); overflow-x: auto; }
-    .board-tool-group { display: flex; gap: 4px; align-items: center; flex-wrap: wrap; }
+    .sub-tab-btn.active {
+      border-color: var(--accent-color);
+      color: var(--accent-color);
+    }
 
-    .canvas-node { position: absolute; background: var(--input-bg); border: 1px solid var(--border-color); padding: 6px; font-size: 11px; box-shadow: 2px 2px 0px rgba(0,0,0,0.2); cursor: move; user-select: none; min-width: 80px; min-height: 40px; }
-    .canvas-node img { width: 100%; height: 100%; object-fit: contain; display: block; pointer-events: none; }
-    .card-delete-btn { position: absolute; top: -6px; right: -6px; width: 16px; height: 16px; background: #ff4d4f; color: #ffffff; border: 1px solid #000; border-radius: 50%; font-size: 10px; line-height: 14px; text-align: center; cursor: pointer; user-select: none; z-index: 10; font-weight: bold; }
-    .resize-handle { position: absolute; right: 0; bottom: 0; width: 10px; height: 10px; background: var(--border-color); cursor: se-resize; }
+    .input-group {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin-bottom: 15px;
+    }
 
-    sidebar { display: flex; flex-direction: column; gap: 12px; min-width: 0; }
-    .profile-card { border: 1px solid var(--border-color); padding: 12px; background: var(--card-sub-bg); text-align: center; width: 100%; }
-    .profile-img-box { width: 90px; height: 90px; border: 1px solid var(--border-color); margin: 0 auto 8px; display: flex; align-items: center; justify-content: center; background: var(--input-bg); overflow: hidden; }
-    .profile-img-box img { width: 100%; height: 100%; object-fit: cover; display: none; }
-    .collapsible-content.collapsed { display: none; }
+    label {
+      font-size: 14px;
+      font-weight: bold;
+    }
 
-    .toast { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); background: var(--window-title-bg); color: #fff; padding: 6px 12px; border: 1px solid #000; font-size: 11px; z-index: 9999; display: none; }
+    input[type="text"], textarea, select {
+      background-color: #1E1E1E;
+      border: 1px solid var(--border-color);
+      color: #fff;
+      padding: 10px;
+      border-radius: 4px;
+      font-size: 14px;
+    }
 
-    footer { margin-top: 15px; border-top: 1px solid var(--border-color); padding-top: 8px; text-align: center; font-size: 11px; color: var(--footer-text); }
-    @media (max-width: 768px) { main { grid-template-columns: 1fr; } }
+    textarea {
+      resize: vertical;
+      min-height: 100px;
+    }
+
+    .btn-submit {
+      background-color: var(--accent-color);
+      color: #fff;
+      border: none;
+      padding: 12px;
+      font-size: 16px;
+      font-weight: bold;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: background-color 0.2s;
+    }
+
+    .btn-submit:hover {
+      background-color: var(--btn-hover);
+    }
+
+    .btn-submit:disabled {
+      background-color: #555;
+      cursor: not-allowed;
+    }
+
+    #resultOutput {
+      line-height: 1.6;
+      min-height: 150px;
+    }
+
+    #resultOutput ul {
+      padding-left: 20px;
+    }
+
+    #toast {
+      position: fixed;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      background-color: #333;
+      color: #fff;
+      padding: 10px 20px;
+      border-radius: 20px;
+      display: none;
+      box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+    }
   </style>
 </head>
-<body data-theme="classic-win">
-
-<div class="toast" id="toastMsg">알림</div>
+<body>
 
 <div class="container">
-  <span class="save-badge" id="saveBadge">💾 저장됨</span>
-
-  <div class="notice-card">
-    <div class="notice-header" onclick="toggleNotice()">
-      <span>📣 서비스 공지사항 (Notice)</span>
-      <button type="button" class="notice-toggle-btn" id="noticeToggleBtn">▲ 접기</button>
+  <!-- 메인 설정 및 입력 영역 -->
+  <div class="card">
+    <div class="tab-group">
+      <button class="tab-btn active" onclick="switchMainTab('topic')">주제 선정 (창작자 모드)</button>
+      <button class="tab-btn" onclick="switchMainTab('myWorld')">내 세계관 (초보자 모드)</button>
     </div>
-    <div class="notice-body" id="noticeBody">
-      <ol>
-        <li>백엔드 연동을 통해 사용자가 별도의 API Key를 입력하지 않고 무료로 창작 기능을 사용할 수 있습니다.</li>
-        <li>출력 텍스트 릴리스 시스템이 개선되어 특수 키워드 및 언어 오류 없이 자연스럽게 작동합니다.</li>
-        <li><strong>데이터 파일 저장 기능 안내:</strong> 오른쪽 사이드바의 [DATA MANAGEMENT] 메뉴를 통해 작업 중인 프로필, 단축키 설정, 입력 데이터를 JSON 파일로 다운로드하여 백업하거나 불러올 수 있습니다.</li>
-      </ol>
-    </div>
-  </div>
 
-  <header>
-    <h1>YOUR WORLD HELPER (v2.0)</h1>
-    <div class="theme-selector-box">
-      <label for="themeSelect">COLOR THEME:</label>
-      <select id="themeSelect" onchange="changeTheme(this.value)">
-        <option value="classic-win" selected>Classic Windows 98</option>
-        <option value="bubblegum">Y2K Bubblegum</option>
-        <option value="classic-teal">Classic Teal</option>
-        <option value="cyberpunk">Cyberpunk Neon</option>
-        <option value="dark">Dark Mode</option>
-        <option value="lavender">Midnight Lavender</option>
-        <option value="matrix">Emerald Matrix</option>
-        <option value="sunset">Sunset Warmth</option>
+    <!-- 서브 탭 (내 세계관 클릭 시 표시) -->
+    <div id="subTabContainer" class="sub-tab-group" style="display: none;">
+      <button class="sub-tab-btn active" onclick="switchSubTab('world')">세계관</button>
+      <button class="sub-tab-btn" onclick="switchSubTab('character')">캐릭터</button>
+      <button class="sub-tab-btn" onclick="switchSubTab('plot')">플롯</button>
+    </div>
+
+    <div class="input-group">
+      <label for="languageSelect">출력 언어</label>
+      <select id="languageSelect">
+        <option value="한국어" selected>한국어</option>
+        <option value="English">English</option>
+        <option value="日本語">日本語</option>
       </select>
-    </div>
-  </header>
 
-  <div class="tab-container">
-    <button class="tab-btn active" id="tab-myWorld" onclick="selectMainTab('myWorld', this)">나만의 세상 만들기</button>
-    <button class="tab-btn" id="tab-topic" onclick="selectMainTab('topic', this)">주제 선정</button>
-    <button class="tab-btn" id="tab-guide" onclick="selectMainTab('guide', this)">사용 가이드</button>
-  </div>
-
-  <div class="sub-tab-container" id="subTabContainer">
-    <button class="sub-tab-btn active" id="subTab-world" onclick="selectSubTab('world', this)">세계관 생성</button>
-    <button class="sub-tab-btn" id="subTab-character" onclick="selectSubTab('character', this)">캐릭터 설정</button>
-    <button class="sub-tab-btn" id="subTab-plot" onclick="selectSubTab('plot', this)">플롯 / 스토리</button>
-  </div>
-
-  <main>
-    <div class="content-area">
-      <section class="card" id="inputSection">
-        <div class="card-title">
-          <span id="formTitle">세계관 설정 입력</span>
-          <button type="button" class="card-title-btn" onclick="resetFormInputs()">🔄 입력 초기화</button>
-        </div>
-        
-        <div class="form-group" id="languageGroup">
-          <label>출력 언어 선택 (Output Language)</label>
-          <select id="languageSelect" onchange="triggerAutoSave()">
-            <option value="한국어" selected>한국어 (Korean)</option>
-            <option value="English">English (영어)</option>
-            <option value="日本語">日本語 (일본어)</option>
-            <option value="中文">中文 (중국어)</option>
-          </select>
-        </div>
-
-        <div class="form-group" id="genreGroup">
-          <label>장르 / 테마</label>
-          <select id="genreSelect" onchange="triggerAutoSave()">
-            <option value="판타지">판타지</option>
-            <option value="SF/사이버펑크">SF / 사이버펑크</option>
-            <option value="현대 로맨스">현대 로맨스</option>
-            <option value="미스터리/스릴러">미스터리 / 스릴러</option>
-            <option value="무협/시대극">무협 / 시대극</option>
-          </select>
-        </div>
-
-        <div class="form-group" id="mainPromptGroup">
-          <label id="promptLabel">상세 요구사항 / 프롬프트</label>
-          <textarea id="promptInput" placeholder="원하는 분위기나 핵심 소재를 입력해보세요..." oninput="debounceAutoSave()"></textarea>
-        </div>
-
-        <div class="form-group" id="keywordGroup">
-          <label id="keywordLabel">핵심 키워드 (선택)</label>
-          <input type="text" id="keywordInput" placeholder="예: 시계탑, 비밀, 안개" oninput="debounceAutoSave()">
-        </div>
-
-        <button type="button" class="primary-btn" id="btnSubmit" onclick="generateContent()">[ 생성 실행 ]</button>
-      </section>
-
-      <section class="card" id="boardSection" style="display: none;">
-        <div class="card-title">RELATIONSHIP & STORY CANVAS</div>
-        <div class="board-toolbar">
-          <div class="board-tool-group">
-            <button class="board-tool-btn" id="tool-select" onclick="setBoardTool('select')"><span id="txt-label-select">이동</span> (<span id="btn-key-select">M</span>)</button>
-            <button class="board-tool-btn active" id="tool-draw" onclick="setBoardTool('draw')"><span id="txt-label-draw">펜</span> (<span id="btn-key-draw">P</span>)</button>
-            <button class="board-tool-btn" id="tool-arrow" onclick="setBoardTool('arrow')"><span id="txt-label-arrow">화살표</span> (<span id="btn-key-arrow">A</span>)</button>
-            <select id="arrowWidthSelect" style="width: 70px; height: 28px; font-size: 11px;" onchange="updateLineWidth(this.value)">
-              <option value="1">1px</option>
-              <option value="2" selected>2px</option>
-              <option value="4">4px</option>
-              <option value="6">6px</option>
-            </select>
-            <button class="board-tool-btn" id="tool-erase" onclick="setBoardTool('erase')"><span id="txt-label-erase">지우개</span> (<span id="btn-key-erase">E</span>)</button>
-          </div>
-          <div class="board-tool-group">
-            <button class="small-btn" onclick="zoomCanvas(0.1)" title="확대">+</button>
-            <button class="small-btn" id="zoomResetBtn" onclick="resetZoom()" title="원래 크기">100%</button>
-            <button class="small-btn" onclick="zoomCanvas(-0.1)" title="축소">-</button>
-            <button class="small-btn" onclick="addTextCard()">+ 카드</button>
-            <button class="small-btn" onclick="document.getElementById('canvasImageInput').click()">+ 이미지</button>
-            <input type="file" id="canvasImageInput" accept="image/*" style="display:none;" onchange="addCanvasImage(event)">
-            <button class="small-btn" onclick="undoCanvas()" title="되돌리기">↩ (<span id="btn-key-undo">Ctrl+Z</span>)</button>
-            <button class="small-btn" onclick="redoCanvas()" title="다시실행">↪ (<span id="btn-key-redo">Ctrl+Y</span>)</button>
-            <button class="small-btn" onclick="clearCanvasDrawing()">초기화</button>
-          </div>
-        </div>
-        <div class="board-container" id="boardContainer">
-          <div class="board-viewport" id="boardViewport">
-            <canvas id="drawingCanvas"></canvas>
-          </div>
-        </div>
-        <div class="form-group" style="margin-top: 10px;">
-          <label>통합 스토리 서술 노트</label>
-          <textarea id="boardStoryText" placeholder="아이디어나 전체 스토리 흐름을 자유롭게 정리하세요..." oninput="debounceAutoSave()"></textarea>
-        </div>
-      </section>
-
-      <article class="card" id="resultSection">
-        <div class="card-title">
-          <span>생성 결과</span>
-          <div>
-            <button type="button" class="card-title-btn" onclick="copyResultText()">📋 복사</button>
-            <button type="button" class="card-title-btn" onclick="downloadResultMD()">💾 MD 다운로드</button>
-          </div>
-        </div>
-        <div id="resultOutput" class="result-box markdown-body">결과가 여기에 표시됩니다.</div>
-      </article>
-
-      <section class="card" id="guideSection" style="display: none;">
-        <div class="card-title">
-          <span>SYSTEM MANUAL & USER GUIDE</span>
-          <button type="button" class="card-title-btn" id="guideToggleBtn" onclick="toggleGuideCard()">▲ 접기</button>
-        </div>
-        <div id="guideBody" class="result-box markdown-body" style="border: none;">
-          <h3>0. 인삿말 및 추천 기능 안내</h3>
-          <p>안녕하세요! <strong>YOUR WORLD HELPER</strong>를 사용해 주셔서 감사합니다. 본 서비스는 창작자 여러분의 숙련도와 작업 목적에 맞춘 최적의 보조 기능을 제공합니다.</p>
-          <ul>
-            <li><strong>초보자 추천 ➔ [나만의 세상 만들기]:</strong> 아무것도 없는 빈 상태에서 전체적인 세계관, 인물, 플롯의 초안을 구체적으로 형성하고 제안받을 때 적합합니다.</li>
-            <li><strong>창작자 추천 ➔ [주제 선정]:</strong> 이미 자신만의 세계관을 완벽히 구축해둔 상태에서, 작업 도중 막히는 구체적 상황을 서술하고 새로운 분위기나 문장 연출 아이디어만 가볍게 제안받고 싶을 때 활용하세요.</li>
-          </ul>
-
-          <h3>1. 캔버스 (Canvas)</h3>
-          <p>상단 메뉴의 <strong>'관계도 & 스토리 캔버스'</strong> 기능을 통해 인물 관계도, 사건 흐름도, 메모 카드를 자유롭게 그리고 배치할 수 있습니다. 펜/화살표/카드 도구를 사용해 아이디어를 시각화해 보세요.</p>
-
-          <h3>2. 공모전(공개작품) 제작 및 참여 시 유의사항</h3>
-          <ul>
-            <li><strong>AI 사용 명시:</strong> 공모전 규정이나 플랫폼 지침에 따라 AI 보조 도구 사용 여부를 밝혀야 하는 경우, 창작 보조 도구로 활용되었음을 분명히 기재하시기 바랍니다.</li>
-            <li><strong>수정 및 2차 가공 필수:</strong> AI가 생성한 텍스트는 보조 아이디어 초안으로 활용하시고, 반드시 창작자 본인의 고유한 문체와 스타일로 직접 수정 및 윤색하여 최종 작품을 완성하시기 바랍니다.</li>
-          </ul>
-        </div>
-      </section>
-    </div>
-
-    <sidebar>
-      <div class="profile-card">
-        <div class="card-title">USER PROFILE</div>
-        <div class="profile-img-box">
-          <img id="profilePreview" src="" alt="프로필">
-          <div id="profilePlaceholder" style="font-size: 11px;">NO IMAGE</div>
-        </div>
-        <div style="margin-bottom: 6px;">
-          <input type="text" id="usernameInput" value="User_01" style="font-weight: bold; font-size: 12px; text-align: center;" oninput="saveUserProfile(); triggerAutoSave();">
-        </div>
-        <button type="button" class="profile-btn" onclick="document.getElementById('profileInput').click()">파일 선택</button>
-        <input type="file" id="profileInput" accept="image/*" style="display: none;" onchange="loadProfileImageFromFile(event)">
-      </div>
-
-      <div class="card">
-        <div class="card-title">
-          <span>SETTINGS (명령어 설정)</span>
-          <button type="button" class="card-title-btn" id="settingsToggleBtn" onclick="toggleSettingsCard()">▲ 열기</button>
-        </div>
-        <div id="settingsContent" class="collapsible-content collapsed">
-          <div class="form-group" style="margin-top: 8px;">
-            <label>툴 버튼 명칭 변경 (Label)</label>
-            <div class="tool-label-grid">
-              <div>
-                <label style="font-weight:normal; font-size:10px;">이동</label>
-                <input type="text" id="labelMove" value="이동" oninput="updateToolLabels(); triggerAutoSave();">
-              </div>
-              <div>
-                <label style="font-weight:normal; font-size:10px;">펜</label>
-                <input type="text" id="labelPen" value="펜" oninput="updateToolLabels(); triggerAutoSave();">
-              </div>
-              <div>
-                <label style="font-weight:normal; font-size:10px;">화살표</label>
-                <input type="text" id="labelArrow" value="화살표" oninput="updateToolLabels(); triggerAutoSave();">
-              </div>
-              <div>
-                <label style="font-weight:normal; font-size:10px;">지우개</label>
-                <input type="text" id="labelErase" value="지우개" oninput="updateToolLabels(); triggerAutoSave();">
-              </div>
-            </div>
-          </div>
-
-          <div class="form-group" style="border-top: 1px dashed var(--border-color); padding-top: 8px;">
-            <label>키보드 명령어 (단축키)</label>
-            <div class="shortcut-grid">
-              <div>
-                <label style="font-weight:normal; font-size:10px;">이동</label>
-                <input type="text" id="keySelect" class="shortcut-input" value="M" readonly onkeydown="recordKey(event, 'select')">
-              </div>
-              <div>
-                <label style="font-weight:normal; font-size:10px;">펜</label>
-                <input type="text" id="keyDraw" class="shortcut-input" value="P" readonly onkeydown="recordKey(event, 'draw')">
-              </div>
-              <div>
-                <label style="font-weight:normal; font-size:10px;">화살표</label>
-                <input type="text" id="keyArrow" class="shortcut-input" value="A" readonly onkeydown="recordKey(event, 'arrow')">
-              </div>
-              <div>
-                <label style="font-weight:normal; font-size:10px;">지우개</label>
-                <input type="text" id="keyErase" class="shortcut-input" value="E" readonly onkeydown="recordKey(event, 'erase')">
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div class="card">
-        <div class="card-title">RECENT HISTORY</div>
-        <select id="historySelect" style="font-size: 11px;" onchange="loadSelectedHistory(this.value)">
-          <option value="">-- 최근 생성 기록 --</option>
+      <div id="genreContainer" style="display: none;">
+        <label for="genreSelect">장르 선택</label>
+        <select id="genreSelect">
+          <option value="판타지">판타지</option>
+          <option value="SF">SF</option>
+          <option value="현대 로맨스">현대 로맨스</option>
+          <option value="미스터리/스릴러">미스터리/스릴러</option>
+          <option value="무협">무협</option>
         </select>
       </div>
 
-      <div class="card">
-        <div class="card-title">MEMO PAD</div>
-        <textarea id="memoInput" placeholder="간단한 메모를 기록하세요..." style="height: 90px; font-size: 11px;" oninput="debounceAutoSave()"></textarea>
-      </div>
+      <label for="promptInput" id="labelPrompt">세계관 및 배경 상황 설정</label>
+      <textarea id="promptInput" placeholder="창작하고 계신 세계관이나 연출하고 싶은 상황을 작성하세요."></textarea>
 
-      <div class="card">
-        <div class="card-title">DATA MANAGEMENT</div>
-        <div style="display: flex; flex-direction: column; gap: 6px;">
-          <button type="button" class="small-btn" style="width: 100%; height: 28px;" onclick="exportDataJSON()">📥 JSON으로 데이터 저장</button>
-          <button type="button" class="small-btn" style="width: 100%; height: 28px;" onclick="document.getElementById('importJsonInput').click()">📤 JSON 데이터 불러오기</button>
-          <input type="file" id="importJsonInput" accept=".json" style="display: none;" onchange="importDataJSON(event)">
-        </div>
-      </div>
+      <label for="keywordInput">핵심 키워드</label>
+      <input type="text" id="keywordInput" placeholder="예: 구원, 배신, 비 오는 날 (쉼표로 구분)">
+    </div>
 
-      <button class="side-nav-btn" id="relationSideBtn" onclick="selectMainTab('relation', this)">
-        관계도 & 스토리 캔버스
-      </button>
-    </sidebar>
-  </main>
+    <button id="btnSubmit" class="btn-submit" onclick="generateContent()">[ 생성 실행 ]</button>
+  </div>
 
-  <footer>
-    <p>Copyright (c) 2026 yourworldhelper. All rights reserved.</p>
-  </footer>
+  <!-- 결과 출력 영역 -->
+  <div class="card">
+    <h3>생성 결과</h3>
+    <div id="resultOutput">
+      <p style="color: #666;">설정을 입력한 후 [ 생성 실행 ] 버튼을 누르세요.</p>
+    </div>
+  </div>
 </div>
 
+<div id="toast"></div>
+
 <script>
-  let currentMainTab = 'myWorld';
+  let currentMainTab = 'topic';
   let currentSubTab = 'world';
-  let boardTool = 'draw';
-  let currentLineWidth = 2;
-  let canvasScale = 1.0;
-  let rawMarkdownResult = "";
+  let rawMarkdownResult = '';
 
-  let isDrawing = false;
-  let lastX = 0, lastY = 0;
-  let startX = 0, startY = 0;
+  function switchMainTab(tab) {
+    currentMainTab = tab;
+    document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+    
+    const subTabContainer = document.getElementById('subTabContainer');
+    const genreContainer = document.getElementById('genreContainer');
+    const labelPrompt = document.getElementById('labelPrompt');
 
-  let undoStack = [];
-  let redoStack = [];
-  const MAX_HISTORY = 20;
-  let autoSaveTimer = null;
+    if (tab === 'topic') {
+      event.target.classList.add('active');
+      subTabContainer.style.display = 'none';
+      genreContainer.style.display = 'none';
+      labelPrompt.innerText = '세계관 및 배경 상황 설정';
+    } else {
+      event.target.classList.add('active');
+      subTabContainer.style.display = 'flex';
+      genreContainer.style.display = 'block';
+      labelPrompt.innerText = '세부 요구사항 및 설명';
+    }
+  }
 
-  let keybindings = { select: "M", draw: "P", arrow: "A", erase: "E", undo: "Ctrl+Z", redo: "Ctrl+Y" };
+  function switchSubTab(subTab) {
+    currentSubTab = subTab;
+    document.querySelectorAll('.sub-tab-btn').forEach(btn => btn.classList.remove('active'));
+    event.target.classList.add('active');
+  }
 
-  const canvas = document.getElementById('drawingCanvas');
-  const ctx = canvas.getContext('2d');
-  let canvasSnapshot = null;
-
-  window.addEventListener('DOMContentLoaded', () => {
-    initCanvas();
-    loadKeybindings();
-    loadSavedTheme();
-    loadSavedLabels();
-    loadUserProfile();
-    loadDraftInputs();
-    updateHistoryDropdown();
-    window.addEventListener('keydown', handleGlobalShortcuts);
-    updateSubTabUI();
-  });
-
-  function showToast(msg) {
-    const toast = document.getElementById('toastMsg');
-    toast.innerText = msg;
+  function showToast(message) {
+    const toast = document.getElementById('toast');
+    toast.innerText = message;
     toast.style.display = 'block';
-    setTimeout(() => { toast.style.display = 'none'; }, 2000);
-  }
-
-  function triggerAutoSave() {
-    const badge = document.getElementById('saveBadge');
-    badge.innerText = "⏳ 저장 중...";
-    badge.style.color = "#ff0000";
-
-    const draftData = {
-      prompt: document.getElementById('promptInput').value,
-      keyword: document.getElementById('keywordInput').value,
-      genre: document.getElementById('genreSelect').value,
-      language: document.getElementById('languageSelect').value,
-      memo: document.getElementById('memoInput').value,
-      boardStoryText: document.getElementById('boardStoryText').value
-    };
-
-    try {
-      localStorage.setItem('user_draft_data', JSON.stringify(draftData));
-    } catch (e) {
-      console.warn("로컬 스토리지용 유저 용량 초과:", e);
-    }
-
-    setTimeout(() => {
-      badge.innerText = "💾 저장됨";
-      badge.style.color = "var(--text-color)";
-    }, 500);
-  }
-
-  function debounceAutoSave() {
-    clearTimeout(autoSaveTimer);
-    autoSaveTimer = setTimeout(() => {
-      triggerAutoSave();
-    }, 1000);
-  }
-
-  function loadDraftInputs() {
-    const saved = localStorage.getItem('user_draft_data');
-    if (saved) {
-      try {
-        const data = JSON.parse(saved);
-        if (data.prompt !== undefined) document.getElementById('promptInput').value = data.prompt;
-        if (data.keyword !== undefined) document.getElementById('keywordInput').value = data.keyword;
-        if (data.genre) document.getElementById('genreSelect').value = data.genre;
-        if (data.language) document.getElementById('languageSelect').value = data.language;
-        if (data.memo) document.getElementById('memoInput').value = data.memo;
-        if (data.boardStoryText) document.getElementById('boardStoryText').value = data.boardStoryText;
-      } catch (e) {}
-    }
-  }
-
-  function resetFormInputs() {
-    if (confirm("입력한 프롬프트 및 설정을 모두 초기화하시겠습니까?")) {
-      document.getElementById('promptInput').value = "";
-      document.getElementById('keywordInput').value = "";
-      document.getElementById('memoInput').value = "";
-      document.getElementById('boardStoryText').value = "";
-      localStorage.removeItem('user_draft_data');
-      showToast("입력 내용이 초기화되었습니다.");
-      triggerAutoSave();
-    }
+    setTimeout(() => { toast.style.display = 'none'; }, 3000);
   }
 
   function cleanOutputText(text) {
-    if (!text) return "";
-    return text
-      .replace(/_EXTENSIONS/g, "")
-      .replace(/_SYSTEM/g, "")
-      .replace(/_INSTRUCTION/g, "")
-      .replace(/\[INST\][\s\S]*?\[\/INST\]/g, "")
-      .trim();
+    return text.replace(/_EXTENSIONS/g, '').trim();
   }
 
-  function saveToHistory(type, markdownContent) {
-    let histories = [];
-    const saved = localStorage.getItem('ai_result_history');
-    if (saved) {
-      try { histories = JSON.parse(saved); } catch(e){}
-    }
-
-    const newEntry = {
-      id: Date.now(),
-      date: new Date().toLocaleString(),
-      type: type,
-      content: markdownContent
-    };
-
-    histories.unshift(newEntry);
-    if (histories.length > 10) histories.pop();
-
-    try {
-      localStorage.setItem('ai_result_history', JSON.stringify(histories));
-    } catch(e) {
-      console.warn("히스토리 저장 실패(용량 부족):", e);
-    }
-    updateHistoryDropdown();
-  }
-
-  function updateHistoryDropdown() {
-    const select = document.getElementById('historySelect');
-    select.innerHTML = '<option value="">-- 최근 생성 기록 --</option>';
-    
-    const saved = localStorage.getItem('ai_result_history');
-    if (saved) {
-      try {
-        const histories = JSON.parse(saved);
-        histories.forEach((item) => {
-          const opt = document.createElement('option');
-          opt.value = item.id;
-          opt.innerText = `[${item.type}] ${item.date}`;
-          select.appendChild(opt);
-        });
-      } catch(e){}
-    }
-  }
-
-  function loadSelectedHistory(id) {
-    if (!id) return;
-    const saved = localStorage.getItem('ai_result_history');
-    if (saved) {
-      try {
-        const histories = JSON.parse(saved);
-        const target = histories.find(h => h.id == id);
-        if (target) {
-          rawMarkdownResult = cleanOutputText(target.content);
-          document.getElementById('resultOutput').innerHTML = marked.parse(rawMarkdownResult);
-          showToast("이전 생성 기록을 불러왔습니다.");
-        }
-      } catch(e){}
-    }
-  }
-
-  function copyResultText() {
-    if (!rawMarkdownResult) {
-      alert("복사할 결과 내용이 없습니다.");
-      return;
-    }
-    navigator.clipboard.writeText(rawMarkdownResult).then(() => {
-      showToast("클립보드에 복사되었습니다.");
-    });
-  }
-
-  function downloadResultMD() {
-    if (!rawMarkdownResult) {
-      alert("다운로드할 결과 내용이 없습니다.");
-      return;
-    }
-    const blob = new Blob([rawMarkdownResult], { type: 'text/markdown;charset=utf-8;' });
-    const link = document.createElement('a');
-    link.href = URL.createObjectURL(blob);
-    link.download = `world_helper_result_${new Date().toISOString().slice(0,10)}.md`;
-    link.click();
-    showToast("파일이 다운로드되었습니다.");
-  }
-
-  function toggleNotice() {
-    const noticeBody = document.getElementById('noticeBody');
-    const noticeBtn = document.getElementById('noticeToggleBtn');
-    if (noticeBody.style.display === 'none') {
-      noticeBody.style.display = 'block';
-      noticeBtn.innerText = '▲ 접기';
-    } else {
-      noticeBody.style.display = 'none';
-      noticeBtn.innerText = '▼ 펼치기';
-    }
-  }
-
-  function toggleGuideCard() {
-    const guideBody = document.getElementById('guideBody');
-    const guideBtn = document.getElementById('guideToggleBtn');
-    if (guideBody.style.display === 'none') {
-      guideBody.style.display = 'block';
-      guideBtn.innerText = '▲ 접기';
-    } else {
-      guideBody.style.display = 'none';
-      guideBtn.innerText = '▼ 펼치기';
-    }
-  }
-
-  function changeTheme(themeName) {
-    if (themeName === 'classic-win') {
-      document.body.removeAttribute('data-theme');
-    } else {
-      document.body.setAttribute('data-theme', themeName);
-    }
-    localStorage.setItem('user_theme', themeName);
-  }
-
-  function loadSavedTheme() {
-    const savedTheme = localStorage.getItem('user_theme');
-    if (savedTheme) {
-      const themeSelect = document.getElementById('themeSelect');
-      if (themeSelect) themeSelect.value = savedTheme;
-      changeTheme(savedTheme);
-    }
-  }
-
-  function updateToolLabels() {
-    const moveText = document.getElementById('labelMove').value || '이동';
-    const penText = document.getElementById('labelPen').value || '펜';
-    const arrowText = document.getElementById('labelArrow').value || '화살표';
-    const eraseText = document.getElementById('labelErase').value || '지우개';
-
-    document.getElementById('txt-label-select').innerText = moveText;
-    document.getElementById('txt-label-draw').innerText = penText;
-    document.getElementById('txt-label-arrow').innerText = arrowText;
-    document.getElementById('txt-label-erase').innerText = eraseText;
-
-    const toolLabels = { move: moveText, pen: penText, arrow: arrowText, erase: eraseText };
-    localStorage.setItem('tool_labels', JSON.stringify(toolLabels));
-  }
-
-  function loadSavedLabels() {
-    const savedLabels = localStorage.getItem('tool_labels');
-    if (savedLabels) {
-      try {
-        const toolLabels = JSON.parse(savedLabels);
-        if (toolLabels.move) document.getElementById('labelMove').value = toolLabels.move;
-        if (toolLabels.pen) document.getElementById('labelPen').value = toolLabels.pen;
-        if (toolLabels.arrow) document.getElementById('labelArrow').value = toolLabels.arrow;
-        if (toolLabels.erase) document.getElementById('labelErase').value = toolLabels.erase;
-        updateToolLabels();
-      } catch (e) {}
-    }
-  }
-
-  function saveUserProfile() {
-    const username = document.getElementById('usernameInput').value;
-    localStorage.setItem('user_profile_name', username);
-  }
-
-  function loadUserProfile() {
-    const savedName = localStorage.getItem('user_profile_name');
-    if (savedName) {
-      document.getElementById('usernameInput').value = savedName;
-    }
-    const savedImg = localStorage.getItem('user_profile_img');
-    if (savedImg) {
-      const preview = document.getElementById('profilePreview');
-      preview.src = savedImg;
-      preview.style.display = 'block';
-      document.getElementById('profilePlaceholder').style.display = 'none';
-    }
-  }
-
-  function loadProfileImageFromFile(event) {
-    const file = event.target.files[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onload = function(e) {
-        const preview = document.getElementById('profilePreview');
-        preview.src = e.target.result;
-        preview.style.display = 'block';
-        document.getElementById('profilePlaceholder').style.display = 'none';
-        localStorage.setItem('user_profile_img', e.target.result);
-        triggerAutoSave();
-      };
-      reader.readAsDataURL(file);
-    }
-  }
-
-  function loadKeybindings() {
-    const savedKeys = localStorage.getItem('canvas_keybindings');
-    if (savedKeys) {
-      try { keybindings = JSON.parse(savedKeys); } catch (e) {}
-    }
-    updateKeyDisplay();
-  }
-
-  function saveKeybindings() {
-    localStorage.setItem('canvas_keybindings', JSON.stringify(keybindings));
-    updateKeyDisplay();
-  }
-
-  function updateKeyDisplay() {
-    document.getElementById('keySelect').value = keybindings.select;
-    document.getElementById('keyDraw').value = keybindings.draw;
-    document.getElementById('keyArrow').value = keybindings.arrow;
-    document.getElementById('keyErase').value = keybindings.erase;
-
-    document.getElementById('btn-key-select').innerText = keybindings.select;
-    document.getElementById('btn-key-draw').innerText = keybindings.draw;
-    document.getElementById('btn-key-arrow').innerText = keybindings.arrow;
-    document.getElementById('btn-key-erase').innerText = keybindings.erase;
-  }
-
-  function recordKey(e, toolAction) {
-    e.preventDefault();
-    if (e.key === "Control" || e.key === "Shift" || e.key === "Alt") return;
-
-    let combo = [];
-    if (e.ctrlKey) combo.push("Ctrl");
-    if (e.shiftKey) combo.push("Shift");
-    if (e.altKey) combo.push("Alt");
-    combo.push(e.key.length === 1 ? e.key.toUpperCase() : e.key);
-
-    keybindings[toolAction] = combo.join("+");
-    saveKeybindings();
-    triggerAutoSave();
-    e.target.blur();
-  }
-
-  function handleGlobalShortcuts(e) {
-    const activeEl = document.activeElement;
-    const isEditing = activeEl && (
-      activeEl.tagName === 'INPUT' || 
-      activeEl.tagName === 'TEXTAREA' || 
-      activeEl.isContentEditable
-    );
-    if (isEditing) return;
-
-    let combo = [];
-    if (e.ctrlKey) combo.push("Ctrl");
-    if (e.shiftKey) combo.push("Shift");
-    if (e.altKey) combo.push("Alt");
-    combo.push(e.key.length === 1 ? e.key.toUpperCase() : e.key);
-
-    const keyString = combo.join("+");
-
-    if (keyString === keybindings.select) { setBoardTool('select'); }
-    else if (keyString === keybindings.draw) { setBoardTool('draw'); }
-    else if (keyString === keybindings.arrow) { setBoardTool('arrow'); }
-    else if (keyString === keybindings.erase) { setBoardTool('erase'); }
-    else if (keyString === keybindings.undo) { e.preventDefault(); undoCanvas(); }
-    else if (keyString === keybindings.redo) { e.preventDefault(); redoCanvas(); }
-  }
-
-  function updateLineWidth(val) {
-    currentLineWidth = parseInt(val);
-  }
-
-  function zoomCanvas(delta) {
-    canvasScale = Math.min(Math.max(0.5, canvasScale + delta), 2.0);
-    applyCanvasScale();
-  }
-
-  function resetZoom() {
-    canvasScale = 1.0;
-    applyCanvasScale();
-  }
-
-  function applyCanvasScale() {
-    const viewport = document.getElementById('boardViewport');
-    viewport.style.transform = `scale(${canvasScale})`;
-    const zoomBtn = document.getElementById('zoomResetBtn');
-    if (zoomBtn) {
-      zoomBtn.innerText = Math.round(canvasScale * 100) + '%';
-    }
-  }
-
-  function selectMainTab(tabType, element) {
-    if (currentMainTab !== tabType) {
-      document.getElementById('promptInput').value = '';
-      document.getElementById('keywordInput').value = '';
-
-      const saved = localStorage.getItem('user_draft_data');
-      if (saved) {
-        try {
-          let draftData = JSON.parse(saved);
-          draftData.prompt = '';
-          draftData.keyword = '';
-          localStorage.setItem('user_draft_data', JSON.stringify(draftData));
-        } catch (e) {}
-      }
-      
-      triggerAutoSave();
-    }
-
-    currentMainTab = tabType;
-    document.querySelectorAll('.tab-btn, .side-nav-btn').forEach(btn => btn.classList.remove('active'));
-    if (element) element.classList.add('active');
-
-    const subTabContainer = document.getElementById('subTabContainer');
-    const inputSection = document.getElementById('inputSection');
-    const boardSection = document.getElementById('boardSection');
-    const resultSection = document.getElementById('resultSection');
-    const guideSection = document.getElementById('guideSection');
-
-    const genreGroup = document.getElementById('genreGroup');
-    const keywordGroup = document.getElementById('keywordGroup');
-    const promptLabel = document.getElementById('promptLabel');
-
-    if (tabType === 'myWorld') {
-      subTabContainer.style.display = 'flex';
-      inputSection.style.display = 'block';
-      boardSection.style.display = 'none';
-      resultSection.style.display = 'block';
-      guideSection.style.display = 'none';
-      keywordGroup.style.display = 'block';
-      updateSubTabUI();
-    } else if (tabType === 'topic') {
-      subTabContainer.style.display = 'none';
-      inputSection.style.display = 'block';
-      boardSection.style.display = 'none';
-      resultSection.style.display = 'block';
-      guideSection.style.display = 'none';
-      genreGroup.style.display = 'none';
-      keywordGroup.style.display = 'block';
-      promptLabel.innerText = '구상한 세계관 서술 및 막히는 상황 (창작자용)';
-      document.getElementById('formTitle').innerText = '주제 선정 (창작자 작업 지원)';
-    } else if (tabType === 'relation') {
-      subTabContainer.style.display = 'none';
-      inputSection.style.display = 'none';
-      boardSection.style.display = 'block';
-      resultSection.style.display = 'none';
-      guideSection.style.display = 'none';
-      resizeCanvas();
-    } else if (tabType === 'guide') {
-      subTabContainer.style.display = 'none';
-      inputSection.style.display = 'none';
-      boardSection.style.display = 'none';
-      resultSection.style.display = 'none';
-      guideSection.style.display = 'block';
-    }
-  }
-
-  function selectSubTab(subType, element) {
-    currentSubTab = subType;
-    document.querySelectorAll('.sub-tab-btn').forEach(btn => btn.classList.remove('active'));
-    if (element) element.classList.add('active');
-    updateSubTabUI();
-  }
-
-  function updateSubTabUI() {
-    const genreGroup = document.getElementById('genreGroup');
-    const keywordGroup = document.getElementById('keywordGroup');
-    const promptLabel = document.getElementById('promptLabel');
-
-    keywordGroup.style.display = 'block';
-
-    if (currentSubTab === 'world') {
-      genreGroup.style.display = 'block';
-      promptLabel.innerText = '세계관 상세 요구사항 / 프롬프트';
-      document.getElementById('formTitle').innerText = '세계관 설정 입력';
-    } else if (currentSubTab === 'character') {
-      genreGroup.style.display = 'none';
-      promptLabel.innerText = '캐릭터 구상 프롬프트';
-      document.getElementById('formTitle').innerText = '캐릭터 설정 입력';
-    } else if (currentSubTab === 'plot') {
-      genreGroup.style.display = 'block';
-      promptLabel.innerText = '플롯/스토리 사건 프롬프트';
-      document.getElementById('formTitle').innerText = '플롯 / 스토리 입력';
-    }
-  }
-
-  function toggleSettingsCard() {
-    const content = document.getElementById('settingsContent');
-    const btn = document.getElementById('settingsToggleBtn');
-    content.classList.toggle('collapsed');
-    btn.innerText = content.classList.contains('collapsed') ? '▲ 열기' : '▼ 접기';
-  }
-
-  function saveState() {
-    if (undoStack.length >= MAX_HISTORY) undoStack.shift();
-    undoStack.push(ctx.getImageData(0, 0, canvas.width, canvas.height));
-    redoStack = [];
-  }
-
-  function undoCanvas() {
-    if (undoStack.length > 0) {
-      redoStack.push(ctx.getImageData(0, 0, canvas.width, canvas.height));
-      const previousState = undoStack.pop();
-      ctx.putImageData(previousState, 0, 0);
-    }
-  }
-
-  function redoCanvas() {
-    if (redoStack.length > 0) {
-      undoStack.push(ctx.getImageData(0, 0, canvas.width, canvas.height));
-      const nextState = redoStack.pop();
-      ctx.putImageData(nextState, 0, 0);
-    }
-  }
-
-  function getPos(e) {
-    const rect = canvas.getBoundingClientRect();
-    const clientX = e.touches && e.touches.length > 0 ? e.touches[0].clientX : e.clientX;
-    const clientY = e.touches && e.touches.length > 0 ? e.touches[0].clientY : e.clientY;
-    return { 
-      x: (clientX - rect.left) / canvasScale, 
-      y: (clientY - rect.top) / canvasScale 
-    };
-  }
-
-  function startDrawing(e) {
-    if (boardTool === 'select') return;
-    saveState();
-    isDrawing = true;
-    const pos = getPos(e);
-    startX = pos.x; startY = pos.y;
-    lastX = pos.x; lastY = pos.y;
-    if (boardTool === 'arrow') {
-      canvasSnapshot = ctx.getImageData(0, 0, canvas.width, canvas.height);
-    }
-  }
-
-  function draw(e) {
-    if (!isDrawing || boardTool === 'select') return;
-    e.preventDefault();
-    const pos = getPos(e);
-
-    if (boardTool === 'draw' || boardTool === 'erase') {
-      ctx.beginPath();
-      ctx.moveTo(lastX, lastY);
-      ctx.lineTo(pos.x, pos.y);
-
-      if (boardTool === 'erase') {
-        ctx.globalCompositeOperation = 'destination-out';
-        ctx.lineWidth = 20;
-      } else {
-        ctx.globalCompositeOperation = 'source-over';
-        ctx.strokeStyle = getComputedStyle(document.documentElement).getPropertyValue('--border-color').trim() || '#000000';
-        ctx.lineWidth = currentLineWidth;
-      }
-
-      ctx.lineCap = 'round';
-      ctx.stroke();
-      ctx.globalCompositeOperation = 'source-over';
-
-      lastX = pos.x; lastY = pos.y;
-    } else if (boardTool === 'arrow') {
-      ctx.putImageData(canvasSnapshot, 0, 0);
-      drawArrow(startX, startY, pos.x, pos.y);
-    }
-  }
-
-  function drawArrow(fromx, fromy, tox, toy) {
-    const headlen = 8 + currentLineWidth * 2;
-    const angle = Math.atan2(toy - fromy, tox - fromx);
-    const strokeColor = getComputedStyle(document.documentElement).getPropertyValue('--border-color').trim() || '#000000';
-    
-    ctx.beginPath();
-    ctx.moveTo(fromx, fromy);
-    ctx.lineTo(tox, toy);
-    ctx.strokeStyle = strokeColor;
-    ctx.lineWidth = currentLineWidth;
-    ctx.stroke();
-
-    ctx.beginPath();
-    ctx.moveTo(tox, toy);
-    ctx.lineTo(tox - headlen * Math.cos(angle - Math.PI / 6), toy - headlen * Math.sin(angle - Math.PI / 6));
-    ctx.lineTo(tox - headlen * Math.cos(angle + Math.PI / 6), toy - headlen * Math.sin(angle + Math.PI / 6));
-    ctx.lineTo(tox, toy);
-    ctx.fillStyle = strokeColor;
-    ctx.fill();
-  }
-
-  function stopDrawing() { isDrawing = false; }
-
-  function initCanvas() {
-    resizeCanvas();
-    canvas.addEventListener('mousedown', startDrawing);
-    canvas.addEventListener('mousemove', draw);
-    canvas.addEventListener('mouseup', stopDrawing);
-    canvas.addEventListener('mouseleave', stopDrawing);
-    canvas.addEventListener('touchstart', startDrawing, { passive: false });
-    canvas.addEventListener('touchmove', draw, { passive: false });
-    canvas.addEventListener('touchend', stopDrawing);
-  }
-
-  function resizeCanvas() {
-    const container = document.getElementById('boardContainer');
-    if (container) {
-      canvas.width = container.clientWidth;
-      canvas.height = container.clientHeight;
-    }
-  }
-
-  function setBoardTool(tool) {
-    boardTool = tool;
-    document.querySelectorAll('.board-tool-btn').forEach(b => b.classList.remove('active'));
-    document.getElementById(`tool-${tool}`).classList.add('active');
-  }
-
-  function clearCanvasDrawing() {
-    saveState();
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    const viewport = document.getElementById('boardViewport');
-    document.querySelectorAll('.canvas-node').forEach(node => viewport.removeChild(node));
-  }
-
-  function addTextCard() {
-    const viewport = document.getElementById('boardViewport');
-    const card = document.createElement('div');
-    card.className = 'canvas-node';
-    card.style.left = '40px';
-    card.style.top = '40px';
-    card.style.width = '120px';
-    card.style.height = '60px';
-    card.innerHTML = `
-      <div class="card-delete-btn" onclick="this.parentElement.remove()" title="카드 삭제">×</div>
-      <div contenteditable="true" style="outline:none; width:100%; height:100%; overflow:auto;">메모 입력</div>
-      <div class="resize-handle"></div>
-    `;
-    makeElementInteractive(card);
-    viewport.appendChild(card);
-  }
-
-  function addCanvasImage(event) {
-    const file = event.target.files[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onload = function(e) {
-        const viewport = document.getElementById('boardViewport');
-        const card = document.createElement('div');
-        card.className = 'canvas-node';
-        card.style.left = '60px';
-        card.style.top = '60px';
-        card.style.width = '130px';
-        card.style.height = '130px';
-        card.innerHTML = `
-          <div class="card-delete-btn" onclick="this.parentElement.remove()" title="카드 삭제">×</div>
-          <img src="${e.target.result}" alt="카드 이미지">
-          <div class="resize-handle"></div>
-        `;
-        makeElementInteractive(card);
-        viewport.appendChild(card);
-      };
-      reader.readAsDataURL(file);
-    }
-  }
-
-  function makeElementInteractive(element) {
-    let posX = 0, posY = 0, initialX = 0, initialY = 0;
-    const resizeHandle = element.querySelector('.resize-handle');
-
-    element.onmousedown = dragMouseDown;
-    element.ontouchstart = dragMouseDown;
-
-    function dragMouseDown(e) {
-      if (e.target.classList.contains('card-delete-btn')) return;
-      if (boardTool !== 'select') return;
-      if (e.target === resizeHandle) return startResize(e);
-
-      e.stopPropagation();
-      const clientX = e.touches ? e.touches[0].clientX : e.clientX;
-      const clientY = e.touches ? e.touches[0].clientY : e.clientY;
-      initialX = clientX; initialY = clientY;
-
-      document.onmouseup = closeDragElement;
-      document.onmousemove = elementDrag;
-      document.ontouchend = closeDragElement;
-      document.ontouchmove = elementDrag;
-    }
-
-    function elementDrag(e) {
-      const clientX = e.touches ? e.touches[0].clientX : e.clientX;
-      const clientY = e.touches ? e.touches[0].clientY : e.clientY;
-      posX = (initialX - clientX) / canvasScale;
-      posY = (initialY - clientY) / canvasScale;
-      initialX = clientX; initialY = clientY;
-      element.style.top = (element.offsetTop - posY) + "px";
-      element.style.left = (element.offsetLeft - posX) + "px";
-    }
-
-    function closeDragElement() {
-      document.onmouseup = null; document.onmousemove = null;
-      document.ontouchend = null; document.ontouchmove = null;
-    }
-
-    function startResize(e) {
-      e.stopPropagation();
-      e.preventDefault();
-      const startW = element.offsetWidth;
-      const startH = element.offsetHeight;
-      const startX = e.touches ? e.touches[0].clientX : e.clientX;
-      const startY = e.touches ? e.touches[0].clientY : e.clientX;
-
-      function doResize(re) {
-        const currentX = re.touches ? re.touches[0].clientX : re.clientX;
-        const currentY = re.touches ? re.touches[0].clientY : re.clientX;
-        const newW = startW + (currentX - startX) / canvasScale;
-        const newH = startH + (currentY - startY) / canvasScale;
-        if (newW > 50) element.style.width = newW + 'px';
-        if (newH > 30) element.style.height = newH + 'px';
-      }
-
-      function stopResize() {
-        document.removeEventListener('mousemove', doResize);
-        document.removeEventListener('mouseup', stopResize);
-        document.removeEventListener('touchmove', doResize);
-        document.removeEventListener('touchend', stopResize);
-      }
-
-      document.addEventListener('mousemove', doResize);
-      document.addEventListener('mouseup', stopResize);
-      document.addEventListener('touchmove', doResize);
-      document.addEventListener('touchend', stopResize);
-    }
-  }
-
-  function exportDataJSON() {
-    const data = {
-      profile: {
-        name: localStorage.getItem('user_profile_name') || 'User_01',
-        img: localStorage.getItem('user_profile_img') || ''
-      },
-      settings: {
-        theme: localStorage.getItem('user_theme') || 'classic-win',
-        keybindings: JSON.parse(localStorage.getItem('canvas_keybindings') || '{}'),
-        toolLabels: JSON.parse(localStorage.getItem('tool_labels') || '{}')
-      },
-      inputs: JSON.parse(localStorage.getItem('user_draft_data') || '{}')
-    };
-
-    const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(data, null, 2));
-    const downloadAnchor = document.createElement('a');
-    downloadAnchor.setAttribute("href", dataStr);
-    downloadAnchor.setAttribute("download", `world_helper_data_${new Date().toISOString().slice(0,10)}.json`);
-    document.body.appendChild(downloadAnchor);
-    downloadAnchor.click();
-    downloadAnchor.remove();
-  }
-
-  function importDataJSON(event) {
-    const file = event.target.files[0];
-    if (!file) return;
-
-    const reader = new FileReader();
-    reader.onload = function(e) {
-      try {
-        const data = JSON.parse(e.target.result);
-
-        if (data.profile) {
-          if (data.profile.name) localStorage.setItem('user_profile_name', data.profile.name);
-          if (data.profile.img) localStorage.setItem('user_profile_img', data.profile.img);
-          loadUserProfile();
-        }
-
-        if (data.settings) {
-          if (data.settings.theme) changeTheme(data.settings.theme);
-          if (data.settings.keybindings) {
-            keybindings = data.settings.keybindings;
-            saveKeybindings();
-          }
-          if (data.settings.toolLabels) {
-            localStorage.setItem('tool_labels', JSON.stringify(data.settings.toolLabels));
-            loadSavedLabels();
-          }
-        }
-
-        if (data.inputs) {
-          localStorage.setItem('user_draft_data', JSON.stringify(data.inputs));
-          loadDraftInputs();
-        }
-
-        showToast("성공적으로 데이터를 불러왔습니다.");
-      } catch (err) {
-        alert("JSON 파일을 읽는 도중 오류가 발생했습니다.");
-      }
-    };
-    reader.readAsText(file);
-    event.target.value = '';
+  function saveToHistory(type, content) {
+    console.log(`[히스토리 저장] ${type}:`, content.substring(0, 30) + "...");
   }
 
   async function generateContent() {
@@ -1310,23 +301,30 @@
 2. 사용자가 이미 세계관을 구상하여 입력한 경우, 그 설정을 단순 재정리하거나 되풀이하여 출력하지 마십시오.
 3. 타 언어, 개발 코드, 특수 키워드(예: _EXTENSIONS 등)를 절대로 출력에 포함하지 마세요.
 4. 어색한 번역투를 피하고 몰입감 있는 자연스러운 문장 구조를 사용하세요.
-5. 순수 완성본 결과물만 깔끔하게 출력하세요.`;
+5. 마크다운 서식을 활용해 순수 결과물만 깔끔하게 출력하세요.`;
 
     let userPromptMessage = `${systemRules}\n\n`;
 
     if (currentMainTab === 'topic') {
+      // 스크린샷 기반 주제 선정 프롬프트 통합 구성
       userPromptMessage += `[주제 선정 - 창작자 모드]
 - 입력된 창작자의 세계관 및 상황: ${processedPrompt}
 - 핵심 키워드: ${processedKeyword}
 
 [작성 요구사항 및 출력 양식]
-입력된 세계관과 상황에 맞춰 아래와 같은 양식(단어와 분위기 묘사가 한 쌍으로 묶인 형태)으로 2~3개의 서로 다른 예시 세트를 작성해 주세요.
-단, 항목 구분을 나누는 별도의 커다란 목차나 서론/결론 설명글은 모두 제외하고 오직 아래의 형태만 연속해서 2~3세트 출력하세요.
+입력된 세계관과 키워드에 맞춰 서론이나 결론 인사말 없이 오직 아래 마크다운 양식 그대로 3개씩 아이디어를 제시해 주세요.
 
-단어 = [핵심 키워드 및 오브젝트 2~3개]
-분위기 묘사 = [해당 단어들을 활용하여 장면이 눈앞에 그려지듯 서술한 2~3문장의 묘사문]
+[ 단어형 주제 ]
 
-(위 양식을 서로 다른 내용과 단어로 2~3세트 반복하여 출력할 것)`;
+*   (세계관/키워드에 어울리는 연출용 키워드 조합 1)
+*   (세계관/키워드에 어울리는 연출용 키워드 조합 2)
+*   (세계관/키워드에 어울리는 연출용 키워드 조합 3)
+
+[ 상황형 주제 ]
+
+*   (상위 단어와 세계관 요소를 결합하여 서술한 특정 상황 묘사문 1)
+*   (상위 단어와 세계관 요소를 결합하여 서술한 특정 상황 묘사문 2)
+*   (상위 단어와 세계관 요소를 결합하여 서술한 특정 상황 묘사문 3)`;
     } else if (currentMainTab === 'myWorld') {
       if (currentSubTab === 'world') {
         userPromptMessage += `[세계관 구상 - 초보자 모드]\n- 장르: ${genre}\n- 요구사항: ${processedPrompt}\n- 키워드: ${processedKeyword}\n\n[작성 요구사항]\n위 입력을 바탕으로 지리, 사회 구조, 핵심 규칙이 포함된 완성형 세계관 문서를 작성하세요.`;
@@ -1386,6 +384,6 @@
     }
   }
 </script>
-
 </body>
 </html>
+
