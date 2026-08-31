@@ -254,7 +254,6 @@
   <div class="tab-container">
     <button class="tab-btn active" id="tab-myWorld" onclick="selectMainTab('myWorld', this)">나만의 세상 만들기</button>
     <button class="tab-btn" id="tab-topic" onclick="selectMainTab('topic', this)">주제 선정</button>
-    <button class="tab-btn" id="tab-dialogue" onclick="selectMainTab('dialogue', this)">대사 생성</button>
     <button class="tab-btn" id="tab-guide" onclick="selectMainTab('guide', this)">사용 가이드</button>
   </div>
 
@@ -296,11 +295,6 @@
         <div class="form-group" id="mainPromptGroup">
           <label id="promptLabel">상세 요구사항 / 프롬프트</label>
           <textarea id="promptInput" placeholder="원하는 분위기나 핵심 소재를 입력해보세요..." oninput="debounceAutoSave()"></textarea>
-        </div>
-
-        <div class="form-group" id="dialogueExtraGroup" style="display: none;">
-          <label>상황 및 장소 설정</label>
-          <textarea id="dialogueContextInput" placeholder="예: 비 내리는 조용한 골목길, 대립 중인 상황" oninput="debounceAutoSave()"></textarea>
         </div>
 
         <div class="form-group" id="aiLevelGroup">
@@ -388,9 +382,6 @@
 
           <p><strong>나. 주제 선정 (Topic Selector)</strong></p>
           <p>구상 중인 핵심 소재나 분위기를 조합하여 완성도 높은 스토리 구도와 소재 아이디어를 제안받습니다.</p>
-
-          <p><strong>다. 대사 생성 (Dialogue Generator)</strong></p>
-          <p>캐릭터의 성격, 말투, 지정 상황 및 장소에 어울리는 구어체 스크립트를 생성합니다.</p>
 
           <h3>2. AI 관여도 (창의성 Level) 안내</h3>
           <ul>
@@ -565,7 +556,6 @@
 
     const draftData = {
       prompt: document.getElementById('promptInput').value,
-      dialogueContext: document.getElementById('dialogueContextInput').value,
       keyword: document.getElementById('keywordInput').value,
       genre: document.getElementById('genreSelect').value,
       language: document.getElementById('languageSelect').value,
@@ -599,7 +589,6 @@
       try {
         const data = JSON.parse(saved);
         if (data.prompt) document.getElementById('promptInput').value = data.prompt;
-        if (data.dialogueContext) document.getElementById('dialogueContextInput').value = data.dialogueContext;
         if (data.keyword) document.getElementById('keywordInput').value = data.keyword;
         if (data.genre) document.getElementById('genreSelect').value = data.genre;
         if (data.language) document.getElementById('languageSelect').value = data.language;
@@ -613,7 +602,6 @@
   function resetFormInputs() {
     if (confirm("입력한 프롬프트 및 설정을 모두 초기화하시겠습니까?")) {
       document.getElementById('promptInput').value = "";
-      document.getElementById('dialogueContextInput').value = "";
       document.getElementById('keywordInput').value = "";
       document.getElementById('memoInput').value = "";
       document.getElementById('boardStoryText').value = "";
@@ -913,7 +901,6 @@
   function selectMainTab(tabType, element) {
     if (currentMainTab !== tabType) {
       document.getElementById('promptInput').value = '';
-      document.getElementById('dialogueContextInput').value = '';
       document.getElementById('keywordInput').value = '';
       triggerAutoSave();
     }
@@ -929,7 +916,6 @@
     const guideSection = document.getElementById('guideSection');
 
     const genreGroup = document.getElementById('genreGroup');
-    const dialogueExtraGroup = document.getElementById('dialogueExtraGroup');
     const keywordGroup = document.getElementById('keywordGroup');
     const aiLevelGroup = document.getElementById('aiLevelGroup');
     const promptLabel = document.getElementById('promptLabel');
@@ -942,18 +928,6 @@
       guideSection.style.display = 'none';
       keywordGroup.style.display = 'block';
       updateSubTabUI();
-    } else if (tabType === 'dialogue') {
-      subTabContainer.style.display = 'none';
-      inputSection.style.display = 'block';
-      boardSection.style.display = 'none';
-      resultSection.style.display = 'block';
-      guideSection.style.display = 'none';
-      genreGroup.style.display = 'none';
-      dialogueExtraGroup.style.display = 'block';
-      keywordGroup.style.display = 'none';
-      aiLevelGroup.style.display = 'block';
-      promptLabel.innerText = '캐릭터 성격 및 말투 입력';
-      document.getElementById('formTitle').innerText = '대사 생성 입력';
     } else if (tabType === 'topic') {
       subTabContainer.style.display = 'none';
       inputSection.style.display = 'block';
@@ -961,7 +935,6 @@
       resultSection.style.display = 'block';
       guideSection.style.display = 'none';
       genreGroup.style.display = 'none';
-      dialogueExtraGroup.style.display = 'none';
       keywordGroup.style.display = 'block';
       aiLevelGroup.style.display = 'block';
       promptLabel.innerText = '원하는 분위기 / 배경 설정 힌트';
@@ -991,12 +964,10 @@
 
   function updateSubTabUI() {
     const genreGroup = document.getElementById('genreGroup');
-    const dialogueExtraGroup = document.getElementById('dialogueExtraGroup');
     const keywordGroup = document.getElementById('keywordGroup');
     const aiLevelGroup = document.getElementById('aiLevelGroup');
     const promptLabel = document.getElementById('promptLabel');
 
-    dialogueExtraGroup.style.display = 'none';
     keywordGroup.style.display = 'block';
 
     if (currentSubTab === 'world') {
@@ -1329,25 +1300,35 @@
 
   async function generateContent() {
     const promptInput = document.getElementById('promptInput');
-    const dialogueContextInput = document.getElementById('dialogueContextInput');
     const keywordInput = document.getElementById('keywordInput');
     const submitBtn = document.getElementById('btnSubmit');
 
-    let promptText = promptInput.value.trim();
-    let dialogueContextText = dialogueContextInput.value.trim();
-    let keywordText = keywordInput.value.trim();
+    let rawPrompt = promptInput.value.trim();
+    let rawKeyword = keywordInput.value.trim();
     const targetLanguage = document.getElementById('languageSelect').value;
     const genre = document.getElementById('genreSelect').value;
     const outputDiv = document.getElementById('resultOutput');
 
-    if (!promptText && currentMainTab !== 'topic') {
-      alert("요구사항 또는 프롬프트를 입력해주세요.");
-      return;
+    // 키워드가 없거나 '없음', '아무꺼나', '아무거나' 등일 때 처리
+    const invalidValues = ['', '없음', '아무거나', '아무꺼나', 'none', 'null', 'undefined', '없음.', '아무거나.'];
+    
+    let processedPrompt = invalidValues.includes(rawPrompt.toLowerCase()) 
+      ? `AI의 창의성을 발휘하여 ${genre} 장르에 어울리는 흥미롭고 독창적인 주제/요구사항을 직접 구상해주세요.` 
+      : rawPrompt;
+
+    let processedKeyword = invalidValues.includes(rawKeyword.toLowerCase()) 
+      ? `AI가 ${genre} 장르에 어울리는 핵심 키워드 3가지를 스스로 선정해주세요.` 
+      : rawKeyword;
+
+    // 프롬프트와 키워드가 둘 다 완전히 비어있는 경우 AI에게 자유 구상 요청
+    if (!processedPrompt && !processedKeyword) {
+      processedPrompt = `${genre} 장르에 최적화된 참신한 소재와 주제를 자유롭게 생성해주세요.`;
+      processedKeyword = `장르 특성에 어울리는 자유 키워드 조합`;
     }
 
     const MAX_INPUT_LEN = 4000;
-    if (promptText.length > MAX_INPUT_LEN) {
-      promptText = promptText.substring(0, MAX_INPUT_LEN);
+    if (processedPrompt.length > MAX_INPUT_LEN) {
+      processedPrompt = processedPrompt.substring(0, MAX_INPUT_LEN);
       showToast("입력문이 너무 길어 상위 4000자까지 축소되어 처리됩니다.");
     }
 
@@ -1360,31 +1341,30 @@
 
     if (selectedAiLevel === 'low') {
       tempValue = 0.75;
-      levelInstruction = "입력한 내용의 핵심을 살려 일관되고 정돈된 문장으로 작성하세요.";
+      levelInstruction = "주제와 기본 설정을 일관되고 정돈된 문장으로 명확히 작성하세요.";
     } else if (selectedAiLevel === 'high') {
       tempValue = 0.95;
-      levelInstruction = "입력한 내용을 바탕으로 풍부하고 창의적인 아이디어를 적극적으로 전개하세요.";
+      levelInstruction = "제시된 장르적 특징을 극대화하여 독창적이고 풍부한 연출적 아이디어를 자유롭게 전개하세요.";
     }
 
     const systemRules = `[시스템 지시사항]
 1. 답변은 반드시 완벽하고 자연스러운 ${targetLanguage}로만 작성해야 합니다.
-2. 타 언어, 개발 코드, 특수 키워드(예: _EXTENSIONS 등)를 절대로 출력에 포함하지 마세요.
-3. 어색한 번역투를 피하고 자연스러운 문장 구조를 사용하세요.
-4. 순수 완성본 결과물만 깔끔하게 출력하세요.`;
+2. 사용자가 키워드나 상세 내용을 제공하지 않거나 '없음/아무거나'로 제시한 경우에도 AI가 직접 매력적이고 완성도 높은 주제와 세계관을 설계하여 결과물로 제시해야 합니다.
+3. 타 언어, 개발 코드, 특수 키워드(예: _EXTENSIONS 등)를 절대로 출력에 포함하지 마세요.
+4. 어색한 번역투를 피하고 자연스러운 문장 구조를 사용하세요.
+5. 순수 완성본 결과물만 깔끔하게 출력하세요.`;
 
     let userPromptMessage = `${systemRules}\n\n`;
 
     if (currentMainTab === 'topic') {
-      userPromptMessage += `[주제 선정 정보]\n- 입력 힌트: ${promptText}\n- 키워드: ${keywordText}\n\n[작성 요구사항]\n자연스러운 ${targetLanguage}로 완성된 주제 및 아이디어 텍스트만 출력하세요.`;
-    } else if (currentMainTab === 'dialogue') {
-      userPromptMessage += `[캐릭터 정보 및 상황]\n- 캐릭터 성향 및 말투: ${promptText}\n- 상황 및 장소: ${dialogueContextText}\n\n[작성 요구사항]\n1. 캐릭터의 성격과 어조가 생생하게 드러나는 자연스러운 대사 스크립트를 작성하세요.\n2. 번역투나 특수 기호를 배제하고 구어체 문장을 사용하세요.\n3. 대본 형식으로 깔끔하게 출력하세요.`;
+      userPromptMessage += `[주제 선정 정보]\n- 장르: ${genre}\n- 입력 힌트: ${processedPrompt}\n- 키워드: ${processedKeyword}\n- 창의성 가이드: ${levelInstruction}\n\n[작성 요구사항]\n위 정보를 기반으로 자연스러운 ${targetLanguage}로 완성된 참신한 작품 주제, 핵심 메인 컨셉 및 스토리 아이디어를 출력하세요.`;
     } else if (currentMainTab === 'myWorld') {
       if (currentSubTab === 'world') {
-        userPromptMessage += `[세계관 구상 정보]\n- 장르: ${genre}\n- 요구사항: ${promptText}\n- 키워드: ${keywordText}\n\n[작성 요구사항]\n위 입력을 바탕으로 지리, 사회 구조, 핵심 규칙이 포함된 완성형 세계관 문서를 작성하세요.`;
+        userPromptMessage += `[세계관 구상 정보]\n- 장르: ${genre}\n- 요구사항: ${processedPrompt}\n- 키워드: ${processedKeyword}\n- 창의성 가이드: ${levelInstruction}\n\n[작성 요구사항]\n위 입력을 바탕으로 지리, 사회 구조, 핵심 규칙이 포함된 완성형 세계관 문서를 작성하세요.`;
       } else if (currentSubTab === 'character') {
-        userPromptMessage += `[캐릭터 구상 정보]\n- 요구사항: ${promptText}\n- 키워드: ${keywordText}\n\n[작성 요구사항]\n위 입력을 바탕으로 인물의 외형, 성격, 과거 서사, 행동 동기가 포함된 입체적인 캐릭터 프로필을 작성하세요.`;
+        userPromptMessage += `[캐릭터 구상 정보]\n- 장르: ${genre}\n- 요구사항: ${processedPrompt}\n- 키워드: ${processedKeyword}\n- 창의성 가이드: ${levelInstruction}\n\n[작성 요구사항]\n위 입력을 바탕으로 인물의 외형, 성격, 과거 서사, 행동 동기가 포함된 입체적인 캐릭터 프로필을 작성하세요.`;
       } else if (currentSubTab === 'plot') {
-        userPromptMessage += `[플롯 구상 정보]\n- 장르: ${genre}\n- 사건 요약: ${promptText}\n- 키워드: ${keywordText}\n- 관여도 가이드: ${levelInstruction}\n\n[작성 요구사항]\n위 입력을 바탕으로 기승전결 사건 흐름 및 복선 포인트를 포함한 플롯을 작성하세요.`;
+        userPromptMessage += `[플롯 구상 정보]\n- 장르: ${genre}\n- 사건 요약: ${processedPrompt}\n- 키워드: ${processedKeyword}\n- 관여도 가이드: ${levelInstruction}\n\n[작성 요구사항]\n위 입력을 바탕으로 기승전결 사건 흐름 및 복선 포인트를 포함한 플롯을 작성하세요.`;
       }
     }
 
@@ -1422,7 +1402,7 @@
       rawMarkdownResult = cleanOutputText(data.result);
       outputDiv.innerHTML = marked.parse(rawMarkdownResult);
 
-      const typeTag = currentMainTab === 'dialogue' ? '대사' : (currentMainTab === 'topic' ? '주제' : currentSubTab);
+      const typeTag = currentMainTab === 'topic' ? '주제' : currentSubTab;
       saveToHistory(typeTag, rawMarkdownResult);
 
     } catch (error) {
@@ -1441,4 +1421,3 @@
 
 </body>
 </html>
-
