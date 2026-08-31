@@ -1223,7 +1223,7 @@
       const startW = element.offsetWidth;
       const startH = element.offsetHeight;
       const startX = e.touches ? e.touches[0].clientX : e.clientX;
-      const startY = e.touches ? e.touches[0].clientY : e.clientY;
+      const startY = e.touches ? e.touches[0].clientY : e.clientX;
 
       function doResize(re) {
         const currentX = re.touches ? re.touches[0].clientX : re.clientX;
@@ -1340,37 +1340,38 @@
     submitBtn.innerText = "[ 생성 처리 중... ]";
     outputDiv.innerHTML = '<p style="color:var(--accent-color);">⏳ AI가 입력을 분석하여 생성 중입니다...</p>';
 
-    // 온도(temperature) 최적화: 토큰 루프 방지를 위해 최소 온도를 0.3으로 설정
-    let tempValue = 0.5;
-    let levelInstruction = "사용자의 요청에 맞춰 완성도 있게 작성해 주세요.";
+    // 언어 깨짐 방지를 위해 온도를 0.75 / 0.95로 최적화
+    let tempValue = 0.75;
+    let levelInstruction = "제공된 조건을 충실히 반영하되 자연스러운 문맥으로 완성하세요.";
 
     if (selectedAiLevel === 'low') {
-      tempValue = 0.5;
-      levelInstruction = "사용자의 요청에 맞춰 적절한 창의성을 보태어 작성해 주세요.";
+      tempValue = 0.75; // 낮음에서도 0.75 이상이어야 한국어 토큰이 깨지지 않습니다.
+      levelInstruction = "입력한 내용의 핵심을 살려 일관되고 정돈된 문장으로 작성하세요.";
     } else if (selectedAiLevel === 'high') {
-      tempValue = 0.8;
-      levelInstruction = "입력한 내용을 바탕으로 풍부하고 창의적인 아이디어를 적극적으로 살 붙여 전개하세요.";
+      tempValue = 0.95;
+      levelInstruction = "입력한 내용을 바탕으로 풍부하고 창의적인 아이디어를 적극적으로 전개하세요.";
     }
 
-    const systemRules = `[System Directive]
-1. Output MUST be strictly in ${targetLanguage}.
-2. Keep the tone natural, logical, and fully grammatically correct in ${targetLanguage}.
-3. Format the output neatly using standard Markdown headings and bullet points.
-4. Do NOT repeat or include the user's input variables, settings, prompts, instructions, or rules in the final response output. Output ONLY the pure generated content.`;
+    // 시스템 규칙을 모두 한국어로 명확히 지정하여 언어 꼬임 방지
+    const systemRules = `[시스템 지시사항]
+1. 답변은 반드시 완벽하고 자연스러운 ${targetLanguage}로만 작성해야 합니다.
+2. 타 언어(영어, 개발 코드, 한자, 키릴 문자 등)나 무의미한 특수 문자열을 절대로 섞어서 출력하지 마세요.
+3. 어색한 번역투를 피하고 한국어 문법과 문맥에 맞는 자연스러운 표현을 사용하세요.
+4. 요청된 본문 결과물만 깔끔하게 출력하고, 프롬프트 조건이나 지시문은 결과물에 포함하지 마세요.`;
 
     let userPromptMessage = `${systemRules}\n\n`;
 
     if (currentMainTab === 'topic') {
-      userPromptMessage += `[주제 선정 정보]\n- 입력 힌트: ${promptText}\n- 키워드: ${keywordText}\n\n[작성 요구사항]\n오직 완성된 주제 및 아이디어 텍스트만 출력하세요. 프롬프트나 요구사항 조건을 되풀이하여 출력하지 마세요.`;
+      userPromptMessage += `[주제 선정 정보]\n- 입력 힌트: ${promptText}\n- 키워드: ${keywordText}\n\n[작성 요구사항]\n자연스러운 ${targetLanguage}로 완성된 주제 및 아이디어 텍스트만 출력하세요.`;
     } else if (currentMainTab === 'dialogue') {
-      userPromptMessage += `[캐릭터 정보 및 상황]\n- 캐릭터 성향/말투: ${promptText}\n- 상황 및 장소: ${dialogueContextText}\n\n[절대 규칙]\n1. 오직 '대사 스크립트' 내용만 출력하세요.\n2. 입력받은 조건 텍스트('캐릭터 성향', '상황 및 장소' 등)나 규칙 가이드를 결과물 상단 또는 하단에 절대로 다시 출력하지 마세요.\n3. 제목과 행동 지문, 캐릭터 간 대사만 깔끔한 마크다운으로 출력하세요.`;
+      userPromptMessage += `[캐릭터 정보 및 상황]\n- 캐릭터 성향 및 말투: ${promptText}\n- 상황 및 장소: ${dialogueContextText}\n\n[작성 요구사항]\n1. 캐릭터의 성격과 어조가 생생하게 드러나는 자연스러운 대사 스크립트를 작성하세요.\n2. 번역투나 어색한 표현을 배제하고 감정이 살아있는 구어체 문장을 사용하세요.\n3. 제목, 행동 지문, 대사만 깔끔한 마크다운 형식으로 출력하세요.`;
     } else if (currentMainTab === 'myWorld') {
       if (currentSubTab === 'world') {
-        userPromptMessage += `[세계관 구상 정보]\n- 장르: ${genre}\n- 요구사항: ${promptText}\n- 키워드: ${keywordText}\n\n[작성 요구사항]\n위 입력을 바탕으로 세부 지리, 사회 구조, 핵심 규칙이 포함된 완성형 세계관 문서만 출력하세요. 입력 조건이나 가이드를 되풀이하지 마세요.`;
+        userPromptMessage += `[세계관 구상 정보]\n- 장르: ${genre}\n- 요구사항: ${promptText}\n- 키워드: ${keywordText}\n\n[작성 요구사항]\n위 입력을 바탕으로 지리, 사회 구조, 핵심 규칙이 포함된 완성형 세계관 문서를 작성하세요.`;
       } else if (currentSubTab === 'character') {
-        userPromptMessage += `[캐릭터 구상 정보]\n- 요구사항: ${promptText}\n- 키워드: ${keywordText}\n\n[작성 요구사항]\n위 입력을 바탕으로 인물의 외형, 성격, 과거 서사, 행동 동기가 포함된 완성형 캐릭터 프로필만 출력하세요. 입력 조건이나 가이드를 되풀이하지 마세요.`;
+        userPromptMessage += `[캐릭터 구상 정보]\n- 요구사항: ${promptText}\n- 키워드: ${keywordText}\n\n[작성 요구사항]\n위 입력을 바탕으로 인물의 외형, 성격, 과거 서사, 행동 동기가 포함된 입체적인 캐릭터 프로필을 작성하세요.`;
       } else if (currentSubTab === 'plot') {
-        userPromptMessage += `[플롯 구상 정보]\n- 장르: ${genre}\n- 사건 요약: ${promptText}\n- 키워드: ${keywordText}\n- 관여도 가이드: ${levelInstruction}\n\n[작성 요구사항]\n위 입력을 바탕으로 기승전결 사건 흐름 및 복선 포인트를 포함한 완성형 플롯 스토리만 출력하세요. 입력 조건이나 가이드를 되풀이하지 마세요.`;
+        userPromptMessage += `[플롯 구상 정보]\n- 장르: ${genre}\n- 사건 요약: ${promptText}\n- 키워드: ${keywordText}\n- 관여도 가이드: ${levelInstruction}\n\n[작성 요구사항]\n위 입력을 바탕으로 기승전결 사건 흐름 및 복선 포인트를 포함한 플롯을 작성하세요.`;
       }
     }
 
