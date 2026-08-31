@@ -298,7 +298,6 @@
           <textarea id="dialogueContextInput" placeholder="예: 비 내리는 조용한 골목길, 대립 중인 상황" oninput="debounceAutoSave()"></textarea>
         </div>
 
-        <!-- AI 관여도: 슬라이더 -> 버튼 선택 방식으로 개선 -->
         <div class="form-group" id="aiLevelGroup">
           <label>AI 관여도 (창의성 Level)</label>
           <div class="level-btn-group">
@@ -378,16 +377,23 @@
           <p><strong>가. 나만의 세상 만들기</strong></p>
           <p>작품의 뼈대가 되는 세계관, 인물, 그리고 스토리의 사건 흐름을 단계별로 세분화하여 도출할 수 있습니다.</p>
           <ul>
-            <li><strong>세계관 생성:</strong> 장르(판타지, SF, 로맨스 등)와 핵심 키워드를 조합하여 세부 지리/환경적 특징, 사회적 구조, 독자적인 규칙 및 기믹을 구축합니다.</li>
-            <li><strong>캐릭터 설정:</strong> 인물의 입체적인 외형 프로필, 성격적 결함, 숨겨진 과거 서사, 행동 동기 및 목표를 항목별로 일목요연하게 정리해 줍니다.</li>
+            <li><strong>세계관 생성:</strong> 장르(판타지, SF, 로맨스 등)와 핵심 키워드를 조합하여 세부 지리/환경적 특징, 사회적 구조, 독자적인 규칙 및 기믹을 구축합니다. (초보 창작자를 위해 AI 관여도가 제외되어 입력을 바탕으로 곧바로 완성형 설정을 도출합니다)</li>
+            <li><strong>캐릭터 설정:</strong> 인물의 입체적인 외형 프로필, 성격적 결함, 숨겨진 과거 서사, 행동 동기 및 목표를 항목별로 일목요연하게 정리해 줍니다. (세계관과 동일하게 AI 관여도 선택이 제외됩니다)</li>
             <li><strong>플롯 / 스토리:</strong> 기승전결 구조에 맞춰 메인 사건의 발단, 갈등의 심화, 핵심 복선 및 반전 연출 포인트를 체계적으로 설계합니다.</li>
           </ul>
 
-          <p><strong>나. 대사 생성 (Dialogue Generator)</strong></p>
-          <p>등장인물의 개성과 고유한 말투, 특정 상황 및 장소 배경을 조합하여 입체감 있는 인물 간 스크립트를 도출합니다.</p>
+          <p><strong>나. 주제 선정 (Topic Selector)</strong></p>
+          <p>이미 구상 중인 아이디어나 상황 힌트를 기반으로 완성도 높은 구체적 프롬프트 및 구도를 확립합니다.</p>
           <ul>
-            <li><strong>말투 및 성격 반영:</strong> 인물의 성격 키워드와 구어체 특성을 반영하여 캐릭터성을 극대화합니다.</li>
-            <li><strong>지문 및 행동 연출:</strong> 단순 대사 교환 외에도 인물의 시선 처리, 동작, 주변 배경 묘사 지문을 함께 제공받을 수 있습니다.</li>
+            <li><strong>낮음 (충실):</strong> 입력된 연출 단어나 직관적인 한 문장을 명확하게 정리해줍니다. (예: 안개, 골목 → "알 수 없는 연기가 골목에 피어나고 있다")</li>
+            <li><strong>높음 (창의적):</strong> 인물의 반응과 배경을 조합한 직관적인 상황 묘사를 제안해 줍니다. (예: "사람들이 콜록거리며 골목을 나온다. 그곳에는 알 수 없는 연기가 피어난다.")</li>
+          </ul>
+
+          <p><strong>다. 대사 생성 (Dialogue Generator)</strong></p>
+          <p>특정 캐릭터의 이름이나 정형화된 프로필 연출을 넘어 지정된 상황, 장소, 성격 및 말투를 바탕으로 입체감 있는 대사와 상황을 구성합니다.</p>
+          <ul>
+            <li><strong>낮음 (충실):</strong> 입력한 핵심 상황에서의 직관적인 대사 및 핵심 연출 힌트를 제시합니다. (예: "라면을 먹으며 행복할 때 어떤 말을 할까?")</li>
+            <li><strong>높음 (창의적):</strong> 성격, 말투, 장소, 행동 묘사가 완벽히 어우러진 상황 해설과 대사 스크립트를 도출합니다. (예: "야! 그럼 안 되지!" / 골목길에서 장난을 치던 아이에게 딱밤을 때린다.)</li>
           </ul>
 
           <h3>2. 관계도 & 스토리 캔버스 (Canvas)</h3>
@@ -398,15 +404,7 @@
             <li><strong>단축키 및 레이아웃 제어:</strong> 이동(M) 툴 및 키보드 단축키, 확대/축소 기능을 통해 자유롭게 화면을 이동하며 작업할 수 있습니다.</li>
           </ul>
 
-          <h3>3. AI 관여도 (창의성 Level)</h3>
-          <p>AI가 창작 프롬프트에 얼마나 주도적으로 개입할지 선택하여 작업 목적에 들어맞는 결과를 도출합니다.</p>
-          <ul>
-            <li><strong>낮음 (충실):</strong> 입력된 사용자의 프롬프트 내용과 소재를 엄격하게 준수하며, 가공 및 정리 중심의 안정적인 텍스트를 출력합니다.</li>
-            <li><strong>보통 (적절):</strong> 기존 입력 아이디어를 훼손하지 않는 선에서 서사의 연결고리와 디테일을 자연스럽게 보완합니다.</li>
-            <li><strong>높음 (창의적):</strong> 입력된 키워드를 바탕으로 AI가 새로운 사건, 의외의 반전, 독창적인 세계관 요소를 적극적으로 확장하여 제시합니다.</li>
-          </ul>
-
-          <h3>4. 공모전 및 공개 작품 제작 시 유의사항</h3>
+          <h3>3. 공모전 및 공개 작품 제작 시 유의사항</h3>
           <p>본 플랫폼을 활용하여 창작 공모전 출품, 상업적 연재, 또는 대외적 작품 공개를 진행하실 경우 다음 항목을 반드시 준수해 주시기 바랍니다.</p>
           <ul>
             <li><strong>AI 활용 명시:</strong> 주최 측의 공모전 요강이나 플랫폼 규정에 따라 인공지능 보조 도구 사용 여부 표기가 의무인 경우, 작성 과정에서 AI 시스템이 활용되었음을 정직하게 명시해야 합니다.</li>
@@ -521,7 +519,7 @@
   let currentLineWidth = 2;
   let canvasScale = 1.0;
   let rawMarkdownResult = "";
-  let selectedAiLevel = 'mid'; // 기본값: 보통
+  let selectedAiLevel = 'mid';
 
   let isDrawing = false;
   let lastX = 0, lastY = 0;
@@ -547,6 +545,7 @@
     loadDraftInputs();
     updateHistoryDropdown();
     window.addEventListener('keydown', handleGlobalShortcuts);
+    updateSubTabUI();
   });
 
   function showToast(msg) {
@@ -918,6 +917,7 @@
     const genreGroup = document.getElementById('genreGroup');
     const dialogueExtraGroup = document.getElementById('dialogueExtraGroup');
     const keywordGroup = document.getElementById('keywordGroup');
+    const aiLevelGroup = document.getElementById('aiLevelGroup');
     const promptLabel = document.getElementById('promptLabel');
 
     if (tabType === 'myWorld') {
@@ -937,6 +937,7 @@
       genreGroup.style.display = 'none';
       dialogueExtraGroup.style.display = 'block';
       keywordGroup.style.display = 'none';
+      aiLevelGroup.style.display = 'block';
       promptLabel.innerText = '캐릭터 성격 및 말투 입력';
       document.getElementById('formTitle').innerText = '대사 생성 입력';
     } else if (tabType === 'topic') {
@@ -948,6 +949,7 @@
       genreGroup.style.display = 'none';
       dialogueExtraGroup.style.display = 'none';
       keywordGroup.style.display = 'block';
+      aiLevelGroup.style.display = 'block';
       promptLabel.innerText = '원하는 분위기 / 배경 설정 힌트';
       document.getElementById('formTitle').innerText = '주제 선정';
     } else if (tabType === 'relation') {
@@ -977,6 +979,7 @@
     const genreGroup = document.getElementById('genreGroup');
     const dialogueExtraGroup = document.getElementById('dialogueExtraGroup');
     const keywordGroup = document.getElementById('keywordGroup');
+    const aiLevelGroup = document.getElementById('aiLevelGroup');
     const promptLabel = document.getElementById('promptLabel');
 
     dialogueExtraGroup.style.display = 'none';
@@ -986,14 +989,17 @@
       genreGroup.style.display = 'block';
       promptLabel.innerText = '세계관 상세 요구사항 / 프롬프트';
       document.getElementById('formTitle').innerText = '세계관 설정 입력';
+      aiLevelGroup.style.display = 'none'; // 요구사항 1 반영: AI 관여도 숨김
     } else if (currentSubTab === 'character') {
       genreGroup.style.display = 'none';
       promptLabel.innerText = '캐릭터 구상 프롬프트';
       document.getElementById('formTitle').innerText = '캐릭터 설정 입력';
+      aiLevelGroup.style.display = 'none'; // 요구사항 1 반영: AI 관여도 숨김
     } else if (currentSubTab === 'plot') {
       genreGroup.style.display = 'block';
       promptLabel.innerText = '플롯/스토리 사건 프롬프트';
       document.getElementById('formTitle').innerText = '플롯 / 스토리 입력';
+      aiLevelGroup.style.display = 'block';
     }
   }
 
@@ -1322,7 +1328,6 @@
 
     outputDiv.innerHTML = '<p>AI가 안전하게 답변을 생성 중입니다...</p>';
 
-    // 온도값 보정 (언어 깨짐 방지를 위해 낮은 온도로 고정)
     let tempValue = 0.5;
     let levelInstruction = "사용자의 요청에 맞춰 완성도 있게 작성해 주세요.";
 
@@ -1334,22 +1339,47 @@
       levelInstruction = "입력한 내용을 바탕으로 풍부하고 창의적인 아이디어를 적극적으로 살 붙여 전개하세요.";
     }
 
-    // 간단명료한 언어 지정 시스템 지침 (깨짐 유발 문구 완전 거름)
     const languagePrompt = `Important: You must generate the response strictly in ${targetLanguage}. Do not use any foreign letters, programming symbols, or invalid words. Keep the layout organized with Markdown headings and bullet points.`;
 
-    let userPromptMessage = `${languagePrompt}\n\n[작성 지침: ${levelInstruction}]\n\n`;
+    let userPromptMessage = `${languagePrompt}\n\n`;
 
+    // 요구사항 2 & 3 반영: 주제 선정 및 대사 생성 전문화 프롬프트 구축
     if (currentMainTab === 'topic') {
-      userPromptMessage += `[주제 및 로그라인 추천]\n- 분위기 및 배경: ${promptText}\n- 키워드: ${keywordText}\n- 장르: ${genre}\n작품의 로그라인, 추천 연출 요소, 시각적 키워드를 정리해 주세요.`;
+      if (selectedAiLevel === 'low') {
+        userPromptMessage += `[주제 선정 - 간단한 단어/문장 구상]\n`;
+        userPromptMessage += `- 입력 힌트: ${promptText}\n- 키워드: ${keywordText}\n`;
+        userPromptMessage += `[요구사항]\n`;
+        userPromptMessage += `입력된 소재를 바탕으로 단어나 직관적인 한 문장 형태의 상황 아이디어를 정리해 주세요.\n`;
+        userPromptMessage += `예시 형태:\n- 안개, 골목 / "알 수 없는 연기가 골목에 피어나고 있다."`;
+      } else {
+        userPromptMessage += `[주제 선정 - 구체적 상황 및 묘사 전개]\n`;
+        userPromptMessage += `- 입력 힌트: ${promptText}\n- 키워드: ${keywordText}\n`;
+        userPromptMessage += `[요구사항]\n`;
+        userPromptMessage += `입력된 아이디어를 바탕으로 시각적 묘사와 인물의 반응이 포함된 구체적인 상황 서술 프롬프트를 작성해 주세요.\n`;
+        userPromptMessage += `예시 형태:\n"사람들이 콜록거리며 골목을 나온다. 그곳에는 알 수 없는 연기가 피어난다."`;
+      }
     } else if (currentMainTab === 'dialogue') {
-      userPromptMessage += `[대사 스크립트 생성]\n- 캐릭터 성격/말투: ${promptText}\n- 상황 및 장소: ${dialogueContextText}\n- 장르: ${genre}\n인물 간의 자연스러운 대사 스크립트와 간단한 지문/행동 연출을 작성해 주세요.`;
+      userPromptMessage += `[대사 생성]\n`;
+      userPromptMessage += `- 캐릭터 성향(성격 및 말투): ${promptText}\n`;
+      userPromptMessage += `- 상황 및 장소: ${dialogueContextText}\n`;
+      userPromptMessage += `[공통 주의사항] 고정된 프로필이나 이름을 단순 설명하지 말고, 오직 '지정된 상황, 장소, 적힌 성격과 대사' 중심으로 작성할 것.\n\n`;
+
+      if (selectedAiLevel === 'low') {
+        userPromptMessage += `[요구사항 - 대사 및 상황 힌트]\n`;
+        userPromptMessage += `주어진 상황에서 캐릭터가 할 법한 대표 대사와 핵심 상황 연출 힌트를 정리해 주세요.\n`;
+        userPromptMessage += `예시 형태:\n대사: "음~ 너무 맛있다!" (라면을 먹으며 행복해하는 상황 연출)`;
+      } else {
+        userPromptMessage += `[요구사항 - 상황해설 및 생생한 대사 스크립트]\n`;
+        userPromptMessage += `캐릭터의 성향, 말투, 지정된 상황 및 장소가 잘 드러나도록 행동 지문과 인물 대사를 조합한 완성형 스크립트를 작성해 주세요.\n`;
+        userPromptMessage += `예시 형태:\n"야! 그럼 안 되지!"\n골목길에서 장난을 치던 아이에게 딱밤을 때린다.`;
+      }
     } else if (currentMainTab === 'myWorld') {
       if (currentSubTab === 'world') {
-        userPromptMessage += `[세계관 상세 설정]\n- 장르: ${genre}\n- 세부 요구사항: ${promptText}\n- 키워드: ${keywordText}\n세계관 배경, 사회 구조, 주요 규칙을 작성해 주세요.`;
+        userPromptMessage += `[세계관 상세 설정]\n- 장르: ${genre}\n- 세부 요구사항: ${promptText}\n- 키워드: ${keywordText}\n초보 창작자가 바로 활용할 수 있도록 세부 지리, 사회 구조, 핵심 규칙을 정리해 주세요.`;
       } else if (currentSubTab === 'character') {
-        userPromptMessage += `[캐릭터 상세 프로필]\n- 요구사항: ${promptText}\n- 키워드: ${keywordText}\n인물의 외형, 성격, 배경 스토리, 동기를 작성해 주세요.`;
+        userPromptMessage += `[캐릭터 상세 프로필]\n- 요구사항: ${promptText}\n- 키워드: ${keywordText}\n인물의 외형, 성격, 과거 서사, 행동 동기를 체계적으로 다듬어 주세요.`;
       } else if (currentSubTab === 'plot') {
-        userPromptMessage += `[플롯 / 스토리 구조]\n- 장르: ${genre}\n- 사건 요약: ${promptText}\n- 키워드: ${keywordText}\n기승전결 흐름에 맞춘 주요 사건과 복선 포인트를 작성해 주세요.`;
+        userPromptMessage += `[작성 지침: ${levelInstruction}]\n[플롯 / 스토리 구조]\n- 장르: ${genre}\n- 사건 요약: ${promptText}\n- 키워드: ${keywordText}\n기승전결 흐름에 맞춘 주요 사건과 복선 포인트를 작성해 주세요.`;
       }
     }
 
