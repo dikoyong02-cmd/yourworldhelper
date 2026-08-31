@@ -86,44 +86,67 @@
       --canvas-frame: #bb86fc;
     }
 
+    /* 새로 추가된 테마 3종 */
+    [data-theme="lavender"] {
+      --bg-color: #1e1b2e;
+      --card-bg: #2a2438;
+      --card-sub-bg: #352f44;
+      --text-color: #e0d7f5;
+      --border-color: #5c5470;
+      --accent-color: #b9a7ea;
+      --accent-text: #1e1b2e;
+      --input-bg: #191624;
+      --window-title-bg: #5c5470;
+      --footer-text: #b9a7ea;
+      --canvas-bg: #151221;
+      --canvas-grid: rgba(185, 167, 234, 0.15);
+      --canvas-frame: #b9a7ea;
+    }
+
+    [data-theme="matrix"] {
+      --bg-color: #020b05;
+      --card-bg: #081a0e;
+      --card-sub-bg: #0e2917;
+      --text-color: #00ff66;
+      --border-color: #008033;
+      --accent-color: #00ff66;
+      --accent-text: #000000;
+      --input-bg: #030f07;
+      --window-title-bg: #004d1f;
+      --footer-text: #00ff66;
+      --canvas-bg: #010502;
+      --canvas-grid: rgba(0, 255, 102, 0.2);
+      --canvas-frame: #00ff66;
+    }
+
+    [data-theme="sunset"] {
+      --bg-color: #2b1e1e;
+      --card-bg: #3d2b2b;
+      --card-sub-bg: #4a3535;
+      --text-color: #f7d6c8;
+      --border-color: #a35d4d;
+      --accent-color: #e07a5f;
+      --accent-text: #ffffff;
+      --input-bg: #241919;
+      --window-title-bg: #8d493a;
+      --footer-text: #e07a5f;
+      --canvas-bg: #1c1313;
+      --canvas-grid: rgba(224, 122, 95, 0.2);
+      --canvas-frame: #e07a5f;
+    }
+
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Tahoma', 'Dotum', '굴림', sans-serif; }
     body { background-color: var(--bg-color); color: var(--text-color); padding: 15px; touch-action: manipulation; }
-    .container { max-width: 1000px; margin: 0 auto; background: var(--card-bg); border: 2px solid var(--border-color); padding: 10px; box-shadow: 4px 4px 0px #000000; }
+    .container { max-width: 1000px; margin: 0 auto; background: var(--card-bg); border: 2px solid var(--border-color); padding: 10px; box-shadow: 4px 4px 0px #000000; position: relative; }
     
-    .notice-card {
-      background: var(--card-sub-bg);
-      border: 1px solid var(--border-color);
-      margin-bottom: 10px;
-      font-size: 11px;
-    }
-    .notice-header {
-      background: var(--accent-color);
-      color: var(--accent-text);
-      padding: 4px 8px;
-      font-weight: bold;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      cursor: pointer;
-    }
-    .notice-toggle-btn {
-      background: var(--card-bg);
-      color: var(--text-color);
-      border: 1px solid var(--border-color);
-      font-size: 10px;
-      padding: 1px 6px;
-      cursor: pointer;
-    }
-    .notice-body {
-      padding: 10px;
-      line-height: 1.5;
-    }
-    .notice-body ol {
-      margin-left: 18px;
-    }
-    .notice-body li {
-      margin-bottom: 4px;
-    }
+    .save-badge { position: absolute; top: 12px; right: 15px; font-size: 10px; padding: 2px 6px; background: var(--input-bg); border: 1px solid var(--border-color); font-weight: bold; }
+
+    .notice-card { background: var(--card-sub-bg); border: 1px solid var(--border-color); margin-bottom: 10px; font-size: 11px; }
+    .notice-header { background: var(--accent-color); color: var(--accent-text); padding: 4px 8px; font-weight: bold; display: flex; justify-content: space-between; align-items: center; cursor: pointer; }
+    .notice-toggle-btn { background: var(--card-bg); color: var(--text-color); border: 1px solid var(--border-color); font-size: 10px; padding: 1px 6px; cursor: pointer; }
+    .notice-body { padding: 10px; line-height: 1.5; }
+    .notice-body ol { margin-left: 18px; }
+    .notice-body li { margin-bottom: 4px; }
 
     header { background: var(--window-title-bg); padding: 6px 10px; margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center; border: 1px solid var(--border-color); }
     header h1 { font-size: 14px; font-weight: bold; color: #ffffff; }
@@ -181,13 +204,19 @@
     .profile-img-box img { width: 100%; height: 100%; object-fit: cover; display: none; }
     .collapsible-content.collapsed { display: none; }
 
+    .toast { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); background: var(--window-title-bg); color: #fff; padding: 6px 12px; border: 1px solid #000; font-size: 11px; z-index: 9999; display: none; }
+
     footer { margin-top: 15px; border-top: 1px solid var(--border-color); padding-top: 8px; text-align: center; font-size: 11px; color: var(--footer-text); }
     @media (max-width: 768px) { main { grid-template-columns: 1fr; } }
   </style>
 </head>
 <body data-theme="classic-win">
 
+<div class="toast" id="toastMsg">알림</div>
+
 <div class="container">
+  <span class="save-badge" id="saveBadge">💾 저장됨</span>
+
   <div class="notice-card">
     <div class="notice-header" onclick="toggleNotice()">
       <span>📣 서비스 공지사항 (Notice)</span>
@@ -196,8 +225,7 @@
     <div class="notice-body" id="noticeBody">
       <ol>
         <li>백엔드 서버 연동을 통해 사용자가 별도의 API Key를 입력하지 않아도 바로 AI 창작 기능을 무료로 사용하실 수 있습니다.</li>
-        <li>현재 버그, 디자인 개선, 신규 기능 제안을 위한 문의 창구를 별도로 개설해두지 않아 <strong>의견 반영이 다소 어려울 수 있는 점</strong> 양해 부탁드립니다.</li>
-        <li>(추가예정)</li>
+        <li>언어 및 출력 품질 제어 시스템이 적용되어 지정한 언어(한국어 등)로 안전하게 작성됩니다.</li>
       </ol>
     </div>
   </div>
@@ -212,6 +240,10 @@
         <option value="classic-teal">Classic Teal</option>
         <option value="cyberpunk">Cyberpunk Neon</option>
         <option value="dark">Dark Mode</option>
+        <!-- 추가된 테마 -->
+        <option value="lavender">Midnight Lavender</option>
+        <option value="matrix">Emerald Matrix</option>
+        <option value="sunset">Sunset Warmth</option>
       </select>
     </div>
   </header>
@@ -232,11 +264,24 @@
   <main>
     <div class="content-area">
       <section class="card" id="inputSection">
-        <div class="card-title" id="formTitle">세계관 설정 입력</div>
+        <div class="card-title">
+          <span id="formTitle">세계관 설정 입력</span>
+          <button type="button" class="card-title-btn" onclick="resetFormInputs()">🔄 입력 초기화</button>
+        </div>
         
+        <div class="form-group" id="languageGroup">
+          <label>출력 언어 선택 (Output Language)</label>
+          <select id="languageSelect" onchange="triggerAutoSave()">
+            <option value="한국어" selected>한국어 (Korean)</option>
+            <option value="English">English (영어)</option>
+            <option value="日本語">日本語 (일본어)</option>
+            <option value="中文">中文 (중국어)</option>
+          </select>
+        </div>
+
         <div class="form-group" id="genreGroup">
           <label>장르 / 테마</label>
-          <select id="genreSelect">
+          <select id="genreSelect" onchange="triggerAutoSave()">
             <option value="판타지">판타지</option>
             <option value="SF/사이버펑크">SF / 사이버펑크</option>
             <option value="현대 로맨스">현대 로맨스</option>
@@ -247,12 +292,12 @@
 
         <div class="form-group" id="mainPromptGroup">
           <label id="promptLabel">상세 요구사항 / 프롬프트</label>
-          <textarea id="promptInput" placeholder="원하는 분위기나 핵심 소재를 입력해보세요..."></textarea>
+          <textarea id="promptInput" placeholder="원하는 분위기나 핵심 소재를 입력해보세요..." oninput="debounceAutoSave()"></textarea>
         </div>
 
         <div class="form-group" id="dialogueExtraGroup" style="display: none;">
           <label>상황 및 장소 설정</label>
-          <textarea id="dialogueContextInput" placeholder="예: 비 내리는 조용한 골목길, 대립 중인 상황"></textarea>
+          <textarea id="dialogueContextInput" placeholder="예: 비 내리는 조용한 골목길, 대립 중인 상황" oninput="debounceAutoSave()"></textarea>
         </div>
 
         <div class="form-group" id="aiLevelGroup">
@@ -260,12 +305,12 @@
             <label for="aiLevelInput">AI 관여도 (창의성 Level)</label>
             <span id="aiLevelDesc" class="slider-desc">Lv.3 보통 (적절한 디테일 추가)</span>
           </div>
-          <input type="range" id="aiLevelInput" min="1" max="5" value="3" oninput="updateAiLevelDesc(this.value)">
+          <input type="range" id="aiLevelInput" min="1" max="5" value="3" oninput="updateAiLevelDesc(this.value); triggerAutoSave();">
         </div>
 
         <div class="form-group" id="keywordGroup">
           <label id="keywordLabel">핵심 키워드 (선택)</label>
-          <input type="text" id="keywordInput" placeholder="예: 시계탑, 비밀, 안개">
+          <input type="text" id="keywordInput" placeholder="예: 시계탑, 비밀, 안개" oninput="debounceAutoSave()">
         </div>
 
         <button type="button" class="primary-btn" onclick="generateContent()">[ 생성 실행 ]</button>
@@ -305,12 +350,18 @@
         </div>
         <div class="form-group" style="margin-top: 10px;">
           <label>통합 스토리 서술 노트</label>
-          <textarea id="boardStoryText" placeholder="아이디어나 전체 스토리 흐름을 자유롭게 정리하세요..."></textarea>
+          <textarea id="boardStoryText" placeholder="아이디어나 전체 스토리 흐름을 자유롭게 정리하세요..." oninput="debounceAutoSave()"></textarea>
         </div>
       </section>
 
       <article class="card" id="resultSection">
-        <div class="card-title">생성 결과</div>
+        <div class="card-title">
+          <span>생성 결과</span>
+          <div>
+            <button type="button" class="card-title-btn" onclick="copyResultText()">📋 복사</button>
+            <button type="button" class="card-title-btn" onclick="downloadResultMD()">💾 MD 다운로드</button>
+          </div>
+        </div>
         <div id="resultOutput" class="result-box markdown-body">결과가 여기에 표시됩니다.</div>
       </article>
 
@@ -320,19 +371,23 @@
           <h3>1. 서비스 개요</h3>
           <p>Your World Helper는 작가, 기획자, 크리에이터를 위한 레트로 스타일의 스토리보딩 및 세계관 생성 헬퍼 시스템입니다.</p>
           
-          <h3>2. 주요 기능 활용법</h3>
+          <h3>2. AI 관여도 (창의성 Level) 작동 가이드</h3>
+          <p>AI 관여도는 사용자가 입력한 단어 및 요구사항에 대해 <strong>AI가 얼마나 개입하여 내용을 자율 확장하거나 묘사하는지 방식</strong>을 결정합니다.</p>
+          <ul>
+            <li><strong>Lv.1 최소 (원문 충실):</strong> AI의 임의적 추론을 제한하고, 입력한 요구사항 및 키워드를 정확하게 정돈·요약하여 정형화된 스타일로 출력합니다. (정확도가 중요할 때 추천)</li>
+            <li><strong>Lv.2 절제 (서술 보완):</strong> 원본 설정을 유효하게 유지하면서 가벼운 서술적 미사여구나 자잘한 문맥적 디테일을 보완합니다.</li>
+            <li><strong>Lv.3 보통 (밸런스형):</strong> 지시사항을 충실히 반영하되, 세계관의 분위기나 매끄러운 전개를 위해 적절한 부가 설정이나 서사를 균형 있게 제안합니다. (기본 권장값)</li>
+            <li><strong>Lv.4 높음 (창의적 확장):</strong> 사용자의 아이디어를 바탕으로 예상치 못한 인과관계, 주변 인물 설정, 환경적 기믹 등을 풍부하고 창의적으로 넓혀줍니다.</li>
+            <li><strong>Lv.5 최대 (자율적 파생):</strong> 단 소량의 키워드만으로도 AI가 스스로 독창적이고 예상하지 못한 하이 콘셉트 아이디어와 대량의 디테일 서사를 파생시켜 생성합니다. (아이디어 고갈 시 추천)</li>
+          </ul>
+
+          <h3>3. 주요 기능 활용법</h3>
           <ul>
             <li><strong>세계관 / 캐릭터 / 플롯 생성:</strong> 원하는 설정과 AI 관여도를 조정해 창작을 시도해보세요.</li>
             <li><strong>대사 생성:</strong> 캐릭터 성격과 상황을 설정해 대사 스크립트와 연출 지침을 즉시 구성합니다.</li>
-            <li><strong>관계도 & 스토리 캔버스:</strong> 펜 드로잉, 메모 카드, 이미지를 캔버스 위에 자유롭게 배치하고 구조를 시각화하세요.</li>
-            <li><strong>명령어 커스텀 설정:</strong> SETTINGS 메뉴에서 툴 버튼 명칭(Label) 및 키보드 단축키(Keybindings)를 변경할 수 있습니다.</li>
+            <li><strong>관계도 & 스토리 캔버스:</strong> 펜, 화살표, 텍스트 카드 기능으로 시각적인 마인드맵과 스토리보드를 자유롭게 구상하세요.</li>
+            <li><strong>언어 인식 및 자동 제어:</strong> 다국어 입력 및 원하는 출력 언어 선택이 가능합니다.</li>
           </ul>
-
-          <h3>3. 저작권 및 공모전 / 공개 작품 제작 가이드라인</h3>
-          <blockquote>
-            <strong>Q. AI가 생성한 텍스트나 아이디어를 공모전 및 공개 작품에 바로 사용해도 되나요?</strong><br>
-            A. 본 서비스의 AI 생성물은 <u>창작 아이디어를 돕는 보조 도구(Assistant Tool)</u>입니다. 공모전 제출이나 일반 대중에게 공개되는 작품을 제작하실 때에는 <strong>AI 사용 여부를 명확히 밝히시거나, 생성 결과를 바탕으로 사용자의 독창적인 문체와 설정을 직접 수정·강화하여 완성하시는 것을 권장합니다.</strong>
-          </blockquote>
         </div>
       </section>
     </div>
@@ -344,7 +399,9 @@
           <img id="profilePreview" src="" alt="프로필">
           <div id="profilePlaceholder" style="font-size: 11px;">NO IMAGE</div>
         </div>
-        <div style="font-weight: bold; font-size: 12px; margin-bottom: 6px;">User_01</div>
+        <div style="margin-bottom: 6px;">
+          <input type="text" id="usernameInput" value="User_01" style="font-weight: bold; font-size: 12px; text-align: center;" oninput="saveUserProfile(); triggerAutoSave();">
+        </div>
         <button type="button" class="profile-btn" onclick="document.getElementById('profileInput').click()">파일 선택</button>
         <input type="file" id="profileInput" accept="image/*" style="display: none;" onchange="loadProfileImageFromFile(event)">
       </div>
@@ -360,26 +417,25 @@
             <div class="tool-label-grid">
               <div>
                 <label style="font-weight:normal; font-size:10px;">이동</label>
-                <input type="text" id="labelMove" value="이동" oninput="updateToolLabels()">
+                <input type="text" id="labelMove" value="이동" oninput="updateToolLabels(); triggerAutoSave();">
               </div>
               <div>
                 <label style="font-weight:normal; font-size:10px;">펜</label>
-                <input type="text" id="labelPen" value="펜" oninput="updateToolLabels()">
+                <input type="text" id="labelPen" value="펜" oninput="updateToolLabels(); triggerAutoSave();">
               </div>
               <div>
                 <label style="font-weight:normal; font-size:10px;">화살표</label>
-                <input type="text" id="labelArrow" value="화살표" oninput="updateToolLabels()">
+                <input type="text" id="labelArrow" value="화살표" oninput="updateToolLabels(); triggerAutoSave();">
               </div>
               <div>
                 <label style="font-weight:normal; font-size:10px;">지우개</label>
-                <input type="text" id="labelErase" value="지우개" oninput="updateToolLabels()">
+                <input type="text" id="labelErase" value="지우개" oninput="updateToolLabels(); triggerAutoSave();">
               </div>
             </div>
           </div>
 
           <div class="form-group" style="border-top: 1px dashed var(--border-color); padding-top: 8px;">
             <label>키보드 명령어 (단축키)</label>
-            <p style="font-size: 10px; color: var(--text-color); opacity: 0.8; margin-bottom: 6px;">클릭 후 사용하고 싶은 키보드 키를 누르세요.</p>
             <div class="shortcut-grid">
               <div>
                 <label style="font-weight:normal; font-size:10px;">이동</label>
@@ -397,22 +453,30 @@
                 <label style="font-weight:normal; font-size:10px;">지우개</label>
                 <input type="text" id="keyErase" class="shortcut-input" value="E" readonly onkeydown="recordKey(event, 'erase')">
               </div>
-              <div>
-                <label style="font-weight:normal; font-size:10px;">Undo</label>
-                <input type="text" id="keyUndo" class="shortcut-input" value="Ctrl+Z" readonly onkeydown="recordKey(event, 'undo')">
-              </div>
-              <div>
-                <label style="font-weight:normal; font-size:10px;">Redo</label>
-                <input type="text" id="keyRedo" class="shortcut-input" value="Ctrl+Y" readonly onkeydown="recordKey(event, 'redo')">
-              </div>
             </div>
           </div>
         </div>
       </div>
 
       <div class="card">
+        <div class="card-title">RECENT HISTORY</div>
+        <select id="historySelect" style="font-size: 11px;" onchange="loadSelectedHistory(this.value)">
+          <option value="">-- 최근 생성 기록 --</option>
+        </select>
+      </div>
+
+      <div class="card">
         <div class="card-title">MEMO PAD</div>
-        <textarea id="memoInput" placeholder="간단한 메모를 기록하세요..." style="height: 90px; font-size: 11px;"></textarea>
+        <textarea id="memoInput" placeholder="간단한 메모를 기록하세요..." style="height: 90px; font-size: 11px;" oninput="debounceAutoSave()"></textarea>
+      </div>
+
+      <div class="card">
+        <div class="card-title">DATA MANAGEMENT</div>
+        <div style="display: flex; flex-direction: column; gap: 6px;">
+          <button type="button" class="small-btn" style="width: 100%; height: 28px;" onclick="exportDataJSON()">📥 JSON으로 데이터 저장</button>
+          <button type="button" class="small-btn" style="width: 100%; height: 28px;" onclick="document.getElementById('importJsonInput').click()">📤 JSON 데이터 불러오기</button>
+          <input type="file" id="importJsonInput" accept=".json" style="display: none;" onchange="importDataJSON(event)">
+        </div>
       </div>
 
       <button class="side-nav-btn" id="relationSideBtn" onclick="selectMainTab('relation', this)">
@@ -432,6 +496,7 @@
   let boardTool = 'draw';
   let currentLineWidth = 2;
   let canvasScale = 1.0;
+  let rawMarkdownResult = "";
 
   let isDrawing = false;
   let lastX = 0, lastY = 0;
@@ -440,34 +505,182 @@
   let undoStack = [];
   let redoStack = [];
   const MAX_HISTORY = 20;
+  let autoSaveTimer = null;
 
-  let keybindings = {
-    select: "M",
-    draw: "P",
-    arrow: "A",
-    erase: "E",
-    undo: "Ctrl+Z",
-    redo: "Ctrl+Y"
-  };
+  let keybindings = { select: "M", draw: "P", arrow: "A", erase: "E", undo: "Ctrl+Z", redo: "Ctrl+Y" };
 
   const canvas = document.getElementById('drawingCanvas');
   const ctx = canvas.getContext('2d');
   let canvasSnapshot = null;
 
+  // AI 관여도 안내 문구 강화
   const aiLevelDescriptions = {
-    "1": "Lv.1 최소 (원문 충실)",
-    "2": "Lv.2 절제 (약간의 서술 보완)",
-    "3": "Lv.3 보통 (밸런스 있는 디테일 서술)",
-    "4": "Lv.4 높음 (창의적 설정 확장)",
-    "5": "Lv.5 최대 (자율적 아이디어 파생)"
+    "1": "Lv.1 최소 (원문 충실 / 개입 없이 키워드 정리)",
+    "2": "Lv.2 절제 (약간의 서술적 표현 보완)",
+    "3": "Lv.3 보통 (지시 준수 + 균형 있는 디테일 추가)",
+    "4": "Lv.4 높음 (창의적 설정 및 관련 요소 확장)",
+    "5": "Lv.5 최대 (자율적 파생 / 독창적 아이디어 전개)"
   };
 
   window.addEventListener('DOMContentLoaded', () => {
     initCanvas();
     loadKeybindings();
     loadSavedTheme();
+    loadSavedLabels();
+    loadUserProfile();
+    loadDraftInputs();
+    updateHistoryDropdown();
     window.addEventListener('keydown', handleGlobalShortcuts);
   });
+
+  function showToast(msg) {
+    const toast = document.getElementById('toastMsg');
+    toast.innerText = msg;
+    toast.style.display = 'block';
+    setTimeout(() => { toast.style.display = 'none'; }, 2000);
+  }
+
+  function triggerAutoSave() {
+    const badge = document.getElementById('saveBadge');
+    badge.innerText = "⏳ 저장 중...";
+    badge.style.color = "#ff0000";
+
+    const draftData = {
+      prompt: document.getElementById('promptInput').value,
+      dialogueContext: document.getElementById('dialogueContextInput').value,
+      keyword: document.getElementById('keywordInput').value,
+      genre: document.getElementById('genreSelect').value,
+      language: document.getElementById('languageSelect').value,
+      aiLevel: document.getElementById('aiLevelInput').value,
+      memo: document.getElementById('memoInput').value,
+      boardStoryText: document.getElementById('boardStoryText').value
+    };
+
+    localStorage.setItem('user_draft_data', JSON.stringify(draftData));
+
+    setTimeout(() => {
+      badge.innerText = "💾 저장됨";
+      badge.style.color = "var(--text-color)";
+    }, 500);
+  }
+
+  function debounceAutoSave() {
+    clearTimeout(autoSaveTimer);
+    autoSaveTimer = setTimeout(() => {
+      triggerAutoSave();
+    }, 1000);
+  }
+
+  function loadDraftInputs() {
+    const saved = localStorage.getItem('user_draft_data');
+    if (saved) {
+      try {
+        const data = JSON.parse(saved);
+        if (data.prompt) document.getElementById('promptInput').value = data.prompt;
+        if (data.dialogueContext) document.getElementById('dialogueContextInput').value = data.dialogueContext;
+        if (data.keyword) document.getElementById('keywordInput').value = data.keyword;
+        if (data.genre) document.getElementById('genreSelect').value = data.genre;
+        if (data.language) document.getElementById('languageSelect').value = data.language;
+        if (data.aiLevel) {
+          document.getElementById('aiLevelInput').value = data.aiLevel;
+          updateAiLevelDesc(data.aiLevel);
+        }
+        if (data.memo) document.getElementById('memoInput').value = data.memo;
+        if (data.boardStoryText) document.getElementById('boardStoryText').value = data.boardStoryText;
+      } catch (e) {}
+    }
+  }
+
+  function resetFormInputs() {
+    if (confirm("입력한 프롬프트 및 설정을 모두 초기화하시겠습니까?")) {
+      document.getElementById('promptInput').value = "";
+      document.getElementById('dialogueContextInput').value = "";
+      document.getElementById('keywordInput').value = "";
+      document.getElementById('memoInput').value = "";
+      document.getElementById('boardStoryText').value = "";
+      localStorage.removeItem('user_draft_data');
+      showToast("입력 내용이 초기화되었습니다.");
+      triggerAutoSave();
+    }
+  }
+
+  function saveToHistory(type, markdownContent) {
+    let histories = [];
+    const saved = localStorage.getItem('ai_result_history');
+    if (saved) {
+      try { histories = JSON.parse(saved); } catch(e){}
+    }
+
+    const newEntry = {
+      id: Date.now(),
+      date: new Date().toLocaleString(),
+      type: type,
+      content: markdownContent
+    };
+
+    histories.unshift(newEntry);
+    if (histories.length > 10) histories.pop();
+
+    localStorage.setItem('ai_result_history', JSON.stringify(histories));
+    updateHistoryDropdown();
+  }
+
+  function updateHistoryDropdown() {
+    const select = document.getElementById('historySelect');
+    select.innerHTML = '<option value="">-- 최근 생성 기록 --</option>';
+    
+    const saved = localStorage.getItem('ai_result_history');
+    if (saved) {
+      try {
+        const histories = JSON.parse(saved);
+        histories.forEach((item, index) => {
+          const opt = document.createElement('option');
+          opt.value = item.id;
+          opt.innerText = `[${item.type}] ${item.date}`;
+          select.appendChild(opt);
+        });
+      } catch(e){}
+    }
+  }
+
+  function loadSelectedHistory(id) {
+    if (!id) return;
+    const saved = localStorage.getItem('ai_result_history');
+    if (saved) {
+      try {
+        const histories = JSON.parse(saved);
+        const target = histories.find(h => h.id == id);
+        if (target) {
+          rawMarkdownResult = target.content;
+          document.getElementById('resultOutput').innerHTML = marked.parse(rawMarkdownResult);
+          showToast("이전 생성 기록을 불러왔습니다.");
+        }
+      } catch(e){}
+    }
+  }
+
+  function copyResultText() {
+    if (!rawMarkdownResult) {
+      alert("복사할 결과 내용이 없습니다.");
+      return;
+    }
+    navigator.clipboard.writeText(rawMarkdownResult).then(() => {
+      showToast("클립보드에 복사되었습니다.");
+    });
+  }
+
+  function downloadResultMD() {
+    if (!rawMarkdownResult) {
+      alert("다운로드할 결과 내용이 없습니다.");
+      return;
+    }
+    const blob = new Blob([rawMarkdownResult], { type: 'text/markdown;charset=utf-8;' });
+    const link = document.createElement('a');
+    link.href = URL.createObjectURL(blob);
+    link.download = `world_helper_result_${new Date().toISOString().slice(0,10)}.md`;
+    link.click();
+    showToast("파일이 다운로드되었습니다.");
+  }
 
   function toggleNotice() {
     const noticeBody = document.getElementById('noticeBody');
@@ -494,9 +707,7 @@
     const savedTheme = localStorage.getItem('user_theme');
     if (savedTheme) {
       const themeSelect = document.getElementById('themeSelect');
-      if (themeSelect) {
-        themeSelect.value = savedTheme;
-      }
+      if (themeSelect) themeSelect.value = savedTheme;
       changeTheme(savedTheme);
     }
   }
@@ -511,6 +722,58 @@
     document.getElementById('txt-label-draw').innerText = penText;
     document.getElementById('txt-label-arrow').innerText = arrowText;
     document.getElementById('txt-label-erase').innerText = eraseText;
+
+    const toolLabels = { move: moveText, pen: penText, arrow: arrowText, erase: eraseText };
+    localStorage.setItem('tool_labels', JSON.stringify(toolLabels));
+  }
+
+  function loadSavedLabels() {
+    const savedLabels = localStorage.getItem('tool_labels');
+    if (savedLabels) {
+      try {
+        const toolLabels = JSON.parse(savedLabels);
+        if (toolLabels.move) document.getElementById('labelMove').value = toolLabels.move;
+        if (toolLabels.pen) document.getElementById('labelPen').value = toolLabels.pen;
+        if (toolLabels.arrow) document.getElementById('labelArrow').value = toolLabels.arrow;
+        if (toolLabels.erase) document.getElementById('labelErase').value = toolLabels.erase;
+        updateToolLabels();
+      } catch (e) {}
+    }
+  }
+
+  function saveUserProfile() {
+    const username = document.getElementById('usernameInput').value;
+    localStorage.setItem('user_profile_name', username);
+  }
+
+  function loadUserProfile() {
+    const savedName = localStorage.getItem('user_profile_name');
+    if (savedName) {
+      document.getElementById('usernameInput').value = savedName;
+    }
+    const savedImg = localStorage.getItem('user_profile_img');
+    if (savedImg) {
+      const preview = document.getElementById('profilePreview');
+      preview.src = savedImg;
+      preview.style.display = 'block';
+      document.getElementById('profilePlaceholder').style.display = 'none';
+    }
+  }
+
+  function loadProfileImageFromFile(event) {
+    const file = event.target.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        const preview = document.getElementById('profilePreview');
+        preview.src = e.target.result;
+        preview.style.display = 'block';
+        document.getElementById('profilePlaceholder').style.display = 'none';
+        localStorage.setItem('user_profile_img', e.target.result);
+        triggerAutoSave();
+      };
+      reader.readAsDataURL(file);
+    }
   }
 
   function loadKeybindings() {
@@ -531,15 +794,11 @@
     document.getElementById('keyDraw').value = keybindings.draw;
     document.getElementById('keyArrow').value = keybindings.arrow;
     document.getElementById('keyErase').value = keybindings.erase;
-    document.getElementById('keyUndo').value = keybindings.undo;
-    document.getElementById('keyRedo').value = keybindings.redo;
 
     document.getElementById('btn-key-select').innerText = keybindings.select;
     document.getElementById('btn-key-draw').innerText = keybindings.draw;
     document.getElementById('btn-key-arrow').innerText = keybindings.arrow;
     document.getElementById('btn-key-erase').innerText = keybindings.erase;
-    document.getElementById('btn-key-undo').innerText = keybindings.undo;
-    document.getElementById('btn-key-redo').innerText = keybindings.redo;
   }
 
   function recordKey(e, toolAction) {
@@ -554,6 +813,7 @@
 
     keybindings[toolAction] = combo.join("+");
     saveKeybindings();
+    triggerAutoSave();
     e.target.blur();
   }
 
@@ -624,7 +884,6 @@
     const dialogueExtraGroup = document.getElementById('dialogueExtraGroup');
     const keywordGroup = document.getElementById('keywordGroup');
     const promptLabel = document.getElementById('promptLabel');
-    const promptInput = document.getElementById('promptInput');
 
     if (tabType === 'myWorld') {
       subTabContainer.style.display = 'flex';
@@ -633,7 +892,6 @@
       resultSection.style.display = 'block';
       guideSection.style.display = 'none';
       keywordGroup.style.display = 'block';
-      
       updateSubTabUI();
     } else if (tabType === 'dialogue') {
       subTabContainer.style.display = 'none';
@@ -645,7 +903,6 @@
       dialogueExtraGroup.style.display = 'block';
       keywordGroup.style.display = 'none';
       promptLabel.innerText = '캐릭터 성격 및 말투 입력';
-      promptInput.placeholder = '예: 냉정하고 차분한 어조, 단정한 말투';
       document.getElementById('formTitle').innerText = '대사 생성 입력';
     } else if (tabType === 'topic') {
       subTabContainer.style.display = 'none';
@@ -657,8 +914,7 @@
       dialogueExtraGroup.style.display = 'none';
       keywordGroup.style.display = 'block';
       promptLabel.innerText = '원하는 분위기 / 배경 설정 힌트';
-      promptInput.placeholder = '예: 차가운 새벽 공기, 시간 멈춤';
-      document.getElementById('formTitle').innerText = '주제 선정 (장소/설정 문장 & 단어 추천)';
+      document.getElementById('formTitle').innerText = '주제 선정';
     } else if (tabType === 'relation') {
       subTabContainer.style.display = 'none';
       inputSection.style.display = 'none';
@@ -687,7 +943,6 @@
     const dialogueExtraGroup = document.getElementById('dialogueExtraGroup');
     const keywordGroup = document.getElementById('keywordGroup');
     const promptLabel = document.getElementById('promptLabel');
-    const promptInput = document.getElementById('promptInput');
 
     dialogueExtraGroup.style.display = 'none';
     keywordGroup.style.display = 'block';
@@ -695,17 +950,14 @@
     if (currentSubTab === 'world') {
       genreGroup.style.display = 'block';
       promptLabel.innerText = '세계관 상세 요구사항 / 프롬프트';
-      promptInput.placeholder = '원하는 분위기나 세계관 핵심 특징을 입력해보세요...';
       document.getElementById('formTitle').innerText = '세계관 설정 입력';
     } else if (currentSubTab === 'character') {
       genreGroup.style.display = 'none';
       promptLabel.innerText = '캐릭터 구상 프롬프트';
-      promptInput.placeholder = '인물의 외형, 성격, 배경 스토리를 입력해보세요...';
       document.getElementById('formTitle').innerText = '캐릭터 설정 입력';
     } else if (currentSubTab === 'plot') {
       genreGroup.style.display = 'block';
       promptLabel.innerText = '플롯/스토리 사건 프롬프트';
-      promptInput.placeholder = '스토리의 중심 갈등 사건이나 흐름을 입력해보세요...';
       document.getElementById('formTitle').innerText = '플롯 / 스토리 입력';
     }
   }
@@ -956,24 +1208,75 @@
     }
   }
 
-  function loadProfileImageFromFile(event) {
+  function exportDataJSON() {
+    const data = {
+      profile: {
+        name: localStorage.getItem('user_profile_name') || 'User_01',
+        img: localStorage.getItem('user_profile_img') || ''
+      },
+      settings: {
+        theme: localStorage.getItem('user_theme') || 'classic-win',
+        keybindings: JSON.parse(localStorage.getItem('canvas_keybindings') || '{}'),
+        toolLabels: JSON.parse(localStorage.getItem('tool_labels') || '{}')
+      },
+      inputs: JSON.parse(localStorage.getItem('user_draft_data') || '{}')
+    };
+
+    const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(data, null, 2));
+    const downloadAnchor = document.createElement('a');
+    downloadAnchor.setAttribute("href", dataStr);
+    downloadAnchor.setAttribute("download", `world_helper_data_${new Date().toISOString().slice(0,10)}.json`);
+    document.body.appendChild(downloadAnchor);
+    downloadAnchor.click();
+    downloadAnchor.remove();
+  }
+
+  function importDataJSON(event) {
     const file = event.target.files[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onload = function(e) {
-        const preview = document.getElementById('profilePreview');
-        preview.src = e.target.result;
-        preview.style.display = 'block';
-        document.getElementById('profilePlaceholder').style.display = 'none';
-      };
-      reader.readAsDataURL(file);
-    }
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = function(e) {
+      try {
+        const data = JSON.parse(e.target.result);
+
+        if (data.profile) {
+          if (data.profile.name) localStorage.setItem('user_profile_name', data.profile.name);
+          if (data.profile.img) localStorage.setItem('user_profile_img', data.profile.img);
+          loadUserProfile();
+        }
+
+        if (data.settings) {
+          if (data.settings.theme) changeTheme(data.settings.theme);
+          if (data.settings.keybindings) {
+            keybindings = data.settings.keybindings;
+            saveKeybindings();
+          }
+          if (data.settings.toolLabels) {
+            localStorage.setItem('tool_labels', JSON.stringify(data.settings.toolLabels));
+            loadSavedLabels();
+          }
+        }
+
+        if (data.inputs) {
+          localStorage.setItem('user_draft_data', JSON.stringify(data.inputs));
+          loadDraftInputs();
+        }
+
+        showToast("성공적으로 데이터를 불러왔습니다.");
+      } catch (err) {
+        alert("JSON 파일을 읽는 도중 오류가 발생했습니다.");
+      }
+    };
+    reader.readAsText(file);
+    event.target.value = '';
   }
 
   async function generateContent() {
     const promptText = document.getElementById('promptInput').value.trim();
     const dialogueContextText = document.getElementById('dialogueContextInput').value.trim();
     const keywordText = document.getElementById('keywordInput').value.trim();
+    const targetLanguage = document.getElementById('languageSelect').value;
     const aiLevel = parseInt(document.getElementById('aiLevelInput').value);
     const genre = document.getElementById('genreSelect').value;
     const outputDiv = document.getElementById('resultOutput');
@@ -983,32 +1286,47 @@
       return;
     }
 
-    outputDiv.innerHTML = '<p>AI가 답변을 생성하는 중입니다...</p>';
+    outputDiv.innerHTML = '<p>AI가 안전하게 답변을 생성 중입니다...</p>';
 
-    let userPromptMessage = "";
+    // AI 관여도 수준에 맞춘 프롬프트 가이던스 동적 포함
+    let aiGuidance = "";
+    if (aiLevel === 1) aiGuidance = "사용자의 입력 내용을 엄격하게 유지하고 요구사항 외의 자율적 확장을 최소화하세요.";
+    else if (aiLevel === 2) aiGuidance = "사용자의 기본 설정을 따르되 문맥의 흐름과 문장 표현력 정도만 보완하세요.";
+    else if (aiLevel === 3) aiGuidance = "사용자의 지시사항을 기반으로 매끄럽고 균형감 있는 부가 디테일 및 구체적 서사를 보완하세요.";
+    else if (aiLevel === 4) aiGuidance = "사용자가 제시한 아이디어를 확장하여 창의적이고 풍부한 관련 주변 설정 및 사건을 적극 제안하세요.";
+    else if (aiLevel === 5) aiGuidance = "사용자의 입력을 힌트로 삼아 AI의 창의성을 극대화하여 대담하고 독창적이며 자율적인 아이디어/파생 설정을 대량 생성하세요.";
+
+    const strictLanguageRule = `
+[STRICT SYSTEM INSTRUCTION]
+1. Respond ONLY in ${targetLanguage}.
+2. Absolute BAN on generating random English words, gibberish tokens, or unformatted text fragments.
+3. Keep the content coherent, logical, and structured strictly using Markdown headings and bullet points.
+4. AI Involvement Level Policy (${aiLevel}/5): ${aiGuidance}
+`;
+
+    let userPromptMessage = strictLanguageRule + "\n\n";
 
     if (currentMainTab === 'topic') {
-      userPromptMessage = `[주제/분위기 장소 추천 요청]\n배경/힌트: ${promptText}\n키워드: ${keywordText}\n관여도 Level: ${aiLevel}\n장소 문장 및 공간 연출 단어를 마크다운 양식으로 다양하게 추천해 주세요.`;
+      userPromptMessage += `[주제/분위기 장소 추천 요청]\n배경/힌트: ${promptText}\n키워드: ${keywordText}\n창의성 Level: ${aiLevel}\n언어: ${targetLanguage}\n장소 문장 및 연출 단어를 마크다운으로 구성하세요.`;
     } else if (currentMainTab === 'dialogue') {
-      userPromptMessage = `[대사 생성 요청]\n캐릭터 성격/말투: ${promptText}\n상황/장소: ${dialogueContextText}\n관여도 Level: ${aiLevel}\n생생한 캐릭터 대사 스크립트와 연출 지침을 반드시 마크다운 형식을 사용하여 명확히 구분 및 작성해주세요.`;
+      userPromptMessage += `[대사 생성 요청]\n캐릭터 성격/말투: ${promptText}\n상황/장소: ${dialogueContextText}\n창의성 Level: ${aiLevel}\n언어: ${targetLanguage}\n대사 스크립트와 연출 지침을 마크다운으로 작성하세요.`;
     } else if (currentMainTab === 'myWorld') {
       if (currentSubTab === 'world') {
-        userPromptMessage = `[세계관 생성 요청]\n장르: ${genre}\n상세 요구사항: ${promptText}\n키워드: ${keywordText}\n세계관 배경, 환경적 특징, 지배적 규칙을 마크다운 형식으로 구성해주세요.`;
+        userPromptMessage += `[세계관 생성 요청]\n장르: ${genre}\n요구사항: ${promptText}\n키워드: ${keywordText}\n언어: ${targetLanguage}\n세계관 배경, 환경적 특징, 규칙을 마크다운으로 작성하세요.`;
       } else if (currentSubTab === 'character') {
-        userPromptMessage = `[캐릭터 구상 요청]\n요구사항: ${promptText}\n키워드: ${keywordText}\n인물의 외형, 내면 동기, 서사적 갈등을 마크다운 형식으로 작성해주세요.`;
+        userPromptMessage += `[캐릭터 구상 요청]\n요구사항: ${promptText}\n키워드: ${keywordText}\n언어: ${targetLanguage}\n외형, 성격, 배경 스토리를 마크다운으로 구성하세요.`;
       } else if (currentSubTab === 'plot') {
-        userPromptMessage = `[플롯/스토리 생성 요청]\n장르: ${genre}\n사건/갈등 요구사항: ${promptText}\n키워드: ${keywordText}\n기승전결(발단-전개-절정-결말) 서사 구조를 마크다운 형식으로 자세히 설계해주세요.`;
+        userPromptMessage += `[플롯 생성 요청]\n장르: ${genre}\n요구사항: ${promptText}\n키워드: ${keywordText}\n언어: ${targetLanguage}\n기승전결 구성을 마크다운으로 작성하세요.`;
       }
     }
 
     try {
       const response = await fetch('/generate', {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json"
-        },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          prompt: userPromptMessage
+          prompt: userPromptMessage,
+          temperature: 0.1 + (aiLevel * 0.15)
         })
       });
 
@@ -1018,7 +1336,11 @@
         throw new Error(data.error || `오류가 발생했습니다 (코드: ${response.status})`);
       }
 
-      outputDiv.innerHTML = marked.parse(data.result);
+      rawMarkdownResult = data.result;
+      outputDiv.innerHTML = marked.parse(rawMarkdownResult);
+
+      const typeTag = currentMainTab === 'dialogue' ? '대사' : (currentMainTab === 'topic' ? '주제' : currentSubTab);
+      saveToHistory(typeTag, rawMarkdownResult);
 
     } catch (error) {
       console.error("오류 상세 내용:", error);
@@ -1029,3 +1351,4 @@
 
 </body>
 </html>
+
