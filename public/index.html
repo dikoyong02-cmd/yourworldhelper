@@ -363,7 +363,6 @@
         <div id="resultOutput" class="result-box markdown-body">결과가 여기에 표시됩니다.</div>
       </article>
 
-      <!-- 수정한 가이드 섹션: 나만의 세상, 대사 생성, 주제 선정 및 기존 기능 안내 통합 -->
       <section class="card" id="guideSection" style="display: none;">
         <div class="card-title">
           <span>SYSTEM MANUAL & USER GUIDE</span>
@@ -1346,43 +1345,50 @@
     outputDiv.innerHTML = '<p>AI가 안전하게 답변을 생성 중입니다...</p>';
 
     let aiGuidance = "";
-    if (aiLevel === 1) aiGuidance = "사용자의 입력 내용을 엄격하게 유지하고 요구사항 외의 자율적 확장을 최소화하세요.";
-    else if (aiLevel === 2) aiGuidance = "사용자의 기본 설정을 따르되 문맥의 흐름과 문장 표현력 정도만 보완하세요.";
-    else if (aiLevel === 3) aiGuidance = "사용자의 지시사항을 기반으로 매끄럽고 균형감 있는 부가 디테일 및 구체적 서사를 보완하세요.";
-    else if (aiLevel === 4) aiGuidance = "사용자가 제시한 아이디어를 확장하여 창의적이고 풍부한 관련 주변 설정 및 사건을 적극 제안하세요.";
-    else if (aiLevel === 5) aiGuidance = "사용자의 입력을 힌트로 삼아 AI의 창의성을 극대화하여 대담하고 독창적이며 자율적인 아이디어/파생 설정을 대량 생성하세요.";
+    if (aiLevel === 1) aiGuidance = "사용자의 입력 내용을 엄격하게 유지하고 추가 창작을 최소화하세요.";
+    else if (aiLevel === 2) aiGuidance = "기본 설정을 지키며 서술 표현을 매끄럽게 정리하세요.";
+    else if (aiLevel === 3) aiGuidance = "지시사항을 바탕으로 자연스럽고 균형 있는 디테일을 추가하세요.";
+    else if (aiLevel === 4) aiGuidance = "아이디어를 풍부하게 확장하여 입체적인 설정을 제시하세요.";
+    else if (aiLevel === 5) aiGuidance = "독창적이고 파격적인 하이 콘셉트 아이디어를 대량 전개하세요.";
 
+    // 다국어 완벽 고정 시스템 프롬프트 (환각 및 영문/타 언어 섞임 완벽 차단)
     const strictLanguageRule = `
-[STRICT SYSTEM INSTRUCTION]
-1. Respond ONLY in ${targetLanguage}.
-2. Absolute BAN on generating random English words, gibberish tokens, or unformatted text fragments.
-3. Keep the content coherent, logical, and structured strictly using Markdown headings and bullet points.
-4. AI Involvement Level Policy (${aiLevel}/5): ${aiGuidance}
+[시스템 지침 - 출력 언어 엄격 제한]
+당신은 완벽한 다국어 스토리 생성 AI입니다.
+반드시 모든 결과를 예외 없이 오직 [ ${targetLanguage} ] 언어로만 작성하십시오.
+
+[필수 규칙]
+1. 영문 변수명, 프로그래밍 코드(asyield, search 등), 타국어(아랍어, 키릴 문자 등), 의미 없는 깨진 기호/단어의 생성을 절대 금지합니다.
+2. 자연스러운 문장 구조를 유지하며 깔끔한 마크다운(Markdown) 제목과 불렛 포인트로 정리하십시오.
+3. 창의성 수준 (${aiLevel}/5): ${aiGuidance}
 `;
 
     let userPromptMessage = strictLanguageRule + "\n\n";
 
     if (currentMainTab === 'topic') {
-      userPromptMessage += `[주제/분위기 장소 추천 요청]\n배경/힌트: ${promptText}\n키워드: ${keywordText}\n창의성 Level: ${aiLevel}\n언어: ${targetLanguage}\n장소 문장 및 연출 단어를 마크다운으로 구성하세요.`;
+      userPromptMessage += `[주제/분위기 장소 추천]\n- 분위기 및 배경: ${promptText}\n- 키워드: ${keywordText}\n- 지정 언어: ${targetLanguage}\n위 내용을 기반으로 로그라인 및 추천 연출 요소를 작성해 주세요.`;
     } else if (currentMainTab === 'dialogue') {
-      userPromptMessage += `[대사 생성 요청]\n캐릭터 성격/말투: ${promptText}\n상황/장소: ${dialogueContextText}\n창의성 Level: ${aiLevel}\n언어: ${targetLanguage}\n대사 스크립트와 연출 지침을 마크다운으로 작성하세요.`;
+      userPromptMessage += `[대사 생성]\n- 캐릭터 성격/말투: ${promptText}\n- 상황 및 장소: ${dialogueContextText}\n- 지정 언어: ${targetLanguage}\n인물 간의 대사 스크립트와 장면 연출 지문을 작성해 주세요.`;
     } else if (currentMainTab === 'myWorld') {
       if (currentSubTab === 'world') {
-        userPromptMessage += `[세계관 생성 요청]\n장르: ${genre}\n요구사항: ${promptText}\n키워드: ${keywordText}\n언어: ${targetLanguage}\n세계관 배경, 환경적 특징, 규칙을 마크다운으로 작성하세요.`;
+        userPromptMessage += `[세계관 생성]\n- 장르: ${genre}\n- 상세 요구사항: ${promptText}\n- 키워드: ${keywordText}\n- 지정 언어: ${targetLanguage}\n세계관 배경, 사회 구조, 독자적 규칙을 체계적으로 작성해 주세요.`;
       } else if (currentSubTab === 'character') {
-        userPromptMessage += `[캐릭터 구상 요청]\n요구사항: ${promptText}\n키워드: ${keywordText}\n언어: ${targetLanguage}\n외형, 성격, 배경 스토리를 마크다운으로 구성하세요.`;
+        userPromptMessage += `[캐릭터 구상]\n- 상세 요구사항: ${promptText}\n- 키워드: ${keywordText}\n- 지정 언어: ${targetLanguage}\n인물의 외형, 성격, 배경 스토리, 행동 동기를 작성해 주세요.`;
       } else if (currentSubTab === 'plot') {
-        userPromptMessage += `[플롯 생성 요청]\n장르: ${genre}\n요구사항: ${promptText}\n키워드: ${keywordText}\n언어: ${targetLanguage}\n기승전결 구성을 마크다운으로 작성하세요.`;
+        userPromptMessage += `[플롯/스토리 생성]\n- 장르: ${genre}\n- 사건 요약: ${promptText}\n- 키워드: ${keywordText}\n- 지정 언어: ${targetLanguage}\n기승전결 구조에 맞춘 스토리 흐름과 복선 포인트를 작성해 주세요.`;
       }
     }
 
     try {
+      // temperature 값을 안정적인 0.65~0.95 범위로 보정하여 언어 깨짐 및 반복 현상 차단
+      const safeTemperature = 0.6 + (aiLevel * 0.08);
+
       const response = await fetch('/generate', {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           prompt: userPromptMessage,
-          temperature: 0.1 + (aiLevel * 0.15)
+          temperature: safeTemperature
         })
       });
 
