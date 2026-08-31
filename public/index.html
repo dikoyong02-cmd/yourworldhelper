@@ -135,19 +135,20 @@
     }
 
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Tahoma', 'Dotum', '굴림', sans-serif; }
+    html, body { width: 100%; overflow-x: hidden; }
     body { background-color: var(--bg-color); color: var(--text-color); padding: 15px; touch-action: manipulation; }
-    .container { max-width: 1000px; margin: 0 auto; background: var(--card-bg); border: 2px solid var(--border-color); padding: 10px; box-shadow: 4px 4px 0px #000000; position: relative; }
+    .container { max-width: 1000px; width: 100%; margin: 0 auto; background: var(--card-bg); border: 2px solid var(--border-color); padding: 10px; box-shadow: 4px 4px 0px #000000; position: relative; overflow: hidden; }
     
     .save-badge { position: absolute; top: 12px; right: 15px; font-size: 10px; padding: 2px 6px; background: var(--input-bg); border: 1px solid var(--border-color); font-weight: bold; }
 
-    .notice-card { background: var(--card-sub-bg); border: 1px solid var(--border-color); margin-bottom: 10px; font-size: 11px; }
+    .notice-card { background: var(--card-sub-bg); border: 1px solid var(--border-color); margin-bottom: 10px; font-size: 11px; width: 100%; }
     .notice-header { background: var(--accent-color); color: var(--accent-text); padding: 4px 8px; font-weight: bold; display: flex; justify-content: space-between; align-items: center; cursor: pointer; }
     .notice-toggle-btn { background: var(--card-bg); color: var(--text-color); border: 1px solid var(--border-color); font-size: 10px; padding: 1px 6px; cursor: pointer; }
     .notice-body { padding: 10px; line-height: 1.5; }
     .notice-body ol { margin-left: 18px; }
     .notice-body li { margin-bottom: 4px; }
 
-    header { background: var(--window-title-bg); padding: 6px 10px; margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center; border: 1px solid var(--border-color); }
+    header { background: var(--window-title-bg); padding: 6px 10px; margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center; border: 1px solid var(--border-color); flex-wrap: wrap; gap: 8px; }
     header h1 { font-size: 14px; font-weight: bold; color: #ffffff; }
     .theme-selector-box { display: flex; align-items: center; gap: 6px; color: #ffffff; font-size: 11px; }
     .theme-selector-box select { padding: 3px 6px; font-size: 11px; border: 1px solid var(--border-color); background-color: var(--input-bg); color: var(--text-color); }
@@ -155,41 +156,45 @@
     .tab-btn, .sub-tab-btn, button.primary-btn, .profile-btn, .board-tool-btn, .side-nav-btn, .small-btn, .level-btn {
       display: inline-flex; align-items: center; justify-content: center; height: 28px; padding: 0 10px;
       border: 1px solid var(--border-color); background: var(--card-bg); color: var(--text-color);
-      font-size: 11px; font-weight: bold; cursor: pointer; outline: none; user-select: none;
+      font-size: 11px; font-weight: bold; cursor: pointer; outline: none; user-select: none; flex-shrink: 0;
     }
     .tab-btn.active, .sub-tab-btn.active, .board-tool-btn.active, .side-nav-btn.active, .level-btn.active { background: var(--accent-color); color: var(--accent-text); }
     .side-nav-btn { width: 100%; height: 36px; font-size: 11px; border: 1px solid var(--border-color); }
     button.primary-btn, .profile-btn { width: 100%; }
 
-    .level-btn-group { display: flex; gap: 6px; margin-top: 4px; }
+    .level-btn-group { display: flex; gap: 6px; margin-top: 4px; width: 100%; }
     .level-btn-group .level-btn { flex: 1; height: 30px; }
 
-    .tab-container { display: flex; gap: 4px; margin-bottom: 8px; flex-wrap: wrap; }
-    .sub-tab-container { display: flex; gap: 4px; margin-bottom: 12px; padding-left: 2px; }
-    main { display: grid; grid-template-columns: 1fr 260px; gap: 12px; }
-    .content-area { display: flex; flex-direction: column; gap: 12px; }
-    .card { border: 1px solid var(--border-color); background: var(--card-sub-bg); padding: 12px; }
-    .card-title { font-size: 12px; font-weight: bold; margin-bottom: 10px; background: var(--accent-color); color: var(--accent-text); padding: 4px 8px; border: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center; }
+    .tab-container { display: flex; gap: 4px; margin-bottom: 8px; overflow-x: auto; padding-bottom: 4px; -webkit-overflow-scrolling: touch; }
+    .sub-tab-container { display: flex; gap: 4px; margin-bottom: 12px; padding-left: 2px; overflow-x: auto; padding-bottom: 4px; -webkit-overflow-scrolling: touch; }
+    
+    main { display: grid; grid-template-columns: 1fr 260px; gap: 12px; width: 100%; }
+    .content-area { display: flex; flex-direction: column; gap: 12px; min-width: 0; }
+    .card { border: 1px solid var(--border-color); background: var(--card-sub-bg); padding: 12px; width: 100%; box-sizing: border-box; }
+    .card-title { font-size: 12px; font-weight: bold; margin-bottom: 10px; background: var(--accent-color); color: var(--accent-text); padding: 4px 8px; border: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 4px; }
     .card-title-btn { background: var(--card-bg); color: var(--text-color); border: 1px solid var(--border-color); font-size: 10px; padding: 1px 6px; cursor: pointer; }
 
-    .form-group { margin-bottom: 10px; }
+    .form-group { margin-bottom: 10px; width: 100%; }
     .form-group label { display: block; font-size: 11px; font-weight: bold; margin-bottom: 4px; }
-    input[type="text"], input[type="password"], select, textarea { width: 100%; border: 1px solid var(--border-color); padding: 6px; font-size: 12px; background: var(--input-bg); color: var(--text-color); outline: none; }
+    input[type="text"], input[type="password"], select, textarea { width: 100%; border: 1px solid var(--border-color); padding: 6px; font-size: 12px; background: var(--input-bg); color: var(--text-color); outline: none; box-sizing: border-box; }
     textarea { height: 100px; resize: vertical; }
 
     .tool-label-grid, .shortcut-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
     .shortcut-input { text-align: center; font-weight: bold; cursor: pointer; background-color: var(--input-bg); }
     .shortcut-input:focus { border-color: var(--accent-color); background-color: #fffde7; color: #000; }
 
-    .result-box { min-height: 180px; background: var(--input-bg); border: 1px solid var(--border-color); padding: 12px; font-size: 12px; line-height: 1.6; word-break: break-word; }
-    .markdown-body h1, .markdown-body h2, .markdown-body h3 { margin-top: 10px; margin-bottom: 6px; color: var(--accent-color); border-bottom: 1px dashed var(--border-color); padding-bottom: 4px; }
-    .markdown-body p { margin-bottom: 8px; }
-    .markdown-body ul, .markdown-body ol { margin-left: 20px; margin-bottom: 8px; }
-    .markdown-body blockquote { border-left: 3px solid var(--accent-color); padding-left: 8px; margin: 8px 0; color: var(--text-color); }
+    .result-box { min-height: 180px; width: 100%; background: var(--input-bg); border: 1px solid var(--border-color); padding: 12px; font-size: 12px; line-height: 1.6; word-break: break-all; overflow-wrap: break-word; overflow-x: auto; }
+    .markdown-body { width: 100%; word-break: break-all; overflow-wrap: break-word; }
+    .markdown-body h1, .markdown-body h2, .markdown-body h3 { margin-top: 10px; margin-bottom: 6px; color: var(--accent-color); border-bottom: 1px dashed var(--border-color); padding-bottom: 4px; word-break: break-all; }
+    .markdown-body p { margin-bottom: 8px; word-break: break-all; }
+    .markdown-body ul, .markdown-body ol { margin-left: 20px; margin-bottom: 8px; word-break: break-all; }
+    .markdown-body blockquote { border-left: 3px solid var(--accent-color); padding-left: 8px; margin: 8px 0; color: var(--text-color); word-break: break-all; }
+    .markdown-body table { width: 100%; border-collapse: collapse; margin-bottom: 8px; display: block; overflow-x: auto; }
+    .markdown-body table th, .markdown-body table td { border: 1px solid var(--border-color); padding: 4px 8px; }
 
     .board-container { position: relative; width: 100%; height: 450px; background-color: var(--canvas-bg); border: 2px solid var(--canvas-frame); overflow: hidden; touch-action: none; }
     .board-viewport { position: absolute; width: 100%; height: 100%; background-image: linear-gradient(var(--canvas-grid) 1px, transparent 1px), linear-gradient(90deg, var(--canvas-grid) 1px, transparent 1px); background-size: 20px 20px; transform-origin: 0 0; }
-    .board-toolbar { display: flex; flex-wrap: wrap; gap: 4px; margin-bottom: 8px; align-items: center; justify-content: space-between; background: var(--card-bg); padding: 6px; border: 1px solid var(--border-color); }
+    .board-toolbar { display: flex; flex-wrap: wrap; gap: 4px; margin-bottom: 8px; align-items: center; justify-content: space-between; background: var(--card-bg); padding: 6px; border: 1px solid var(--border-color); overflow-x: auto; }
     .board-tool-group { display: flex; gap: 4px; align-items: center; flex-wrap: wrap; }
 
     .canvas-node { position: absolute; background: var(--input-bg); border: 1px solid var(--border-color); padding: 6px; font-size: 11px; box-shadow: 2px 2px 0px rgba(0,0,0,0.2); cursor: move; user-select: none; min-width: 80px; min-height: 40px; }
@@ -197,8 +202,8 @@
     .card-delete-btn { position: absolute; top: -6px; right: -6px; width: 16px; height: 16px; background: #ff4d4f; color: #ffffff; border: 1px solid #000; border-radius: 50%; font-size: 10px; line-height: 14px; text-align: center; cursor: pointer; user-select: none; z-index: 10; font-weight: bold; }
     .resize-handle { position: absolute; right: 0; bottom: 0; width: 10px; height: 10px; background: var(--border-color); cursor: se-resize; }
 
-    sidebar { display: flex; flex-direction: column; gap: 12px; }
-    .profile-card { border: 1px solid var(--border-color); padding: 12px; background: var(--card-sub-bg); text-align: center; }
+    sidebar { display: flex; flex-direction: column; gap: 12px; min-width: 0; }
+    .profile-card { border: 1px solid var(--border-color); padding: 12px; background: var(--card-sub-bg); text-align: center; width: 100%; }
     .profile-img-box { width: 90px; height: 90px; border: 1px solid var(--border-color); margin: 0 auto 8px; display: flex; align-items: center; justify-content: center; background: var(--input-bg); overflow: hidden; }
     .profile-img-box img { width: 100%; height: 100%; object-fit: cover; display: none; }
     .collapsible-content.collapsed { display: none; }
@@ -1223,7 +1228,7 @@
 
       function doResize(re) {
         const currentX = re.touches ? re.touches[0].clientX : re.clientX;
-        const currentY = re.touches ? re.touches[0].clientY : re.clientY;
+        const currentY = re.touches ? re.touches[0].clientY : re.clientX;
         const newW = startW + (currentX - startX) / canvasScale;
         const newH = startH + (currentY - startY) / canvasScale;
         if (newW > 50) element.style.width = newW + 'px';
@@ -1308,7 +1313,6 @@
     event.target.value = '';
   }
 
-  // --- [개선 및 오류가 해결된 generateContent 함수] ---
   async function generateContent() {
     const promptInput = document.getElementById('promptInput');
     const dialogueContextInput = document.getElementById('dialogueContextInput');
@@ -1327,17 +1331,15 @@
       return;
     }
 
-    // 장문 입력 시 서버 처리 부하를 줄이기 위한 입력 길이 체크 및 자르기 안전장치 (최대 4000자)
     const MAX_INPUT_LEN = 4000;
     if (promptText.length > MAX_INPUT_LEN) {
       promptText = promptText.substring(0, MAX_INPUT_LEN);
       showToast("입력문이 너무 길어 상위 4000자까지 축소되어 처리됩니다.");
     }
 
-    // 버튼 중복 클릭 방지
     submitBtn.disabled = true;
     submitBtn.innerText = "[ 생성 처리 중... ]";
-    outputDiv.innerHTML = '<p style="color:var(--accent-color);">⏳ AI가 입력을 분석하여 생성 중입니다... (장문인 경우 시간이 조금 더 걸릴 수 있습니다)</p>';
+    outputDiv.innerHTML = '<p style="color:var(--accent-color);">⏳ AI가 입력을 분석하여 생성 중입니다...</p>';
 
     let tempValue = 0.3;
     let levelInstruction = "사용자의 요청에 맞춰 완성도 있게 작성해 주세요.";
@@ -1352,44 +1354,26 @@
 
     const systemRules = `[System Directive]
 1. Output MUST be strictly in ${targetLanguage}.
-2. Do NOT use any random English words, gibberish, broken characters, or invalid symbols.
-3. Keep the tone natural, logical, and fully grammatically correct in ${targetLanguage}.
-4. Format the output neatly using standard Markdown headings and bullet points.`;
+2. Keep the tone natural, logical, and fully grammatically correct in ${targetLanguage}.
+3. Format the output neatly using standard Markdown headings and bullet points.
+4. Do NOT repeat or include the user's input variables, settings, prompts, instructions, or rules in the final response output. Output ONLY the pure generated content.`;
 
     let userPromptMessage = `${systemRules}\n\n`;
 
     if (currentMainTab === 'topic') {
-      if (selectedAiLevel === 'low') {
-        userPromptMessage += `[주제 선정 - 간단한 단어/문장 구상]\n`;
-        userPromptMessage += `- 입력 힌트: ${promptText}\n- 키워드: ${keywordText}\n`;
-        userPromptMessage += `[요구사항]\n입력된 소재를 바탕으로 단어나 직관적인 한 문장 형태의 상황 아이디어를 정리해 주세요.`;
-      } else {
-        userPromptMessage += `[주제 선정 - 구체적 상황 및 묘사 전개]\n`;
-        userPromptMessage += `- 입력 힌트: ${promptText}\n- 키워드: ${keywordText}\n`;
-        userPromptMessage += `[요구사항]\n입력된 아이디어를 바탕으로 시각적 묘사와 인물의 반응이 포함된 구체적인 상황 서술 프롬프트를 작성해 주세요.`;
-      }
+      userPromptMessage += `[주제 선정 정보]\n- 입력 힌트: ${promptText}\n- 키워드: ${keywordText}\n\n[작성 요구사항]\n오직 완성된 주제 및 아이디어 텍스트만 출력하세요. 프롬프트나 요구사항 조건을 되풀이하여 출력하지 마세요.`;
     } else if (currentMainTab === 'dialogue') {
-      userPromptMessage += `[대사 생성]\n`;
-      userPromptMessage += `- 캐릭터 성향(성격 및 말투): ${promptText}\n`;
-      userPromptMessage += `- 상황 및 장소: ${dialogueContextText}\n`;
-      userPromptMessage += `[공통 주의사항] 고정된 프로필이나 이름을 단순 설명하지 말고, 오직 '지정된 상황, 장소, 적힌 성격과 대사' 중심으로 작성할 것.\n\n`;
-
-      if (selectedAiLevel === 'low') {
-        userPromptMessage += `[요구사항 - 대사 및 상황 힌트]\n주어진 상황에서 캐릭터가 할 법한 대표 대사와 핵심 상황 연출 힌트를 정리해 주세요.`;
-      } else {
-        userPromptMessage += `[요구사항 - 상황해설 및 생생한 대사 스크립트]\n캐릭터의 성향, 말투, 지정된 상황 및 장소가 잘 드러나도록 행동 지문과 인물 대사를 조합한 완성형 스크립트를 작성해 주세요.`;
-      }
+      userPromptMessage += `[캐릭터 정보 및 상황]\n- 캐릭터 성향/말투: ${promptText}\n- 상황 및 장소: ${dialogueContextText}\n\n[절대 규칙]\n1. 오직 '대사 스크립트' 내용만 출력하세요.\n2. 입력받은 조건 텍스트('캐릭터 성향', '상황 및 장소' 등)나 규칙 가이드를 결과물 상단 또는 하단에 절대로 다시 출력하지 마세요.\n3. 제목과 행동 지문, 캐릭터 간 대사만 깔끔한 마크다운으로 출력하세요.`;
     } else if (currentMainTab === 'myWorld') {
       if (currentSubTab === 'world') {
-        userPromptMessage += `[세계관 상세 설정]\n- 장르: ${genre}\n- 세부 요구사항: ${promptText}\n- 키워드: ${keywordText}\n초보 창작자가 바로 활용할 수 있도록 세부 지리, 사회 구조, 핵심 규칙을 정리해 주세요.`;
+        userPromptMessage += `[세계관 구상 정보]\n- 장르: ${genre}\n- 요구사항: ${promptText}\n- 키워드: ${keywordText}\n\n[작성 요구사항]\n위 입력을 바탕으로 세부 지리, 사회 구조, 핵심 규칙이 포함된 완성형 세계관 문서만 출력하세요. 입력 조건이나 가이드를 되풀이하지 마세요.`;
       } else if (currentSubTab === 'character') {
-        userPromptMessage += `[캐릭터 상세 프로필]\n- 요구사항: ${promptText}\n- 키워드: ${keywordText}\n인물의 외형, 성격, 과거 서사, 행동 동기를 체계적으로 다듬어 주세요.`;
+        userPromptMessage += `[캐릭터 구상 정보]\n- 요구사항: ${promptText}\n- 키워드: ${keywordText}\n\n[작성 요구사항]\n위 입력을 바탕으로 인물의 외형, 성격, 과거 서사, 행동 동기가 포함된 완성형 캐릭터 프로필만 출력하세요. 입력 조건이나 가이드를 되풀이하지 마세요.`;
       } else if (currentSubTab === 'plot') {
-        userPromptMessage += `[작성 지침: ${levelInstruction}]\n[플롯 / 스토리 구조]\n- 장르: ${genre}\n- 사건 요약: ${promptText}\n- 키워드: ${keywordText}\n기승전결 흐름에 맞춘 주요 사건과 복선 포인트를 작성해 주세요.`;
+        userPromptMessage += `[플롯 구상 정보]\n- 장르: ${genre}\n- 사건 요약: ${promptText}\n- 키워드: ${keywordText}\n- 관여도 가이드: ${levelInstruction}\n\n[작성 요구사항]\n위 입력을 바탕으로 기승전결 사건 흐름 및 복선 포인트를 포함한 완성형 플롯 스토리만 출력하세요. 입력 조건이나 가이드를 되풀이하지 마세요.`;
       }
     }
 
-    // 통신 타임아웃 설정을 위한 AbortController (60초 타임아웃 지정)
     const controller = new AbortController();
     const timeoutId = setTimeout(() => controller.abort(), 60000);
 
@@ -1435,7 +1419,6 @@
       }
       outputDiv.innerHTML = `<p style="color:red; font-weight:bold;">⚠️ 생성 실패:</p><p style="color:red;">${showErrMsg}</p>`;
     } finally {
-      // 버튼 상태 원복
       submitBtn.disabled = false;
       submitBtn.innerText = "[ 생성 실행 ]";
     }
