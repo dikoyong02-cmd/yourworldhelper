@@ -303,7 +303,7 @@
 
         <div class="form-group" id="keywordGroup">
           <label id="keywordLabel">원하는 상황 (선택)</label>
-          <input type="text" id="keywordInput" placeholder="예: 위기의 상황, 일상속 생활" oninput="debounceAutoSave()">
+          <input type="text" id="keywordInput" placeholder="예: 꿈속에서 만난 마녀가 홍차를 주었다" oninput="debounceAutoSave()">
         </div>
 
         <button type="button" class="primary-btn" id="btnSubmit" onclick="generateContent()">[ 생성 실행 ]</button>
@@ -974,7 +974,7 @@
       if (fileGroup) fileGroup.style.display = 'block';
       if (keywordGroup) keywordGroup.style.display = 'block';
       if (keywordLabel) keywordLabel.innerText = "원하는 상황 (선택)";
-      if (keywordInput) keywordInput.placeholder = "예: 위기의 상황, 일상속 생활";
+      if (keywordInput) keywordInput.placeholder = "예: 꿈속에서 만난 마녀가 홍차를 주었다";
       if (promptLabel) promptLabel.innerText = '세계관 내용 및 미리보기 (수정 가능)';
       if (document.getElementById('formTitle')) document.getElementById('formTitle').innerText = '주제 선정 (창작자 작업 지원)';
     } else if (tabType === 'relation') {
@@ -1365,12 +1365,12 @@
       : rawPrompt;
 
     let processedKeyword = invalidValues.includes(rawKeyword.toLowerCase()) 
-      ? `일상속 생활` 
+      ? `꿈속에서 만난 마녀가 홍차를 주었다` 
       : rawKeyword;
 
     if (!processedPrompt && !processedKeyword) {
       processedPrompt = `참신한 소재와 연출을 자율적으로 구상해주세요.`;
-      processedKeyword = `원하는 상황`;
+      processedKeyword = `꿈속에서 만난 마녀가 홍차를 주었다`;
     }
 
     const MAX_INPUT_LEN = 4000;
@@ -1384,7 +1384,7 @@
       submitBtn.innerText = "[ 생성 처리 중... ]";
     }
     if (outputDiv) {
-      outputDiv.innerHTML = '<p style="color:var(--accent-color);">AI가 입력을 분석하여 생성 중입니다...</p>';
+      outputDiv.innerHTML = '<p style="color:var(--accent-color);">AI가 키워드와 상황을 분석하여 생성 중입니다...</p>';
     }
 
     const systemRules = `[시스템 지시사항]
@@ -1396,17 +1396,17 @@
     let userPromptMessage = `${systemRules}\n\n`;
 
     if (currentMainTab === 'topic') {
-      userPromptMessage += `[주제 선정 - 창작자 모드]
-- 배경 세계관 설명: ${processedPrompt}
-- 원하는 상황: ${processedKeyword}
+      userPromptMessage += `[주제 선정 - 키워드 및 상황 분해 모드]
+- 설정/세계관 배경: ${processedPrompt}
+- 핵심 입력 키워드(상황): "${processedKeyword}"
 
-[출력 핵심 규칙]
-1. [ 단어형 주제 ]에 정확히 3개의 단어 세트(각 세트 당 단어 3개씩, 예: 골목, 연기, 도망침)를 생성하세요.
-2. [ 상황형 주제 ]에 정확히 3개의 문장을 생성하되, 
-   - 문장 1은 (단어 세트 1)의 단어 3개를 모두 사용해 만든 문장이어야 합니다.
-   - 문장 2는 (단어 세트 2)의 단어 3개를 모두 사용해 만든 문장이어야 합니다.
-   - 문장 3은 (단어 세트 3)의 단어 3개를 모두 사용해 만든 문장이어야 합니다.
-3. 반드시 선택한 '원하는 상황(${processedKeyword})'의 분위기와 연출을 세계관 본문에 적용하세요.
+[생성 및 분석 규칙]
+1. 사용자가 입력한 핵심 상황 키워드("${processedKeyword}") 및 세계관에서 연상되는 대표적인 핵심 단어 3개씩을 묶어 총 3개의 단어 세트를 생성하세요.
+2. [ 단어형 주제 ]에 구상한 단어 세트 3개를 정렬하세요. (예: 마녀, 홍차, 꿈)
+3. [ 상황형 주제 ]에서 해당 단어들을 직접 조합하여 입력 키워드인 "${processedKeyword}" 상황을 다채롭고 감각적으로 연출한 서사적인 문장 3개를 생성하세요.
+   - 문장 1: 단어 세트 1의 단어 3개를 모두 포함하여 완성한 연출 문장
+   - 문장 2: 단어 세트 2의 단어 3개를 모두 포함하여 완성한 연출 문장
+   - 문장 3: 단어 세트 3의 단어 3개를 모두 포함하여 완성한 연출 문장
 
 [출력 양식]
 
@@ -1418,16 +1418,16 @@
 
 [ 상황형 주제 ]
 
-* 문장 1: (단어 세트 1의 단어 A, B, C를 모두 사용하여 '원하는 상황'을 서사적으로 연출한 1개의 완성된 문장)
-* 문장 2: (단어 세트 2의 단어 D, E, F를 모두 사용하여 '원하는 상황'을 서사적으로 연출한 1개의 완성된 문장)
-* 문장 3: (단어 세트 3의 단어 G, H, I를 모두 사용하여 '원하는 상황'을 서사적으로 연출한 1개의 완성된 문장)`;
+* 문장 1: (단어 세트 1의 단어들을 활용해 "${processedKeyword}" 상황을 묘사한 문장)
+* 문장 2: (단어 세트 2의 단어들을 활용해 "${processedKeyword}" 상황을 묘사한 문장)
+* 문장 3: (단어 세트 3의 단어들을 활용해 "${processedKeyword}" 상황을 묘사한 문장)`;
     } else if (currentMainTab === 'myWorld') {
       if (currentSubTab === 'world') {
-        userPromptMessage += `[세계관 구상 - 초보자 모드]\n- 장르: ${genre}\n- 요구사항: ${processedPrompt}\n- 원하는 상황: ${processedKeyword}\n\n[작성 요구사항]\n위 입력을 바탕으로 원하는 상황(${processedKeyword})의 분위기를 강제로 반영하여 지리, 사회 구조, 핵심 규칙이 포함된 완성형 세계관 문서를 작성하세요.`;
+        userPromptMessage += `[세계관 구상 - 초보자 모드]\n- 장르: ${genre}\n- 요구사항: ${processedPrompt}\n- 핵심 키워드/상황: "${processedKeyword}"\n\n[작성 요구사항]\n"${processedKeyword}" 상황의 테마와 핵심 단어들을 자연스럽게 세관 속에 녹여내어, 지리/사회 구조/규칙이 포함된 완성형 세계관 문서를 작성하세요.`;
       } else if (currentSubTab === 'character') {
-        userPromptMessage += `[캐릭터 구상 - 초보자 모드]\n- 장르: ${genre}\n- 요구사항: ${processedPrompt}\n- 원하는 상황: ${processedKeyword}\n\n[작성 요구사항]\n위 입력을 바탕으로 원하는 상황(${processedKeyword})의 분위기를 강제로 반영하여 인물의 외형, 성격, 과거 서사, 행동 동기가 포함된 입체적인 캐릭터 프로필을 작성하세요.`;
+        userPromptMessage += `[캐릭터 구상 - 초보자 모드]\n- 장르: ${genre}\n- 요구사항: ${processedPrompt}\n- 핵심 키워드/상황: "${processedKeyword}"\n\n[작성 요구사항]\n"${processedKeyword}" 상황과 관련된 캐릭터 프로필(외형, 성격, 배경, 동기)을 작성하세요.`;
       } else if (currentSubTab === 'plot') {
-        userPromptMessage += `[플롯 구상 - 초보자 모드]\n- 장르: ${genre}\n- 사건 요약: ${processedPrompt}\n- 원하는 상황: ${processedKeyword}\n\n[작성 요구사항]\n위 입력을 바탕으로 원하는 상황(${processedKeyword})의 분위기를 강제로 반영하여 기승전결 사건 흐름 및 복선 포인트를 포함한 플롯을 작성하세요.`;
+        userPromptMessage += `[플롯 구상 - 초보자 모드]\n- 장르: ${genre}\n- 사건 요약: ${processedPrompt}\n- 핵심 키워드/상황: "${processedKeyword}"\n\n[작성 요구사항]\n"${processedKeyword}" 상황을 중심으로 기승전결 사건 흐름과 복선을 포함한 스토리 플롯을 작성하세요.`;
       }
     }
 
