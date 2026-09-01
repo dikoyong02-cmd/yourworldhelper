@@ -216,12 +216,12 @@
 <div class="toast" id="toastMsg">알림</div>
 
 <div class="container">
-  <span class="save-badge" id="saveBadge">💾 저장됨</span>
+  <span class="save-badge" id="saveBadge">저장됨</span>
 
   <div class="notice-card">
     <div class="notice-header" onclick="toggleNotice()">
-      <span>📣 서비스 공지사항 (Notice)</span>
-      <button type="button" class="notice-toggle-btn" id="noticeToggleBtn">▲ 접기</button>
+      <span>서비스 공지사항 (Notice)</span>
+      <button type="button" class="notice-toggle-btn" id="noticeToggleBtn">접기</button>
     </div>
     <div class="notice-body" id="noticeBody">
       <ol>
@@ -266,7 +266,7 @@
       <section class="card" id="inputSection">
         <div class="card-title">
           <span id="formTitle">세계관 설정 입력</span>
-          <button type="button" class="card-title-btn" onclick="resetFormInputs()">🔄 입력 초기화</button>
+          <button type="button" class="card-title-btn" onclick="resetFormInputs()">입력 초기화</button>
         </div>
         
         <div class="form-group" id="languageGroup">
@@ -288,6 +288,11 @@
             <option value="미스터리/스릴러">미스터리 / 스릴러</option>
             <option value="무협/시대극">무협 / 시대극</option>
           </select>
+        </div>
+
+        <div class="form-group" id="fileGroup" style="display: none;">
+          <label>세계관 TXT 파일 업로드 (.txt)</label>
+          <input type="file" id="worldFileInput" accept=".txt" style="margin-bottom: 6px;" onchange="loadWorldTxtFile(event)">
         </div>
 
         <div class="form-group" id="mainPromptGroup">
@@ -345,8 +350,8 @@
         <div class="card-title">
           <span>생성 결과</span>
           <div>
-            <button type="button" class="card-title-btn" onclick="copyResultText()">📋 복사</button>
-            <button type="button" class="card-title-btn" onclick="downloadResultMD()">💾 MD 다운로드</button>
+            <button type="button" class="card-title-btn" onclick="copyResultText()">복사</button>
+            <button type="button" class="card-title-btn" onclick="downloadResultMD()">MD 다운로드</button>
           </div>
         </div>
         <div id="resultOutput" class="result-box markdown-body">결과가 여기에 표시됩니다.</div>
@@ -355,14 +360,14 @@
       <section class="card" id="guideSection" style="display: none;">
         <div class="card-title">
           <span>SYSTEM MANUAL & USER GUIDE</span>
-          <button type="button" class="card-title-btn" id="guideToggleBtn" onclick="toggleGuideCard()">▲ 접기</button>
+          <button type="button" class="card-title-btn" id="guideToggleBtn" onclick="toggleGuideCard()">접기</button>
         </div>
         <div id="guideBody" class="result-box markdown-body" style="border: none;">
           <h3>1. 인삿말 및 추천 기능 안내</h3>
           <p>안녕하세요! <strong>YOUR WORLD HELPER</strong>를 이용해 주셔서 감사합니다. 창작자 여러분의 숙련도 및 창작 단계에 맞게 아래 추천 기능을 활용해 보세요.</p>
           <ul>
-            <li><strong>🌱 초보자 추천 기능 ➔ [나만의 세상 만들기]:</strong> 세계관 구축이 낯선 분들을 위한 기능입니다. 기본적인 장르, 키워드, 프롬프트 입력만으로 세계관 설정, 인물 프로필, 기승전결 플롯의 초안을 체계적으로 생성받을 수 있습니다.</li>
-            <li><strong>🎨 창작자 추천 기능 ➔ [주제 선정]:</strong> 이미 구축된 세계관이나 구체적인 스토리가 있는 창작자를 위한 기능입니다. 막히는 상황이나 특정 소재를 입력하면 1:1 매칭되는 연출 단어 세트와 감각적인 서사 문장 아이디어를 다양하게 제안받을 수 있습니다.</li>
+            <li><strong>초보자 추천 기능 -> [나만의 세상 만들기]:</strong> 세계관 구축이 낯선 분들을 위한 기능입니다. 기본적인 장르, 키워드, 프롬프트 입력만으로 세계관 설정, 인물 프로필, 기승전결 플롯의 초안을 체계적으로 생성받을 수 있습니다.</li>
+            <li><strong>창작자 추천 기능 -> [주제 선정]:</strong> 구축된 세계관 TXT 파일을 업로드하거나 구체적인 스토리가 있는 창작자를 위한 기능입니다. 막히는 상황이나 특정 소재를 입력하면 1:1 매칭되는 연출 단어 세트와 감각적인 서사 문장 아이디어를 다양하게 제안받을 수 있습니다.</li>
           </ul>
 
           <h3>2. 캔버스 (Canvas)</h3>
@@ -408,7 +413,7 @@
       <div class="card">
         <div class="card-title">
           <span>SETTINGS (명령어 설정)</span>
-          <button type="button" class="card-title-btn" id="settingsToggleBtn" onclick="toggleSettingsCard()">▲ 열기</button>
+          <button type="button" class="card-title-btn" id="settingsToggleBtn" onclick="toggleSettingsCard()">열기</button>
         </div>
         <div id="settingsContent" class="collapsible-content collapsed">
           <div class="form-group" style="margin-top: 8px;">
@@ -472,8 +477,8 @@
       <div class="card">
         <div class="card-title">DATA MANAGEMENT</div>
         <div style="display: flex; flex-direction: column; gap: 6px;">
-          <button type="button" class="small-btn" style="width: 100%; height: 28px;" onclick="exportDataJSON()">📥 JSON으로 데이터 저장</button>
-          <button type="button" class="small-btn" style="width: 100%; height: 28px;" onclick="document.getElementById('importJsonInput').click()">📤 JSON 데이터 불러오기</button>
+          <button type="button" class="small-btn" style="width: 100%; height: 28px;" onclick="exportDataJSON()">JSON으로 데이터 저장</button>
+          <button type="button" class="small-btn" style="width: 100%; height: 28px;" onclick="document.getElementById('importJsonInput').click()">JSON 데이터 불러오기</button>
           <input type="file" id="importJsonInput" accept=".json" style="display: none;" onchange="importDataJSON(event)">
         </div>
       </div>
@@ -535,7 +540,7 @@
   function triggerAutoSave() {
     const badge = document.getElementById('saveBadge');
     if (badge) {
-      badge.innerText = "⏳ 저장 중...";
+      badge.innerText = "저장 중...";
       badge.style.color = "#ff0000";
     }
 
@@ -556,7 +561,7 @@
 
     setTimeout(() => {
       if (badge) {
-        badge.innerText = "💾 저장됨";
+        badge.innerText = "저장됨";
         badge.style.color = "var(--text-color)";
       }
     }, 500);
@@ -590,10 +595,28 @@
       if (document.getElementById('keywordInput')) document.getElementById('keywordInput').value = "";
       if (document.getElementById('memoInput')) document.getElementById('memoInput').value = "";
       if (document.getElementById('boardStoryText')) document.getElementById('boardStoryText').value = "";
+      if (document.getElementById('worldFileInput')) document.getElementById('worldFileInput').value = "";
       localStorage.removeItem('user_draft_data');
       showToast("입력 내용이 초기화되었습니다.");
       triggerAutoSave();
     }
+  }
+
+  function loadWorldTxtFile(event) {
+    const file = event.target.files[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = function(e) {
+      const content = e.target.result;
+      const promptInput = document.getElementById('promptInput');
+      if (promptInput) {
+        promptInput.value = `[파일명: ${file.name}]\n\n${content}`;
+        triggerAutoSave();
+        showToast("세계관 파일 내용을 읽어왔습니다.");
+      }
+    };
+    reader.readAsText(file, "UTF-8");
   }
 
   function cleanOutputText(text) {
@@ -696,10 +719,10 @@
     if (!noticeBody || !noticeBtn) return;
     if (noticeBody.style.display === 'none') {
       noticeBody.style.display = 'block';
-      noticeBtn.innerText = '▲ 접기';
+      noticeBtn.innerText = '접기';
     } else {
       noticeBody.style.display = 'none';
-      noticeBtn.innerText = '▼ 펼치기';
+      noticeBtn.innerText = '펼치기';
     }
   }
 
@@ -709,10 +732,10 @@
     if (!guideBody || !guideBtn) return;
     if (guideBody.style.display === 'none') {
       guideBody.style.display = 'block';
-      guideBtn.innerText = '▲ 접기';
+      guideBtn.innerText = '접기';
     } else {
       guideBody.style.display = 'none';
-      guideBtn.innerText = '▼ 펼치기';
+      guideBtn.innerText = '펼치기';
     }
   }
 
@@ -923,6 +946,7 @@
     const guideSection = document.getElementById('guideSection');
 
     const genreGroup = document.getElementById('genreGroup');
+    const fileGroup = document.getElementById('fileGroup');
     const keywordGroup = document.getElementById('keywordGroup');
     const promptLabel = document.getElementById('promptLabel');
 
@@ -932,6 +956,7 @@
       if (boardSection) boardSection.style.display = 'none';
       if (resultSection) resultSection.style.display = 'block';
       if (guideSection) guideSection.style.display = 'none';
+      if (fileGroup) fileGroup.style.display = 'none';
       if (keywordGroup) keywordGroup.style.display = 'block';
       updateSubTabUI();
     } else if (tabType === 'topic') {
@@ -941,8 +966,9 @@
       if (resultSection) resultSection.style.display = 'block';
       if (guideSection) guideSection.style.display = 'none';
       if (genreGroup) genreGroup.style.display = 'none';
+      if (fileGroup) fileGroup.style.display = 'block';
       if (keywordGroup) keywordGroup.style.display = 'block';
-      if (promptLabel) promptLabel.innerText = '구상한 세계관 서술 및 막히는 상황 (창작자용)';
+      if (promptLabel) promptLabel.innerText = '세계관 내용 및 미리보기 (수정 가능)';
       if (document.getElementById('formTitle')) document.getElementById('formTitle').innerText = '주제 선정 (창작자 작업 지원)';
     } else if (tabType === 'relation') {
       if (subTabContainer) subTabContainer.style.display = 'none';
@@ -969,9 +995,11 @@
 
   function updateSubTabUI() {
     const genreGroup = document.getElementById('genreGroup');
+    const fileGroup = document.getElementById('fileGroup');
     const keywordGroup = document.getElementById('keywordGroup');
     const promptLabel = document.getElementById('promptLabel');
 
+    if (fileGroup) fileGroup.style.display = 'none';
     if (keywordGroup) keywordGroup.style.display = 'block';
 
     if (currentSubTab === 'world') {
@@ -994,7 +1022,7 @@
     const btn = document.getElementById('settingsToggleBtn');
     if (!content || !btn) return;
     content.classList.toggle('collapsed');
-    btn.innerText = content.classList.contains('collapsed') ? '▲ 열기' : '▼ 접기';
+    btn.innerText = content.classList.contains('collapsed') ? '열기' : '접기';
   }
 
   function saveState() {
@@ -1349,7 +1377,7 @@
       submitBtn.innerText = "[ 생성 처리 중... ]";
     }
     if (outputDiv) {
-      outputDiv.innerHTML = '<p style="color:var(--accent-color);">⏳ AI가 입력을 분석하여 생성 중입니다...</p>';
+      outputDiv.innerHTML = '<p style="color:var(--accent-color);">AI가 입력을 분석하여 생성 중입니다...</p>';
     }
 
     const systemRules = `[시스템 지시사항]
@@ -1440,7 +1468,7 @@
         showErrMsg = "서버 응답 시간이 초과되었습니다 (60초 타임아웃). 입력 내용을 조금 줄여서 다시 시도해보세요.";
       }
       if (outputDiv) {
-        outputDiv.innerHTML = `<p style="color:red; font-weight:bold;">⚠️ 생성 실패:</p><p style="color:red;">${showErrMsg}</p>`;
+        outputDiv.innerHTML = `<p style="color:red; font-weight:bold;">생성 실패:</p><p style="color:red;">${showErrMsg}</p>`;
       }
     } finally {
       if (submitBtn) {
