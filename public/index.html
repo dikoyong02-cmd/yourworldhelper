@@ -495,7 +495,7 @@
   let keybindings = { select: "M", draw: "P", arrow: "A", erase: "E", undo: "Ctrl+Z", redo: "Ctrl+Y" };
 
   const canvas = document.getElementById('drawingCanvas');
-  const ctx = canvas.getContext('2d');
+  const ctx = canvas ? canvas.getContext('2d') : null;
   let canvasSnapshot = null;
 
   window.addEventListener('DOMContentLoaded', () => {
@@ -512,6 +512,7 @@
 
   function showToast(msg) {
     const toast = document.getElementById('toastMsg');
+    if (!toast) return;
     toast.innerText = msg;
     toast.style.display = 'block';
     setTimeout(() => { toast.style.display = 'none'; }, 2000);
@@ -519,27 +520,31 @@
 
   function triggerAutoSave() {
     const badge = document.getElementById('saveBadge');
-    badge.innerText = "⏳ 저장 중...";
-    badge.style.color = "#ff0000";
+    if (badge) {
+      badge.innerText = "⏳ 저장 중...";
+      badge.style.color = "#ff0000";
+    }
 
     const draftData = {
-      prompt: document.getElementById('promptInput').value,
-      keyword: document.getElementById('keywordInput').value,
-      genre: document.getElementById('genreSelect').value,
-      language: document.getElementById('languageSelect').value,
-      memo: document.getElementById('memoInput').value,
-      boardStoryText: document.getElementById('boardStoryText').value
+      prompt: document.getElementById('promptInput')?.value || "",
+      keyword: document.getElementById('keywordInput')?.value || "",
+      genre: document.getElementById('genreSelect')?.value || "",
+      language: document.getElementById('languageSelect')?.value || "",
+      memo: document.getElementById('memoInput')?.value || "",
+      boardStoryText: document.getElementById('boardStoryText')?.value || ""
     };
 
     try {
       localStorage.setItem('user_draft_data', JSON.stringify(draftData));
     } catch (e) {
-      console.warn("로컬 스토리지용 유저 용량 초과:", e);
+      console.warn("로컬 스토리지 저장 실패:", e);
     }
 
     setTimeout(() => {
-      badge.innerText = "💾 저장됨";
-      badge.style.color = "var(--text-color)";
+      if (badge) {
+        badge.innerText = "💾 저장됨";
+        badge.style.color = "var(--text-color)";
+      }
     }, 500);
   }
 
@@ -555,22 +560,22 @@
     if (saved) {
       try {
         const data = JSON.parse(saved);
-        if (data.prompt !== undefined) document.getElementById('promptInput').value = data.prompt;
-        if (data.keyword !== undefined) document.getElementById('keywordInput').value = data.keyword;
-        if (data.genre) document.getElementById('genreSelect').value = data.genre;
-        if (data.language) document.getElementById('languageSelect').value = data.language;
-        if (data.memo) document.getElementById('memoInput').value = data.memo;
-        if (data.boardStoryText) document.getElementById('boardStoryText').value = data.boardStoryText;
+        if (data.prompt !== undefined && document.getElementById('promptInput')) document.getElementById('promptInput').value = data.prompt;
+        if (data.keyword !== undefined && document.getElementById('keywordInput')) document.getElementById('keywordInput').value = data.keyword;
+        if (data.genre && document.getElementById('genreSelect')) document.getElementById('genreSelect').value = data.genre;
+        if (data.language && document.getElementById('languageSelect')) document.getElementById('languageSelect').value = data.language;
+        if (data.memo && document.getElementById('memoInput')) document.getElementById('memoInput').value = data.memo;
+        if (data.boardStoryText && document.getElementById('boardStoryText')) document.getElementById('boardStoryText').value = data.boardStoryText;
       } catch (e) {}
     }
   }
 
   function resetFormInputs() {
     if (confirm("입력한 프롬프트 및 설정을 모두 초기화하시겠습니까?")) {
-      document.getElementById('promptInput').value = "";
-      document.getElementById('keywordInput').value = "";
-      document.getElementById('memoInput').value = "";
-      document.getElementById('boardStoryText').value = "";
+      if (document.getElementById('promptInput')) document.getElementById('promptInput').value = "";
+      if (document.getElementById('keywordInput')) document.getElementById('keywordInput').value = "";
+      if (document.getElementById('memoInput')) document.getElementById('memoInput').value = "";
+      if (document.getElementById('boardStoryText')) document.getElementById('boardStoryText').value = "";
       localStorage.removeItem('user_draft_data');
       showToast("입력 내용이 초기화되었습니다.");
       triggerAutoSave();
@@ -614,6 +619,7 @@
 
   function updateHistoryDropdown() {
     const select = document.getElementById('historySelect');
+    if (!select) return;
     select.innerHTML = '<option value="">-- 최근 생성 기록 --</option>';
     
     const saved = localStorage.getItem('ai_result_history');
@@ -639,7 +645,8 @@
         const target = histories.find(h => h.id == id);
         if (target) {
           rawMarkdownResult = cleanOutputText(target.content);
-          document.getElementById('resultOutput').innerHTML = marked.parse(rawMarkdownResult);
+          const out = document.getElementById('resultOutput');
+          if (out) out.innerHTML = window.marked ? marked.parse(rawMarkdownResult) : rawMarkdownResult;
           showToast("이전 생성 기록을 불러왔습니다.");
         }
       } catch(e){}
@@ -672,6 +679,7 @@
   function toggleNotice() {
     const noticeBody = document.getElementById('noticeBody');
     const noticeBtn = document.getElementById('noticeToggleBtn');
+    if (!noticeBody || !noticeBtn) return;
     if (noticeBody.style.display === 'none') {
       noticeBody.style.display = 'block';
       noticeBtn.innerText = '▲ 접기';
@@ -684,6 +692,7 @@
   function toggleGuideCard() {
     const guideBody = document.getElementById('guideBody');
     const guideBtn = document.getElementById('guideToggleBtn');
+    if (!guideBody || !guideBtn) return;
     if (guideBody.style.display === 'none') {
       guideBody.style.display = 'block';
       guideBtn.innerText = '▲ 접기';
@@ -712,15 +721,15 @@
   }
 
   function updateToolLabels() {
-    const moveText = document.getElementById('labelMove').value || '이동';
-    const penText = document.getElementById('labelPen').value || '펜';
-    const arrowText = document.getElementById('labelArrow').value || '화살표';
-    const eraseText = document.getElementById('labelErase').value || '지우개';
+    const moveText = document.getElementById('labelMove')?.value || '이동';
+    const penText = document.getElementById('labelPen')?.value || '펜';
+    const arrowText = document.getElementById('labelArrow')?.value || '화살표';
+    const eraseText = document.getElementById('labelErase')?.value || '지우개';
 
-    document.getElementById('txt-label-select').innerText = moveText;
-    document.getElementById('txt-label-draw').innerText = penText;
-    document.getElementById('txt-label-arrow').innerText = arrowText;
-    document.getElementById('txt-label-erase').innerText = eraseText;
+    if (document.getElementById('txt-label-select')) document.getElementById('txt-label-select').innerText = moveText;
+    if (document.getElementById('txt-label-draw')) document.getElementById('txt-label-draw').innerText = penText;
+    if (document.getElementById('txt-label-arrow')) document.getElementById('txt-label-arrow').innerText = arrowText;
+    if (document.getElementById('txt-label-erase')) document.getElementById('txt-label-erase').innerText = eraseText;
 
     const toolLabels = { move: moveText, pen: penText, arrow: arrowText, erase: eraseText };
     localStorage.setItem('tool_labels', JSON.stringify(toolLabels));
@@ -731,31 +740,35 @@
     if (savedLabels) {
       try {
         const toolLabels = JSON.parse(savedLabels);
-        if (toolLabels.move) document.getElementById('labelMove').value = toolLabels.move;
-        if (toolLabels.pen) document.getElementById('labelPen').value = toolLabels.pen;
-        if (toolLabels.arrow) document.getElementById('labelArrow').value = toolLabels.arrow;
-        if (toolLabels.erase) document.getElementById('labelErase').value = toolLabels.erase;
+        if (toolLabels.move && document.getElementById('labelMove')) document.getElementById('labelMove').value = toolLabels.move;
+        if (toolLabels.pen && document.getElementById('labelPen')) document.getElementById('labelPen').value = toolLabels.pen;
+        if (toolLabels.arrow && document.getElementById('labelArrow')) document.getElementById('labelArrow').value = toolLabels.arrow;
+        if (toolLabels.erase && document.getElementById('labelErase')) document.getElementById('labelErase').value = toolLabels.erase;
         updateToolLabels();
       } catch (e) {}
     }
   }
 
   function saveUserProfile() {
-    const username = document.getElementById('usernameInput').value;
+    const username = document.getElementById('usernameInput')?.value || "";
     localStorage.setItem('user_profile_name', username);
   }
 
   function loadUserProfile() {
     const savedName = localStorage.getItem('user_profile_name');
-    if (savedName) {
+    if (savedName && document.getElementById('usernameInput')) {
       document.getElementById('usernameInput').value = savedName;
     }
     const savedImg = localStorage.getItem('user_profile_img');
     if (savedImg) {
       const preview = document.getElementById('profilePreview');
-      preview.src = savedImg;
-      preview.style.display = 'block';
-      document.getElementById('profilePlaceholder').style.display = 'none';
+      if (preview) {
+        preview.src = savedImg;
+        preview.style.display = 'block';
+      }
+      if (document.getElementById('profilePlaceholder')) {
+        document.getElementById('profilePlaceholder').style.display = 'none';
+      }
     }
   }
 
@@ -765,9 +778,13 @@
       const reader = new FileReader();
       reader.onload = function(e) {
         const preview = document.getElementById('profilePreview');
-        preview.src = e.target.result;
-        preview.style.display = 'block';
-        document.getElementById('profilePlaceholder').style.display = 'none';
+        if (preview) {
+          preview.src = e.target.result;
+          preview.style.display = 'block';
+        }
+        if (document.getElementById('profilePlaceholder')) {
+          document.getElementById('profilePlaceholder').style.display = 'none';
+        }
         localStorage.setItem('user_profile_img', e.target.result);
         triggerAutoSave();
       };
@@ -789,15 +806,15 @@
   }
 
   function updateKeyDisplay() {
-    document.getElementById('keySelect').value = keybindings.select;
-    document.getElementById('keyDraw').value = keybindings.draw;
-    document.getElementById('keyArrow').value = keybindings.arrow;
-    document.getElementById('keyErase').value = keybindings.erase;
+    if (document.getElementById('keySelect')) document.getElementById('keySelect').value = keybindings.select;
+    if (document.getElementById('keyDraw')) document.getElementById('keyDraw').value = keybindings.draw;
+    if (document.getElementById('keyArrow')) document.getElementById('keyArrow').value = keybindings.arrow;
+    if (document.getElementById('keyErase')) document.getElementById('keyErase').value = keybindings.erase;
 
-    document.getElementById('btn-key-select').innerText = keybindings.select;
-    document.getElementById('btn-key-draw').innerText = keybindings.draw;
-    document.getElementById('btn-key-arrow').innerText = keybindings.arrow;
-    document.getElementById('btn-key-erase').innerText = keybindings.erase;
+    if (document.getElementById('btn-key-select')) document.getElementById('btn-key-select').innerText = keybindings.select;
+    if (document.getElementById('btn-key-draw')) document.getElementById('btn-key-draw').innerText = keybindings.draw;
+    if (document.getElementById('btn-key-arrow')) document.getElementById('btn-key-arrow').innerText = keybindings.arrow;
+    if (document.getElementById('btn-key-erase')) document.getElementById('btn-key-erase').innerText = keybindings.erase;
   }
 
   function recordKey(e, toolAction) {
@@ -842,7 +859,7 @@
   }
 
   function updateLineWidth(val) {
-    currentLineWidth = parseInt(val);
+    currentLineWidth = parseInt(val, 10);
   }
 
   function zoomCanvas(delta) {
@@ -857,7 +874,7 @@
 
   function applyCanvasScale() {
     const viewport = document.getElementById('boardViewport');
-    viewport.style.transform = `scale(${canvasScale})`;
+    if (viewport) viewport.style.transform = `scale(${canvasScale})`;
     const zoomBtn = document.getElementById('zoomResetBtn');
     if (zoomBtn) {
       zoomBtn.innerText = Math.round(canvasScale * 100) + '%';
@@ -866,8 +883,8 @@
 
   function selectMainTab(tabType, element) {
     if (currentMainTab !== tabType) {
-      document.getElementById('promptInput').value = '';
-      document.getElementById('keywordInput').value = '';
+      if (document.getElementById('promptInput')) document.getElementById('promptInput').value = '';
+      if (document.getElementById('keywordInput')) document.getElementById('keywordInput').value = '';
 
       const saved = localStorage.getItem('user_draft_data');
       if (saved) {
@@ -878,7 +895,6 @@
           localStorage.setItem('user_draft_data', JSON.stringify(draftData));
         } catch (e) {}
       }
-      
       triggerAutoSave();
     }
 
@@ -897,36 +913,36 @@
     const promptLabel = document.getElementById('promptLabel');
 
     if (tabType === 'myWorld') {
-      subTabContainer.style.display = 'flex';
-      inputSection.style.display = 'block';
-      boardSection.style.display = 'none';
-      resultSection.style.display = 'block';
-      guideSection.style.display = 'none';
-      keywordGroup.style.display = 'block';
+      if (subTabContainer) subTabContainer.style.display = 'flex';
+      if (inputSection) inputSection.style.display = 'block';
+      if (boardSection) boardSection.style.display = 'none';
+      if (resultSection) resultSection.style.display = 'block';
+      if (guideSection) guideSection.style.display = 'none';
+      if (keywordGroup) keywordGroup.style.display = 'block';
       updateSubTabUI();
     } else if (tabType === 'topic') {
-      subTabContainer.style.display = 'none';
-      inputSection.style.display = 'block';
-      boardSection.style.display = 'none';
-      resultSection.style.display = 'block';
-      guideSection.style.display = 'none';
-      genreGroup.style.display = 'none';
-      keywordGroup.style.display = 'block';
-      promptLabel.innerText = '구상한 세계관 서술 및 막히는 상황 (창작자용)';
-      document.getElementById('formTitle').innerText = '주제 선정 (창작자 작업 지원)';
+      if (subTabContainer) subTabContainer.style.display = 'none';
+      if (inputSection) inputSection.style.display = 'block';
+      if (boardSection) boardSection.style.display = 'none';
+      if (resultSection) resultSection.style.display = 'block';
+      if (guideSection) guideSection.style.display = 'none';
+      if (genreGroup) genreGroup.style.display = 'none';
+      if (keywordGroup) keywordGroup.style.display = 'block';
+      if (promptLabel) promptLabel.innerText = '구상한 세계관 서술 및 막히는 상황 (창작자용)';
+      if (document.getElementById('formTitle')) document.getElementById('formTitle').innerText = '주제 선정 (창작자 작업 지원)';
     } else if (tabType === 'relation') {
-      subTabContainer.style.display = 'none';
-      inputSection.style.display = 'none';
-      boardSection.style.display = 'block';
-      resultSection.style.display = 'none';
-      guideSection.style.display = 'none';
+      if (subTabContainer) subTabContainer.style.display = 'none';
+      if (inputSection) inputSection.style.display = 'none';
+      if (boardSection) boardSection.style.display = 'block';
+      if (resultSection) resultSection.style.display = 'none';
+      if (guideSection) guideSection.style.display = 'none';
       resizeCanvas();
     } else if (tabType === 'guide') {
-      subTabContainer.style.display = 'none';
-      inputSection.style.display = 'none';
-      boardSection.style.display = 'none';
-      resultSection.style.display = 'none';
-      guideSection.style.display = 'block';
+      if (subTabContainer) subTabContainer.style.display = 'none';
+      if (inputSection) inputSection.style.display = 'none';
+      if (boardSection) boardSection.style.display = 'none';
+      if (resultSection) resultSection.style.display = 'none';
+      if (guideSection) guideSection.style.display = 'block';
     }
   }
 
@@ -942,37 +958,40 @@
     const keywordGroup = document.getElementById('keywordGroup');
     const promptLabel = document.getElementById('promptLabel');
 
-    keywordGroup.style.display = 'block';
+    if (keywordGroup) keywordGroup.style.display = 'block';
 
     if (currentSubTab === 'world') {
-      genreGroup.style.display = 'block';
-      promptLabel.innerText = '세계관 상세 요구사항 / 프롬프트';
-      document.getElementById('formTitle').innerText = '세계관 설정 입력';
+      if (genreGroup) genreGroup.style.display = 'block';
+      if (promptLabel) promptLabel.innerText = '세계관 상세 요구사항 / 프롬프트';
+      if (document.getElementById('formTitle')) document.getElementById('formTitle').innerText = '세계관 설정 입력';
     } else if (currentSubTab === 'character') {
-      genreGroup.style.display = 'none';
-      promptLabel.innerText = '캐릭터 구상 프롬프트';
-      document.getElementById('formTitle').innerText = '캐릭터 설정 입력';
+      if (genreGroup) genreGroup.style.display = 'none';
+      if (promptLabel) promptLabel.innerText = '캐릭터 구상 프롬프트';
+      if (document.getElementById('formTitle')) document.getElementById('formTitle').innerText = '캐릭터 설정 입력';
     } else if (currentSubTab === 'plot') {
-      genreGroup.style.display = 'block';
-      promptLabel.innerText = '플롯/스토리 사건 프롬프트';
-      document.getElementById('formTitle').innerText = '플롯 / 스토리 입력';
+      if (genreGroup) genreGroup.style.display = 'block';
+      if (promptLabel) promptLabel.innerText = '플롯/스토리 사건 프롬프트';
+      if (document.getElementById('formTitle')) document.getElementById('formTitle').innerText = '플롯 / 스토리 입력';
     }
   }
 
   function toggleSettingsCard() {
     const content = document.getElementById('settingsContent');
     const btn = document.getElementById('settingsToggleBtn');
+    if (!content || !btn) return;
     content.classList.toggle('collapsed');
     btn.innerText = content.classList.contains('collapsed') ? '▲ 열기' : '▼ 접기';
   }
 
   function saveState() {
+    if (!ctx || !canvas) return;
     if (undoStack.length >= MAX_HISTORY) undoStack.shift();
     undoStack.push(ctx.getImageData(0, 0, canvas.width, canvas.height));
     redoStack = [];
   }
 
   function undoCanvas() {
+    if (!ctx || !canvas) return;
     if (undoStack.length > 0) {
       redoStack.push(ctx.getImageData(0, 0, canvas.width, canvas.height));
       const previousState = undoStack.pop();
@@ -981,6 +1000,7 @@
   }
 
   function redoCanvas() {
+    if (!ctx || !canvas) return;
     if (redoStack.length > 0) {
       undoStack.push(ctx.getImageData(0, 0, canvas.width, canvas.height));
       const nextState = redoStack.pop();
@@ -989,6 +1009,7 @@
   }
 
   function getPos(e) {
+    if (!canvas) return { x: 0, y: 0 };
     const rect = canvas.getBoundingClientRect();
     const clientX = e.touches && e.touches.length > 0 ? e.touches[0].clientX : e.clientX;
     const clientY = e.touches && e.touches.length > 0 ? e.touches[0].clientY : e.clientY;
@@ -999,7 +1020,7 @@
   }
 
   function startDrawing(e) {
-    if (boardTool === 'select') return;
+    if (boardTool === 'select' || !ctx) return;
     saveState();
     isDrawing = true;
     const pos = getPos(e);
@@ -1011,7 +1032,7 @@
   }
 
   function draw(e) {
-    if (!isDrawing || boardTool === 'select') return;
+    if (!isDrawing || boardTool === 'select' || !ctx) return;
     e.preventDefault();
     const pos = getPos(e);
 
@@ -1034,13 +1055,14 @@
       ctx.globalCompositeOperation = 'source-over';
 
       lastX = pos.x; lastY = pos.y;
-    } else if (boardTool === 'arrow') {
+    } else if (boardTool === 'arrow' && canvasSnapshot) {
       ctx.putImageData(canvasSnapshot, 0, 0);
       drawArrow(startX, startY, pos.x, pos.y);
     }
   }
 
   function drawArrow(fromx, fromy, tox, toy) {
+    if (!ctx) return;
     const headlen = 8 + currentLineWidth * 2;
     const angle = Math.atan2(toy - fromy, tox - fromx);
     const strokeColor = getComputedStyle(document.documentElement).getPropertyValue('--border-color').trim() || '#000000';
@@ -1064,6 +1086,7 @@
   function stopDrawing() { isDrawing = false; }
 
   function initCanvas() {
+    if (!canvas) return;
     resizeCanvas();
     canvas.addEventListener('mousedown', startDrawing);
     canvas.addEventListener('mousemove', draw);
@@ -1076,7 +1099,7 @@
 
   function resizeCanvas() {
     const container = document.getElementById('boardContainer');
-    if (container) {
+    if (container && canvas) {
       canvas.width = container.clientWidth;
       canvas.height = container.clientHeight;
     }
@@ -1085,18 +1108,23 @@
   function setBoardTool(tool) {
     boardTool = tool;
     document.querySelectorAll('.board-tool-btn').forEach(b => b.classList.remove('active'));
-    document.getElementById(`tool-${tool}`).classList.add('active');
+    const btn = document.getElementById(`tool-${tool}`);
+    if (btn) btn.classList.add('active');
   }
 
   function clearCanvasDrawing() {
+    if (!ctx || !canvas) return;
     saveState();
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     const viewport = document.getElementById('boardViewport');
-    document.querySelectorAll('.canvas-node').forEach(node => viewport.removeChild(node));
+    if (viewport) {
+      document.querySelectorAll('.canvas-node').forEach(node => viewport.removeChild(node));
+    }
   }
 
   function addTextCard() {
     const viewport = document.getElementById('boardViewport');
+    if (!viewport) return;
     const card = document.createElement('div');
     card.className = 'canvas-node';
     card.style.left = '40px';
@@ -1118,6 +1146,7 @@
       const reader = new FileReader();
       reader.onload = function(e) {
         const viewport = document.getElementById('boardViewport');
+        if (!viewport) return;
         const card = document.createElement('div');
         card.className = 'canvas-node';
         card.style.left = '60px';
@@ -1180,11 +1209,11 @@
       const startW = element.offsetWidth;
       const startH = element.offsetHeight;
       const startX = e.touches ? e.touches[0].clientX : e.clientX;
-      const startY = e.touches ? e.touches[0].clientY : e.clientX;
+      const startY = e.touches ? e.touches[0].clientY : e.clientY;
 
       function doResize(re) {
         const currentX = re.touches ? re.touches[0].clientX : re.clientX;
-        const currentY = re.touches ? re.touches[0].clientY : re.clientX;
+        const currentY = re.touches ? re.touches[0].clientY : re.clientY;
         const newW = startW + (currentX - startX) / canvasScale;
         const newH = startH + (currentY - startY) / canvasScale;
         if (newW > 50) element.style.width = newW + 'px';
@@ -1274,10 +1303,10 @@
     const keywordInput = document.getElementById('keywordInput');
     const submitBtn = document.getElementById('btnSubmit');
 
-    let rawPrompt = promptInput.value.trim();
-    let rawKeyword = keywordInput.value.trim();
-    const targetLanguage = document.getElementById('languageSelect').value;
-    const genre = document.getElementById('genreSelect').value;
+    let rawPrompt = promptInput ? promptInput.value.trim() : "";
+    let rawKeyword = keywordInput ? keywordInput.value.trim() : "";
+    const targetLanguage = document.getElementById('languageSelect')?.value || "한국어";
+    const genre = document.getElementById('genreSelect')?.value || "판타지";
     const outputDiv = document.getElementById('resultOutput');
 
     const invalidValues = ['', '없음', '아무거나', '아무꺼나', 'none', 'null', 'undefined', '없음.', '아무거나.'];
@@ -1301,9 +1330,13 @@
       showToast("입력문이 너무 길어 상위 4000자까지 축소되어 처리됩니다.");
     }
 
-    submitBtn.disabled = true;
-    submitBtn.innerText = "[ 생성 처리 중... ]";
-    outputDiv.innerHTML = '<p style="color:var(--accent-color);">⏳ AI가 입력을 분석하여 생성 중입니다...</p>';
+    if (submitBtn) {
+      submitBtn.disabled = true;
+      submitBtn.innerText = "[ 생성 처리 중... ]";
+    }
+    if (outputDiv) {
+      outputDiv.innerHTML = '<p style="color:var(--accent-color);">⏳ AI가 입력을 분석하여 생성 중입니다...</p>';
+    }
 
     const systemRules = `[시스템 지시사항]
 1. 답변은 반드시 완벽하고 자연스러운 ${targetLanguage}로만 작성해야 합니다.
@@ -1374,7 +1407,9 @@
       }
 
       rawMarkdownResult = cleanOutputText(data.result);
-      outputDiv.innerHTML = marked.parse(rawMarkdownResult);
+      if (outputDiv) {
+        outputDiv.innerHTML = window.marked ? marked.parse(rawMarkdownResult) : rawMarkdownResult;
+      }
 
       const typeTag = currentMainTab === 'topic' ? '주제' : currentSubTab;
       saveToHistory(typeTag, rawMarkdownResult);
@@ -1385,10 +1420,14 @@
       if (error.name === 'AbortError') {
         showErrMsg = "서버 응답 시간이 초과되었습니다 (60초 타임아웃). 입력 내용을 조금 줄여서 다시 시도해보세요.";
       }
-      outputDiv.innerHTML = `<p style="color:red; font-weight:bold;">⚠️ 생성 실패:</p><p style="color:red;">${showErrMsg}</p>`;
+      if (outputDiv) {
+        outputDiv.innerHTML = `<p style="color:red; font-weight:bold;">⚠️ 생성 실패:</p><p style="color:red;">${showErrMsg}</p>`;
+      }
     } finally {
-      submitBtn.disabled = false;
-      submitBtn.innerText = "[ 생성 실행 ]";
+      if (submitBtn) {
+        submitBtn.disabled = false;
+        submitBtn.innerText = "[ 생성 실행 ]";
+      }
     }
   }
 </script>
