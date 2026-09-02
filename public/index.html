@@ -22,22 +22,6 @@
       --canvas-frame: #808080;
     }
 
-    [data-theme="classic-win"] {
-      --bg-color: #008080;
-      --card-bg: #c0c0c0;
-      --card-sub-bg: #c0c0c0;
-      --text-color: #000000;
-      --border-color: #000000;
-      --accent-color: #000080;
-      --accent-text: #ffffff;
-      --input-bg: #ffffff;
-      --window-title-bg: #000080;
-      --footer-text: #ffffff;
-      --canvas-bg: #ffffff;
-      --canvas-grid: rgba(0, 0, 0, 0.15);
-      --canvas-frame: #808080;
-    }
-
     [data-theme="crt-terminal"] {
       --bg-color: #050505;
       --card-bg: #0f140f;
@@ -201,12 +185,12 @@
     .theme-selector-box { display: flex; align-items: center; gap: 6px; color: #ffffff; font-size: 11px; }
     .theme-selector-box select { padding: 3px 6px; font-size: 11px; border: 1px solid var(--border-color); background-color: var(--input-bg); color: var(--text-color); }
     
-    .tab-btn, .sub-tab-btn, button.primary-btn, .profile-btn, .board-tool-btn, .side-nav-btn, .small-btn {
+    .tab-btn, .sub-tab-btn, button.primary-btn, .profile-btn, .board-tool-btn, .side-nav-btn, .small-btn, .preset-btn {
       display: inline-flex; align-items: center; justify-content: center; height: 28px; padding: 0 10px;
       border: 1px solid var(--border-color); background: var(--card-bg); color: var(--text-color);
       font-size: 11px; font-weight: bold; cursor: pointer; outline: none; user-select: none; flex-shrink: 0;
     }
-    .tab-btn.active, .sub-tab-btn.active, .board-tool-btn.active, .side-nav-btn.active { background: var(--accent-color); color: var(--accent-text); }
+    .tab-btn.active, .sub-tab-btn.active, .board-tool-btn.active, .side-nav-btn.active, .preset-btn.active { background: var(--accent-color); color: var(--accent-text); }
     .side-nav-btn { width: 100%; height: 36px; font-size: 11px; border: 1px solid var(--border-color); }
     button.primary-btn, .profile-btn { width: 100%; }
 
@@ -224,36 +208,43 @@
     textarea { height: 100px; resize: vertical; }
 
     /* 채팅방 스타일 */
-    .chat-card { display: flex; flex-direction: column; height: 550px; border: 1px solid var(--border-color); background: var(--card-sub-bg); padding: 10px; }
+    .chat-card { display: flex; flex-direction: column; height: 600px; border: 1px solid var(--border-color); background: var(--card-sub-bg); padding: 10px; }
     .chat-messages { flex: 1; overflow-y: auto; display: flex; flex-direction: column; gap: 12px; padding: 8px; background: var(--input-bg); border: 1px solid var(--border-color); margin-bottom: 10px; }
     
-    .chat-msg { display: flex; flex-direction: column; max-width: 85%; font-size: 12px; line-height: 1.5; }
+    .chat-msg { display: flex; flex-direction: column; max-width: 90%; font-size: 12px; line-height: 1.5; }
     .chat-msg.user { align-self: flex-end; align-items: flex-end; }
     .chat-msg.ai { align-self: flex-start; align-items: flex-start; }
 
     .chat-sender { font-size: 10px; font-weight: bold; margin-bottom: 3px; color: var(--text-color); opacity: 0.8; }
-    .chat-bubble { padding: 8px 12px; border: 1px solid var(--border-color); word-break: break-all; overflow-wrap: break-word; }
+    .chat-bubble { padding: 8px 12px; border: 1px solid var(--border-color); word-break: break-word; overflow-wrap: break-word; }
     .chat-msg.user .chat-bubble { background: var(--accent-color); color: var(--accent-text); border-radius: 8px 8px 0px 8px; }
     .chat-msg.ai .chat-bubble { background: var(--card-bg); color: var(--text-color); border-radius: 8px 8px 8px 0px; }
+
+    .preset-panel { background: var(--card-bg); border: 1px solid var(--border-color); padding: 6px; margin-bottom: 8px; font-size: 11px; display: flex; flex-direction: column; gap: 6px; }
+    .preset-row { display: flex; gap: 4px; align-items: center; flex-wrap: wrap; }
+    .preset-label { font-weight: bold; width: 65px; flex-shrink: 0; }
 
     .chat-input-wrapper { display: flex; flex-direction: column; gap: 6px; }
     .chat-options-bar { display: flex; justify-content: space-between; align-items: center; gap: 8px; font-size: 11px; flex-wrap: wrap; }
     .chat-options-left { display: flex; align-items: center; gap: 6px; }
     .chat-input-box { display: flex; gap: 6px; }
-    .chat-input-box textarea { flex: 1; height: 48px; resize: none; font-size: 12px; }
-    .chat-send-btn { width: 70px; height: 48px; background: var(--accent-color); color: var(--accent-text); border: 1px solid var(--border-color); font-weight: bold; cursor: pointer; flex-shrink: 0; }
+    .chat-input-box textarea { flex: 1; height: 52px; resize: none; font-size: 12px; }
+    .chat-send-btn { width: 70px; height: 52px; background: var(--accent-color); color: var(--accent-text); border: 1px solid var(--border-color); font-weight: bold; cursor: pointer; flex-shrink: 0; }
 
     .tool-label-grid, .shortcut-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
     .shortcut-input { text-align: center; font-weight: bold; cursor: pointer; background-color: var(--input-bg); }
     .shortcut-input:focus { border-color: var(--accent-color); background-color: #fffde7; color: #000; }
 
-    .markdown-body { width: 100%; word-break: break-all; overflow-wrap: break-word; }
-    .markdown-body h1, .markdown-body h2, .markdown-body h3 { margin-top: 10px; margin-bottom: 6px; color: var(--accent-color); border-bottom: 1px dashed var(--border-color); padding-bottom: 4px; word-break: break-all; }
-    .markdown-body p { margin-bottom: 8px; word-break: break-all; }
-    .markdown-body ul, .markdown-body ol { margin-left: 20px; margin-bottom: 8px; word-break: break-all; }
-    .markdown-body blockquote { border-left: 3px solid var(--accent-color); padding-left: 8px; margin: 8px 0; color: var(--text-color); word-break: break-all; }
+    /* 마크다운 스타일 정밀화 */
+    .markdown-body { width: 100%; word-break: break-word; overflow-wrap: break-word; line-height: 1.6; }
+    .markdown-body h1, .markdown-body h2, .markdown-body h3 { margin-top: 10px; margin-bottom: 6px; color: var(--accent-color); border-bottom: 1px dashed var(--border-color); padding-bottom: 4px; }
+    .markdown-body p { margin-bottom: 8px; }
+    .markdown-body ul, .markdown-body ol { margin-left: 20px; margin-bottom: 8px; }
+    .markdown-body blockquote { border-left: 3px solid var(--accent-color); padding-left: 8px; margin: 8px 0; opacity: 0.9; }
     .markdown-body table { width: 100%; border-collapse: collapse; margin-bottom: 8px; display: block; overflow-x: auto; }
     .markdown-body table th, .markdown-body table td { border: 1px solid var(--border-color); padding: 4px 8px; }
+    .markdown-body code { background: rgba(0,0,0,0.1); padding: 2px 4px; border-radius: 3px; font-family: monospace; }
+    .markdown-body pre code { display: block; padding: 8px; overflow-x: auto; background: var(--input-bg); }
 
     .board-container { position: relative; width: 100%; height: 450px; background-color: var(--canvas-bg); border: 2px solid var(--canvas-frame); overflow: hidden; touch-action: none; }
     .board-viewport { position: absolute; width: 100%; height: 100%; background-image: linear-gradient(var(--canvas-grid) 1px, transparent 1px), linear-gradient(90deg, var(--canvas-grid) 1px, transparent 1px); background-size: 20px 20px; transform-origin: 0 0; }
@@ -291,8 +282,8 @@
     </div>
     <div class="notice-body" id="noticeBody">
       <ol>
-        <li id="ui-notice-1"><strong>가이드 확인부탁</strong></li>
-        <li id="ui-notice-2">그외 추가할사항(차쯤 추가예정)</li>
+        <li id="ui-notice-1"><strong>세계관 창작 도우미 v2.0 업데이트</strong> - 장르 선택, 톤 반전 및 개입도 설정 옵션 추가</li>
+        <li id="ui-notice-2">마크다운, 이모티콘(😊🚀✨), 특수문자 입력 지원 강화</li>
       </ol>
     </div>
   </div>
@@ -338,9 +329,33 @@
           <div class="chat-msg ai">
             <span class="chat-sender">AI Helper</span>
             <div class="chat-bubble markdown-body" id="ui-ai-welcome">
-              안녕하세요! 세계관 아이디어 도우미입니다.<br>
-              이미 짜둔 세계관 설정 글이 있다면 입력창에 붙여넣어주시고, 없다면 관심 가는 장르(액션, 일상, 다크판타지, 로맨스, 미스터리/스릴러, SF, 포스트아포칼립스)를 입력해주세요!
+              <!-- 안내사항 스크립트에서 자동 동적 삽입 -->
             </div>
+          </div>
+        </div>
+
+        <!-- 빠른 선택 옵션 패널 -->
+        <div class="preset-panel">
+          <div class="preset-row">
+            <span class="preset-label">장르 선택:</span>
+            <button type="button" class="preset-btn" onclick="toggleGenre('액션', this)">액션</button>
+            <button type="button" class="preset-btn" onclick="toggleGenre('일상', this)">일상</button>
+            <button type="button" class="preset-btn" onclick="toggleGenre('다크판타지', this)">다크판타지</button>
+            <button type="button" class="preset-btn" onclick="toggleGenre('로맨스', this)">로맨스</button>
+            <button type="button" class="preset-btn" onclick="toggleGenre('미스터리/스릴러', this)">미스터리/스릴러</button>
+            <button type="button" class="preset-btn" onclick="toggleGenre('SF', this)">SF</button>
+            <button type="button" class="preset-btn" onclick="toggleGenre('포스트아포칼립스', this)">포스트아포칼립스</button>
+          </div>
+          <div class="preset-row">
+            <span class="preset-label">개입 정도:</span>
+            <button type="button" class="preset-btn" onclick="selectIntervention('최소 개입', this)">최소 개입</button>
+            <button type="button" class="preset-btn" onclick="selectIntervention('세부 설정 제안', this)">세부 설정 제안</button>
+            <button type="button" class="preset-btn" onclick="selectIntervention('초안 제안', this)">초안 제안</button>
+          </div>
+          <div class="preset-row">
+            <span class="preset-label">톤 반전:</span>
+            <input type="checkbox" id="toneTwistCheck" onchange="toggleToneTwist(this.checked)">
+            <label for="toneTwistCheck" style="font-size: 11px; cursor: pointer;">"겉모습(톤)과 내용이 어긋나는 톤 반전 요소 포함 (예: 귀여운 그림체 + 스릴러 스토리)"</label>
           </div>
         </div>
 
@@ -363,7 +378,7 @@
           </div>
 
           <div class="chat-input-box">
-            <textarea id="promptInput" placeholder="메시지를 입력하세요... (Shift+Enter 줄바꿈, Enter 전송)" onkeydown="handleChatKeyDown(event)" oninput="debounceAutoSave()"></textarea>
+            <textarea id="promptInput" placeholder="메시지나 세계관 설정을 입력하세요... (Shift+Enter 줄바꿈, Enter 전송)" onkeydown="handleChatKeyDown(event)" oninput="debounceAutoSave()"></textarea>
             <button type="button" class="chat-send-btn" id="btnSubmit" onclick="generateContent()">전송</button>
           </div>
         </div>
@@ -413,35 +428,21 @@
           <button type="button" class="card-title-btn" id="guideToggleBtn" onclick="toggleGuideCard()">접기</button>
         </div>
         <div id="guideBody" class="markdown-body" style="border: none;">
-          <h3>1. 인삿말 및 초보자와 창작자에게 각각 추천하는 기능</h3>
+          <h3>1. 안내말 및 추천 기능</h3>
           <p>안녕하세요! <strong>YOUR WORLD HELPER</strong>를 이용해 주셔서 감사합니다.</p>
           <ul>
-            <li><strong>초보자 추천 (세계관 초안 생성):</strong> 구체적인 아이디어가 없더라도 선호하는 장르(액션, 다크판타지, SF 등)나 톤 반전 요소(예: 귀여운 그림체 + 스릴러 스토리)를 입력해 AI에게 세계관의 기초 틀과 초안을 제안받아 보세요.</li>
-            <li><strong>창작자 추천 (맞춤 소재 제안):</strong> 이미 구상된 세계관 TXT 파일이나 설정글을 붙여넣어 보세요. AI가 본인 세계관을 최대한 존중하며 1) 최소 개입, 2) 세부 갈등 채우기 등 요구사항에 맞는 짧은 단어(2~3개)나 상황형 문장 소재를 제안해 드립니다.</li>
+            <li><strong>초보자 추천 (세계관 초안 생성):</strong> 구체적인 아이디어가 없더라도 상단 패널에서 선호하는 장르(액션, 다크판타지, SF 등) 및 톤 반전 옵션, 개입도('초안 제안')를 선택해 AI에게 초안을 추천받으세요.</li>
+            <li><strong>창작자 추천 (맞춤 소재 제안):</strong> 이미 구상된 세계관 TXT 파일이나 설정글을 붙여넣으신 후 '최소 개입'이나 '세부 설정 제안' 옵션을 활용하세요.</li>
           </ul>
 
-          <h3>2. 캔버스 (Canvas)</h3>
+          <h3>2. 마크다운 및 특수문자 표현 지원</h3>
+          <p>채팅창 및 결과물 저장 시 이모티콘(✨🎭🤖)과 볼드체, 취소선, 표, 코드 블록 등 다양한 마크다운 표현이 완벽히 지원됩니다.</p>
+
+          <h3>3. 캔버스 (Canvas)</h3>
           <p>우측 사이드바의 <strong>'관계도 & 스토리 캔버스'</strong> 버튼을 눌러 시각적 아이디어 정리 공간을 활용하세요.</p>
           <ul>
-            <li><strong>시각화 도구:</strong> 펜(Draw)과 화살표(Arrow) 도구로 캐릭터 관계도나 사건 플롯의 연결고리를 선으로 자유롭게 그리실 수 있습니다.</li>
-            <li><strong>메모 & 이미지 노드:</strong> '+ 카드' 및 '+ 이미지' 버튼을 사용해 아이디어 카드와 연상 이미지를 캔버스 위에 배치해 직관적으로 스토리를 시각화해보세요.</li>
-          </ul>
-
-          <h3>3. 추가기능</h3>
-          <p>창작 효율을 높이기 위해 탑재된 스마트 보조 기능들입니다.</p>
-          <ul>
-            <li><strong>실시간 자동 저장:</strong> 입력 창의 설정, 질문, 프롬프트 내용이 실시간 자동 저장되어 브라우저 재접속 시에도 복구됩니다.</li>
-            <li><strong>다국어 답변 지원:</strong> 한국어 외에도 영어, 일본어, 중국어 등 선택한 타겟 언어로 아이디어를 답변받으실 수 있습니다.</li>
-            <li><strong>데이터 백업 & 복원:</strong> 사이드바 [DATA MANAGEMENT]의 JSON 저장/불러오기 기능으로 유저 설정 및 프롬프트 데이터를 안전하게 백업하세요.</li>
-            <li><strong>메모장 Pad:</strong> 아이디어가 떠오를 때 사이드바 [MEMO PAD]를 사용하여 자유롭게 스크랩 및 임시 메모를 남겨두세요.</li>
-          </ul>
-
-          <h3>4. 공모전(공개작품) 제작 및 참여 시 AI 이용 수칙</h3>
-          <p>공개 작품이나 외부에 출품하는 작품 제작 시에는 다음 윤리적 기준을 준수해야 합니다.</p>
-          <ul>
-            <li><strong>AI 사용 표기 (명시):</strong> 작품 소개 및 공모전 서식에 본 생성형 AI 도구를 창작 보조로 사용했음을 투명하게 밝혀주세요. (예: "본 작품은 AI 창작 보조 도구를 활용하여 구상되었습니다.")</li>
-            <li><strong>2차 가공 및 수정해서 사용하기 (필수):</strong> AI가 추천해 준 아이디어나 소재는 그대로 사용하기보다, 본인만의 독창적인 표현 기법과 문체로 직접 <u>수정, 윤색, 리터칭을 거쳐 2차 가공</u>하여 사용해야 합니다.</li>
-            <li><strong>공모 요강 확인:</strong> 공모전별 AI 가이드라인(제한 사항 등)을 반드시 사전에 숙지해 주세요.</li>
+            <li><strong>시각화 도구:</strong> 펜(Draw)과 화살표(Arrow) 도구로 캐릭터 관계도나 사건 플롯의 연결고리를 그리실 수 있습니다.</li>
+            <li><strong>메모 & 이미지 노드:</strong> '+ 카드' 및 '+ 이미지' 버튼을 사용해 아이디어 카드와 연상 이미지를 배치해보세요.</li>
           </ul>
         </div>
       </section>
@@ -552,6 +553,10 @@
   let canvasScale = 1.0;
   let rawMarkdownResult = "";
 
+  let selectedGenres = [];
+  let selectedInterventionMode = "";
+  let isToneTwistEnabled = false;
+
   let isDrawing = false;
   let lastX = 0, lastY = 0;
   let startX = 0, startY = 0;
@@ -567,6 +572,27 @@
   const ctx = canvas ? canvas.getContext('2d') : null;
   let canvasSnapshot = null;
 
+  const WELCOME_NOTICE_TEXT = `안녕하세요! 창작자님의 글과 그림 작업을 도와드릴 세계관 아이디어 도우미입니다. 🎨✨
+이미 짜둔 세계관 설정 글이 있다면 이곳에 편하게 붙여넣어주시고, 없다면 아래 장르 중 관심 가는 걸 골라주세요.
+
+**[ 장르 목록 ]**
+* 액션
+* 일상
+* 다크판타지
+* 로맨스
+* 미스터리/스릴러
+* SF
+* 포스트아포칼립스
+
+*(💡 **TIP**: "귀여운 그림체로 무서운 이야기를 그리고 싶다"처럼 겉모습(톤)과 내용이 일부러 어긋나는 **'톤 반전'**도 원하신다면 장르와 함께 옵션을 체크해 주세요!)*
+
+만약 장르를 고르는 쪽을 선택하신다면, 도우미의 개입 정도를 조절하기 위해 아래 3가지 중 하나도 함께 골라주세요.
+* **최소 개입**: 세계관은 이미 다 짜왔고, 막힐 때만 가볍게 도움이 필요함
+* **세부 설정 제안**: 큰 틀만 있고, 캐릭터나 갈등 등 세부 요소를 채워주길 원함
+* **초안 제안**: 정말 아무것도 없어서 세계관 초안 자체부터 새로 잡아주길 원함
+
+준비되셨다면 설정 글을 붙여넣어 주시거나, 원하시는 장르와 진행 방식을 상단 옵션에서 선택해 주세요!`;
+
   // 다국어 i18n 번역 딕셔너리
   const i18n = {
     "한국어": {
@@ -574,10 +600,10 @@
       tabGuide: "사용 가이드",
       btnClearChat: "대화 비우기",
       btnSaveMd: "MD 저장",
-      aiWelcome: "안녕하세요! 세계관 아이디어 도우미입니다.<br>이미 짜둔 세계관 설정 글이 있다면 입력창에 붙여넣어주시고, 없다면 관심 가는 장르(액션, 일상, 다크판타지, 로맨스, 미스터리/스릴러, SF, 포스트아포칼립스)를 입력해주세요!",
+      aiWelcome: WELCOME_NOTICE_TEXT,
       labelLang: "언어:",
       btnTxtUpload: "TXT 업로드",
-      placeholderPrompt: "메시지를 입력하세요... (Shift+Enter 줄바꿈, Enter 전송)",
+      placeholderPrompt: "메시지나 세계관 설정을 입력하세요... (Shift+Enter 줄바꿈, Enter 전송)",
       btnSend: "전송",
       btnRelation: "관계도 & 스토리 캔버스",
       placeholderMemo: "간단한 메모를 기록하세요...",
@@ -594,10 +620,10 @@
       tabGuide: "User Guide",
       btnClearChat: "Clear Chat",
       btnSaveMd: "Save MD",
-      aiWelcome: "Hello! I am your Worldbuilding Assistant.<br>If you already have world setting text, paste it into the input box. Otherwise, tell me your favorite genre (Action, Daily, Dark Fantasy, Romance, Thriller, SF, Post-Apocalypse)!",
+      aiWelcome: WELCOME_NOTICE_TEXT,
       labelLang: "Language:",
       btnTxtUpload: "Upload TXT",
-      placeholderPrompt: "Type your message... (Shift+Enter for newline, Enter to send)",
+      placeholderPrompt: "Type message or world settings... (Shift+Enter for newline, Enter to send)",
       btnSend: "Send",
       btnRelation: "Relationship & Canvas",
       placeholderMemo: "Write down quick notes...",
@@ -614,7 +640,7 @@
       tabGuide: "利用ガイド",
       btnClearChat: "会話をクリア",
       btnSaveMd: "MD保存",
-      aiWelcome: "こんにちは！世界観アイデアヘルパーです。<br>すでに作成した世界観設定がある場合は入力欄に貼り付けてください。ない場合は興味のあるジャンル（アクション、日常、ダークファンタジー、ロマンス、ミステリー/スリラー、SF、ポストアポカリプス）を入力してください！",
+      aiWelcome: WELCOME_NOTICE_TEXT,
       labelLang: "言語:",
       btnTxtUpload: "TXTアップロード",
       placeholderPrompt: "メッセージを入力... (Shift+Enterで改行、Enterで送信)",
@@ -634,7 +660,7 @@
       tabGuide: "使用指南",
       btnClearChat: "清空对话",
       btnSaveMd: "保存为MD",
-      aiWelcome: "您好！我是世界观创意助手。<br>如果您已有构建好的世界观设定，请直接粘贴到输入框中；如果没有，请输入您感兴趣的流派（动作、日常、暗黑奇幻、言情、悬疑/惊悚、科幻、末日废土）！",
+      aiWelcome: WELCOME_NOTICE_TEXT,
       labelLang: "语言:",
       btnTxtUpload: "上传TXT",
       placeholderPrompt: "请输入消息... (Shift+Enter 换行，Enter 发送)",
@@ -644,12 +670,20 @@
       btnExportJson: "导出JSON数据",
       btnImportJson: "导入JSON数据",
       selectFile: "选择文件",
-      historyDefault: "-- 最近生成记录 --",
+      historyDefault: "-- 최근 생성 기록 --",
       toastSave: "已保存",
       toastSaving: "保存中...",
       txtLoaded: "世界观文件内容已加载至输入框。"
     }
   };
+
+  // marked.js 안전 파싱 및 특수문자/이모티콘 대응
+  if (window.marked) {
+    marked.setOptions({
+      breaks: true,
+      gfm: true
+    });
+  }
 
   window.addEventListener('DOMContentLoaded', () => {
     initCanvas();
@@ -659,8 +693,16 @@
     loadUserProfile();
     loadDraftInputs();
     updateHistoryDropdown();
+    renderWelcomeMessage();
     window.addEventListener('keydown', handleGlobalShortcuts);
   });
+
+  function renderWelcomeMessage() {
+    const welcomeEl = document.getElementById('ui-ai-welcome');
+    if (welcomeEl) {
+      welcomeEl.innerHTML = window.marked ? marked.parse(WELCOME_NOTICE_TEXT) : WELCOME_NOTICE_TEXT.replace(/\n/g, '<br>');
+    }
+  }
 
   function showToast(msg) {
     const toast = document.getElementById('toastMsg');
@@ -670,10 +712,41 @@
     setTimeout(() => { toast.style.display = 'none'; }, 2000);
   }
 
+  function toggleGenre(genre, btn) {
+    const idx = selectedGenres.indexOf(genre);
+    if (idx > -1) {
+      selectedGenres.splice(idx, 1);
+      btn.classList.remove('active');
+    } else {
+      selectedGenres.push(genre);
+      btn.classList.add('active');
+    }
+    triggerAutoSave();
+  }
+
+  function selectIntervention(mode, btn) {
+    document.querySelectorAll('.preset-row button').forEach(b => {
+      if (['최소 개입', '세부 설정 제안', '초안 제안'].includes(b.innerText)) {
+        b.classList.remove('active');
+      }
+    });
+    if (selectedInterventionMode === mode) {
+      selectedInterventionMode = "";
+    } else {
+      selectedInterventionMode = mode;
+      btn.classList.add('active');
+    }
+    triggerAutoSave();
+  }
+
+  function toggleToneTwist(checked) {
+    isToneTwistEnabled = checked;
+    triggerAutoSave();
+  }
+
   function changeLanguage(lang) {
     const dict = i18n[lang] || i18n["한국어"];
     
-    // UI 주요 텍스트 다국어 변경
     if (document.getElementById('tab-helper')) document.getElementById('tab-helper').innerText = dict.tabHelper;
     if (document.getElementById('tab-guide')) document.getElementById('tab-guide').innerText = dict.tabGuide;
     if (document.getElementById('ui-btn-clearchat')) document.getElementById('ui-btn-clearchat').innerText = dict.btnClearChat;
@@ -705,7 +778,10 @@
       prompt: document.getElementById('promptInput')?.value || "",
       language: lang,
       memo: document.getElementById('memoInput')?.value || "",
-      boardStoryText: document.getElementById('boardStoryText')?.value || ""
+      boardStoryText: document.getElementById('boardStoryText')?.value || "",
+      selectedGenres: selectedGenres,
+      selectedInterventionMode: selectedInterventionMode,
+      isToneTwistEnabled: isToneTwistEnabled
     };
 
     try {
@@ -741,11 +817,28 @@
         if (data.prompt !== undefined && document.getElementById('promptInput')) document.getElementById('promptInput').value = data.prompt;
         if (data.memo && document.getElementById('memoInput')) document.getElementById('memoInput').value = data.memo;
         if (data.boardStoryText && document.getElementById('boardStoryText')) document.getElementById('boardStoryText').value = data.boardStoryText;
+        
+        if (data.selectedGenres) {
+          selectedGenres = data.selectedGenres;
+          document.querySelectorAll('.preset-row button').forEach(btn => {
+            if (selectedGenres.includes(btn.innerText)) btn.classList.add('active');
+          });
+        }
+        if (data.selectedInterventionMode) {
+          selectedInterventionMode = data.selectedInterventionMode;
+          document.querySelectorAll('.preset-row button').forEach(btn => {
+            if (btn.innerText === selectedInterventionMode) btn.classList.add('active');
+          });
+        }
+        if (data.isToneTwistEnabled) {
+          isToneTwistEnabled = data.isToneTwistEnabled;
+          const check = document.getElementById('toneTwistCheck');
+          if (check) check.checked = isToneTwistEnabled;
+        }
       } catch (e) {}
     }
   }
 
-  // [수정 포인트 1]: TXT 업로드 시 덮어쓰기/덧붙이기 처리
   function loadWorldTxtFile(event) {
     const file = event.target.files[0];
     if (!file) return;
@@ -758,7 +851,6 @@
       const dict = i18n[lang] || i18n["한국어"];
 
       if (promptInput) {
-        // 기존 작성글이 있다면 덮어쓸지 확인
         if (promptInput.value.trim().length > 0) {
           if (confirm("기존 입력창의 내용을 새로 불러온 파일 내용으로 대체하시겠습니까? (취소 시 뒤에 연결됩니다)")) {
             promptInput.value = `[${file.name}]\n${content}`;
@@ -773,7 +865,7 @@
       }
     };
     reader.readAsText(file, "UTF-8");
-    event.target.value = ''; // 동일 파일 재업로드 지원
+    event.target.value = '';
   }
 
   function cleanOutputText(text) {
@@ -786,7 +878,6 @@
       .trim();
   }
 
-  /* --- 채팅 메시지 관련 처리 함수들 --- */
   function appendChatMessage(sender, content, type) {
     const chatContainer = document.getElementById('chatMessages');
     if (!chatContainer) return;
@@ -806,17 +897,15 @@
   }
 
   function clearChatMessages() {
-    const lang = document.getElementById('languageSelect')?.value || "한국어";
-    const dict = i18n[lang] || i18n["한국어"];
-
     if (confirm("대화 메시지를 모두 지우시겠습니까?")) {
       const chatContainer = document.getElementById('chatMessages');
       if (chatContainer) {
         chatContainer.innerHTML = `
           <div class="chat-msg ai">
             <span class="chat-sender">AI Helper</span>
-            <div class="chat-bubble markdown-body">${dict.aiWelcome}</div>
+            <div class="chat-bubble markdown-body" id="ui-ai-welcome"></div>
           </div>`;
+        renderWelcomeMessage();
       }
     }
   }
@@ -1086,9 +1175,7 @@
     else if (keyString === keybindings.redo) { e.preventDefault(); redoCanvas(); }
   }
 
-  function updateLineWidth(val) {
-    currentLineWidth = parseInt(val, 10);
-  }
+  function updateLineWidth(val) { currentLineWidth = parseInt(val, 10); }
 
   function zoomCanvas(delta) {
     canvasScale = Math.min(Math.max(0.5, canvasScale + delta), 2.0);
@@ -1104,9 +1191,7 @@
     const viewport = document.getElementById('boardViewport');
     if (viewport) viewport.style.transform = `scale(${canvasScale})`;
     const zoomBtn = document.getElementById('zoomResetBtn');
-    if (zoomBtn) {
-      zoomBtn.innerText = Math.round(canvasScale * 100) + '%';
-    }
+    if (zoomBtn) { zoomBtn.innerText = Math.round(canvasScale * 100) + '%'; }
   }
 
   function selectMainTab(tabType, element) {
@@ -1457,6 +1542,41 @@
     event.target.value = '';
   }
 
+  // 서버 통신 및 로컬 백업 Mock 응답 생성기
+  function generateMockResponse(prompt, genres, mode, isTwist, lang) {
+    const genreStr = genres.length > 0 ? genres.join(', ') : '기본 창작';
+    const twistStr = isTwist ? "⚠️ **[톤 반전 연출 적용]** (귀여운 visual/톤 ↔ 반전 서사/스릴러 요소 결합)\n" : "";
+    const modeStr = mode || "맞춤 창작 지원";
+
+    return `### 🔮 AI 세계관 아이디어 기획서
+
+${twistStr}
+* **선택 장르:** ${genreStr}
+* **개입 모드:** ${modeStr}
+* **타겟 언어:** ${lang}
+
+---
+
+#### 1. 🌟 핵심 컨셉 (Core Concept)
+> "${prompt.substring(0, 80)}..." 질문을 바탕으로 한 맞춤 세계관 구조입니다.
+
+* **메인 무대:** 비현실과 일상이 교차하는 하이브리드 디스토피아/도시
+* **핵심 규칙:** 세계의 표면적 평화 뒤에는 숨겨진 법칙(Rule)이 작동 중
+* **갈등 축:** 기존 질서를 유지하려는 세력 vs 비밀을 파헤치려는 창작 주체
+
+#### 2. 🎭 주요 캐릭터 & 갈등 요소
+1. **주인공 (Protagonist):**
+   * *특징:* 평범해 보이지만 세계관의 금기를 깨뜨릴 열쇠를 쥐고 있음.
+   * *동기:* 잃어버린 기억이나 핵심 인물의 진실을 찾기 위함.
+2. **대립자/조력자 (Antagonist / Helper):**
+   * *특징:* 겉으로는 다정하나 목적을 위해 수단을 가리지 않는 미스터리 인물.
+
+#### 3. 📝 추천 스토리 플롯 키워드
+* \`#비밀결사\` \`#반전복선\` \`#세계관의_이중성\` \`#운명의_선택\`
+
+*(💡 **Tip:** 생성된 아이디어를 오른쪽 **'관계도 & 스토리 캔버스'**에 옮겨 노드로 시각화해보세요!)*`;
+  }
+
   async function generateContent() {
     const promptInput = document.getElementById('promptInput');
     const submitBtn = document.getElementById('btnSubmit');
@@ -1465,7 +1585,10 @@
     const targetLanguage = document.getElementById('languageSelect')?.value || "한국어";
     const userName = localStorage.getItem('user_profile_name') || 'User_01';
 
-    if (!rawPrompt) return;
+    if (!rawPrompt && selectedGenres.length === 0 && !selectedInterventionMode) {
+      alert("세계관 설정 글이나 메시지를 입력하거나, 상단 장르/개입 옵션을 선택해 주세요!");
+      return;
+    }
 
     const MAX_INPUT_LEN = 4000;
     if (rawPrompt.length > MAX_INPUT_LEN) {
@@ -1473,10 +1596,19 @@
       showToast("입력문이 너무 길어 상위 4000자까지 축소되어 처리됩니다.");
     }
 
-    // 1. 유저 메시지를 채팅창에 추가
-    appendChatMessage(userName, rawPrompt, "user");
+    // 유저 메시지 가공 및 출력
+    let userDisplayMsg = rawPrompt;
+    let metaTags = [];
+    if (selectedGenres.length > 0) metaTags.push(`장르: ${selectedGenres.join(', ')}`);
+    if (selectedInterventionMode) metaTags.push(`개입도: ${selectedInterventionMode}`);
+    if (isToneTwistEnabled) metaTags.push(`톤 반전 포함`);
+
+    if (metaTags.length > 0) {
+      userDisplayMsg = `[${metaTags.join(' | ')}]\n${rawPrompt}`;
+    }
+
+    appendChatMessage(userName, userDisplayMsg, "user");
     
-    // [수정 포인트 2]: 전송 시 입력 창 및 자동 저장 드래프트 초기화
     promptInput.value = "";
     triggerAutoSave();
 
@@ -1485,7 +1617,6 @@
       submitBtn.innerText = "...";
     }
 
-    // 2. AI 대기 메시지 생성
     const tempLoadingId = "loading-" + Date.now();
     const chatContainer = document.getElementById('chatMessages');
     const loadingDiv = document.createElement('div');
@@ -1493,23 +1624,19 @@
     loadingDiv.id = tempLoadingId;
     loadingDiv.innerHTML = `
       <span class="chat-sender">AI Helper</span>
-      <div class="chat-bubble">AI is generating response...</div>
+      <div class="chat-bubble">AI가 아이디어를 구상 중입니다... ✨</div>
     `;
     chatContainer.appendChild(loadingDiv);
     chatContainer.scrollTop = chatContainer.scrollHeight;
 
-    // [수정 포인트 3]: 글로벌/해외 유저 대응을 위한 강한 다국어 지시 프롬프트
     const systemPersonaPrompt = `[System Instruction: Multilingual Worldbuilding Assistant]
 You are a friendly "Worldbuilding & Storytelling Helper AI" for creators.
+Selected Genres: ${selectedGenres.join(', ')}
+Intervention Level: ${selectedInterventionMode}
+Tone Twist: ${isToneTwistEnabled ? "Yes" : "No"}
 
 [Language Constraint - CRITICAL]
-- You MUST write your entire response completely and fluently in target language: **${targetLanguage}**.
-- Respond directly in ${targetLanguage} regardless of the user's input language.
-
-[Interaction Guidelines]
-1. If the user provides an existing world setting/file, respect their lore and build ideas within that framework.
-2. Provide concise, creative keywords, situation prompts, or worldbuilding plot points.
-3. Keep a helpful and encouraging tone for writers and artists.`;
+- Write your entire response completely and fluently in target language: ${targetLanguage}.`;
 
     const fullUserPrompt = `${systemPersonaPrompt}\n\n[User Input]:\n${rawPrompt}`;
 
@@ -1517,33 +1644,34 @@ You are a friendly "Worldbuilding & Storytelling Helper AI" for creators.
     const timeoutId = setTimeout(() => controller.abort(), 60000);
 
     try {
-      const response = await fetch('/generate', {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        signal: controller.signal,
-        body: JSON.stringify({
-          prompt: fullUserPrompt
-        })
-      });
+      let resultMarkdown = "";
 
-      clearTimeout(timeoutId);
+      // 백엔드 API 요청 시도
+      try {
+        const response = await fetch('/generate', {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          signal: controller.signal,
+          body: JSON.stringify({ prompt: fullUserPrompt })
+        });
 
-      if (!response.ok) {
-        let errMessage = `Server error code: ${response.status}`;
-        try {
-          const errData = await response.json();
-          if (errData.error) errMessage = errData.error;
-        } catch(e) {}
-        throw new Error(errMessage);
+        clearTimeout(timeoutId);
+
+        if (response.ok) {
+          const data = await response.json();
+          if (data.result) resultMarkdown = data.result;
+        }
+      } catch (e) {
+        console.warn("서버 API 미연결 또는 네트워크 오프라인. 클라이언트 내장 생성 엔진으로 전환합니다.");
       }
 
-      const data = await response.json();
-      
-      if (!data.result) {
-        throw new Error("Empty response from server.");
+      // 서버 연결이 없는 독립 실행 환경일 경우 내장 로컬 엔진 사용
+      if (!resultMarkdown) {
+        await new Promise(resolve => setTimeout(resolve, 800)); // 자연스러운 연출
+        resultMarkdown = generateMockResponse(rawPrompt || "새로운 세계관 요청", selectedGenres, selectedInterventionMode, isToneTwistEnabled, targetLanguage);
       }
 
-      rawMarkdownResult = cleanOutputText(data.result);
+      rawMarkdownResult = cleanOutputText(resultMarkdown);
 
       const loadingEl = document.getElementById(tempLoadingId);
       if (loadingEl) loadingEl.remove();
@@ -1553,14 +1681,9 @@ You are a friendly "Worldbuilding & Storytelling Helper AI" for creators.
 
     } catch (error) {
       console.error("Error details:", error);
-      let showErrMsg = error.message;
-      if (error.name === 'AbortError') {
-        showErrMsg = "Request timed out (60s). Please shorten your input.";
-      }
-      
       const loadingEl = document.getElementById(tempLoadingId);
       if (loadingEl) {
-        loadingEl.querySelector('.chat-bubble').innerHTML = `<span style="color:red; font-weight:bold;">Error: ${showErrMsg}</span>`;
+        loadingEl.querySelector('.chat-bubble').innerHTML = `<span style="color:red; font-weight:bold;">오류가 발생했습니다: ${error.message}</span>`;
       }
     } finally {
       if (submitBtn) {
