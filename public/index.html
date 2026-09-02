@@ -223,11 +223,31 @@
     input[type="text"], input[type="password"], select, textarea { width: 100%; border: 1px solid var(--border-color); padding: 6px; font-size: 12px; background: var(--input-bg); color: var(--text-color); outline: none; box-sizing: border-box; }
     textarea { height: 100px; resize: vertical; }
 
+    /* --- 새로 추가된 채팅방 스타일 --- */
+    .chat-card { display: flex; flex-direction: column; height: 550px; border: 1px solid var(--border-color); background: var(--card-sub-bg); padding: 10px; }
+    .chat-messages { flex: 1; overflow-y: auto; display: flex; flex-direction: column; gap: 12px; padding: 8px; background: var(--input-bg); border: 1px solid var(--border-color); margin-bottom: 10px; }
+    
+    .chat-msg { display: flex; flex-direction: column; max-width: 85%; font-size: 12px; line-height: 1.5; }
+    .chat-msg.user { align-self: flex-end; align-items: flex-end; }
+    .chat-msg.ai { align-self: flex-start; align-items: flex-start; }
+
+    .chat-sender { font-size: 10px; font-weight: bold; margin-bottom: 3px; color: var(--text-color); opacity: 0.8; }
+    .chat-bubble { padding: 8px 12px; border: 1px solid var(--border-color); word-break: break-all; overflow-wrap: break-word; }
+    .chat-msg.user .chat-bubble { background: var(--accent-color); color: var(--accent-text); border-radius: 8px 8px 0px 8px; }
+    .chat-msg.ai .chat-bubble { background: var(--card-bg); color: var(--text-color); border-radius: 8px 8px 8px 0px; }
+
+    .chat-input-wrapper { display: flex; flex-direction: column; gap: 6px; }
+    .chat-options-bar { display: flex; justify-content: space-between; align-items: center; gap: 8px; font-size: 11px; flex-wrap: wrap; }
+    .chat-options-left { display: flex; align-items: center; gap: 6px; }
+    .chat-input-box { display: flex; gap: 6px; }
+    .chat-input-box textarea { flex: 1; height: 48px; resize: none; font-size: 12px; }
+    .chat-send-btn { width: 70px; height: 48px; background: var(--accent-color); color: var(--accent-text); border: 1px solid var(--border-color); font-weight: bold; cursor: pointer; flex-shrink: 0; }
+    /* ---------------------------------- */
+
     .tool-label-grid, .shortcut-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
     .shortcut-input { text-align: center; font-weight: bold; cursor: pointer; background-color: var(--input-bg); }
     .shortcut-input:focus { border-color: var(--accent-color); background-color: #fffde7; color: #000; }
 
-    .result-box { min-height: 180px; width: 100%; background: var(--input-bg); border: 1px solid var(--border-color); padding: 12px; font-size: 12px; line-height: 1.6; word-break: break-all; overflow-wrap: break-word; overflow-x: auto; }
     .markdown-body { width: 100%; word-break: break-all; overflow-wrap: break-word; }
     .markdown-body h1, .markdown-body h2, .markdown-body h3 { margin-top: 10px; margin-bottom: 6px; color: var(--accent-color); border-bottom: 1px dashed var(--border-color); padding-bottom: 4px; word-break: break-all; }
     .markdown-body p { margin-bottom: 8px; word-break: break-all; }
@@ -304,33 +324,50 @@
 
   <main>
     <div class="content-area">
-      <section class="card" id="inputSection">
+      <!-- 기존 입력/결과 폼 대신 교체된 통합 AI 채팅방 영역 -->
+      <section class="chat-card" id="chatSection">
         <div class="card-title">
-          <span id="formTitle">세계관 아이디어 요청</span>
-          <button type="button" class="card-title-btn" onclick="resetFormInputs()">입력 초기화</button>
-        </div>
-        
-        <div class="form-group" id="languageGroup">
-          <label>출력 언어 선택 (Output Language)</label>
-          <select id="languageSelect" onchange="triggerAutoSave()">
-            <option value="한국어" selected>한국어 (Korean)</option>
-            <option value="English">English (영어)</option>
-            <option value="日本語">日本語 (일본어)</option>
-            <option value="中文">中文 (중국어)</option>
-          </select>
+          <span>AI WORLD HELPER CHAT</span>
+          <div>
+            <button type="button" class="card-title-btn" onclick="clearChatMessages()">대화 비우기</button>
+            <button type="button" class="card-title-btn" onclick="downloadResultMD()">MD 저장</button>
+          </div>
         </div>
 
-        <div class="form-group" id="fileGroup">
-          <label>기존 세계관 TXT 파일 업로드 (.txt)</label>
-          <input type="file" id="worldFileInput" accept=".txt" style="margin-bottom: 6px;" onchange="loadWorldTxtFile(event)">
+        <!-- 메시지 리스트 -->
+        <div class="chat-messages" id="chatMessages">
+          <div class="chat-msg ai">
+            <span class="chat-sender">AI Helper</span>
+            <div class="chat-bubble markdown-body">
+              안녕하세요! 세계관 아이디어 도우미입니다.<br>
+              이미 짜둔 세계관 설정 글이 있다면 입력창에 붙여넣어주시고, 없다면 관심 가는 장르(액션, 일상, 다크판타지, 로맨스, 미스터리/스릴러, SF, 포스트아포칼립스)를 입력해주세요!
+            </div>
+          </div>
         </div>
 
-        <div class="form-group" id="mainPromptGroup">
-          <label id="promptLabel">세계관 설정 / 질문 / 소재 요청 입력</label>
-          <textarea id="promptInput" placeholder="이미 짜둔 세계관 설정을 붙여넣거나, 원하는 장르(액션, 일상, 다크판타지, 로맨스, SF 등)나 고민되는 소재를 자유롭게 적어보세요..." oninput="debounceAutoSave()"></textarea>
-        </div>
+        <!-- 하단 입력 및 도구 바 -->
+        <div class="chat-input-wrapper">
+          <div class="chat-options-bar">
+            <div class="chat-options-left">
+              <label style="font-weight:bold;">언어:</label>
+              <select id="languageSelect" style="width: auto; padding: 2px 4px;" onchange="triggerAutoSave()">
+                <option value="한국어" selected>한국어</option>
+                <option value="English">English</option>
+                <option value="日本語">日本語</option>
+                <option value="中文">中文</option>
+              </select>
+            </div>
+            <div>
+              <button type="button" class="small-btn" onclick="document.getElementById('worldFileInput').click()">TXT 업로드</button>
+              <input type="file" id="worldFileInput" accept=".txt" style="display:none;" onchange="loadWorldTxtFile(event)">
+            </div>
+          </div>
 
-        <button type="button" class="primary-btn" id="btnSubmit" onclick="generateContent()">[ AI 아이디어 요청 ]</button>
+          <div class="chat-input-box">
+            <textarea id="promptInput" placeholder="메시지를 입력하세요... (Shift+Enter 줄바꿈, Enter 전송)" onkeydown="handleChatKeyDown(event)" oninput="debounceAutoSave()"></textarea>
+            <button type="button" class="chat-send-btn" id="btnSubmit" onclick="generateContent()">전송</button>
+          </div>
+        </div>
       </section>
 
       <section class="card" id="boardSection" style="display: none;">
@@ -371,23 +408,12 @@
         </div>
       </section>
 
-      <article class="card" id="resultSection">
-        <div class="card-title">
-          <span>AI 답변 / 추천 결과</span>
-          <div>
-            <button type="button" class="card-title-btn" onclick="copyResultText()">복사</button>
-            <button type="button" class="card-title-btn" onclick="downloadResultMD()">MD 다운로드</button>
-          </div>
-        </div>
-        <div id="resultOutput" class="result-box markdown-body">안녕하세요! 세계관 아이디어 도우미입니다.<br>이미 짜둔 세계관 설정 글이 있다면 붙여넣어주시고, 없다면 관심 가는 장르(액션, 일상, 다크판타지, 로맨스, 미스터리/스릴러, SF, 포스트아포칼립스)를 입력하거나 업로드 해주세요. '귀여운 그림체로 무서운 이야기' 같은 톤 반전도 환영합니다!</div>
-      </article>
-
       <section class="card" id="guideSection" style="display: none;">
         <div class="card-title">
           <span>SYSTEM MANUAL & USER GUIDE</span>
           <button type="button" class="card-title-btn" id="guideToggleBtn" onclick="toggleGuideCard()">접기</button>
         </div>
-        <div id="guideBody" class="result-box markdown-body" style="border: none;">
+        <div id="guideBody" class="markdown-body" style="border: none;">
           <h3>1. 인삿말 및 초보자와 창작자에게 각각 추천하는 기능</h3>
           <p>안녕하세요! <strong>YOUR WORLD HELPER</strong>를 이용해 주셔서 감사합니다.</p>
           <ul>
@@ -609,18 +635,6 @@
     }
   }
 
-  function resetFormInputs() {
-    if (confirm("입력한 내용과 설정을 모두 초기화하시겠습니까?")) {
-      if (document.getElementById('promptInput')) document.getElementById('promptInput').value = "";
-      if (document.getElementById('memoInput')) document.getElementById('memoInput').value = "";
-      if (document.getElementById('boardStoryText')) document.getElementById('boardStoryText').value = "";
-      if (document.getElementById('worldFileInput')) document.getElementById('worldFileInput').value = "";
-      localStorage.removeItem('user_draft_data');
-      showToast("입력 내용이 초기화되었습니다.");
-      triggerAutoSave();
-    }
-  }
-
   function loadWorldTxtFile(event) {
     const file = event.target.files[0];
     if (!file) return;
@@ -630,9 +644,9 @@
       const content = e.target.result;
       const promptInput = document.getElementById('promptInput');
       if (promptInput) {
-        promptInput.value = `[파일명: ${file.name}]\n\n${content}`;
+        promptInput.value = `[파일명: ${file.name}]\n${content}`;
         triggerAutoSave();
-        showToast("세계관 파일 내용을 읽어왔습니다.");
+        showToast("세계관 파일 내용이 입력창에 추가되었습니다.");
       }
     };
     reader.readAsText(file, "UTF-8");
@@ -647,6 +661,46 @@
       .replace(/\[INST\][\s\S]*?\[\/INST\]/g, "")
       .trim();
   }
+
+  /* --- 채팅 메시지 관련 처리 함수들 --- */
+  function appendChatMessage(sender, content, type) {
+    const chatContainer = document.getElementById('chatMessages');
+    if (!chatContainer) return;
+
+    const msgDiv = document.createElement('div');
+    msgDiv.className = `chat-msg ${type}`;
+
+    const parsedContent = (type === 'ai' && window.marked) ? marked.parse(content) : content.replace(/\n/g, '<br>');
+
+    msgDiv.innerHTML = `
+      <span class="chat-sender">${sender}</span>
+      <div class="chat-bubble markdown-body">${parsedContent}</div>
+    `;
+
+    chatContainer.appendChild(msgDiv);
+    chatContainer.scrollTop = chatContainer.scrollHeight;
+  }
+
+  function clearChatMessages() {
+    if (confirm("대화 메시지를 모두 지우시겠습니까?")) {
+      const chatContainer = document.getElementById('chatMessages');
+      if (chatContainer) {
+        chatContainer.innerHTML = `
+          <div class="chat-msg ai">
+            <span class="chat-sender">AI Helper</span>
+            <div class="chat-bubble markdown-body">대화 내용이 초기화되었습니다. 편하게 질문이나 세계관 설정을 남겨주세요!</div>
+          </div>`;
+      }
+    }
+  }
+
+  function handleChatKeyDown(e) {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      generateContent();
+    }
+  }
+  /* ------------------------------------- */
 
   function saveToHistory(type, markdownContent) {
     let histories = [];
@@ -701,22 +755,11 @@
         const target = histories.find(h => h.id == id);
         if (target) {
           rawMarkdownResult = cleanOutputText(target.content);
-          const out = document.getElementById('resultOutput');
-          if (out) out.innerHTML = window.marked ? marked.parse(rawMarkdownResult) : rawMarkdownResult;
+          appendChatMessage("AI Helper (불러옴)", rawMarkdownResult, "ai");
           showToast("이전 생성 기록을 불러왔습니다.");
         }
       } catch(e){}
     }
-  }
-
-  function copyResultText() {
-    if (!rawMarkdownResult) {
-      alert("복사할 결과 내용이 없습니다.");
-      return;
-    }
-    navigator.clipboard.writeText(rawMarkdownResult).then(() => {
-      showToast("클립보드에 복사되었습니다.");
-    });
   }
 
   function downloadResultMD() {
@@ -938,44 +981,26 @@
   }
 
   function selectMainTab(tabType, element) {
-    if (currentMainTab !== tabType) {
-      if (document.getElementById('promptInput')) document.getElementById('promptInput').value = '';
-
-      const saved = localStorage.getItem('user_draft_data');
-      if (saved) {
-        try {
-          let draftData = JSON.parse(saved);
-          draftData.prompt = '';
-          localStorage.setItem('user_draft_data', JSON.stringify(draftData));
-        } catch (e) {}
-      }
-      triggerAutoSave();
-    }
-
     currentMainTab = tabType;
     document.querySelectorAll('.tab-btn, .side-nav-btn').forEach(btn => btn.classList.remove('active'));
     if (element) element.classList.add('active');
 
-    const inputSection = document.getElementById('inputSection');
+    const chatSection = document.getElementById('chatSection');
     const boardSection = document.getElementById('boardSection');
-    const resultSection = document.getElementById('resultSection');
     const guideSection = document.getElementById('guideSection');
 
     if (tabType === 'helper') {
-      if (inputSection) inputSection.style.display = 'block';
+      if (chatSection) chatSection.style.display = 'flex';
       if (boardSection) boardSection.style.display = 'none';
-      if (resultSection) resultSection.style.display = 'block';
       if (guideSection) guideSection.style.display = 'none';
     } else if (tabType === 'relation') {
-      if (inputSection) inputSection.style.display = 'none';
+      if (chatSection) chatSection.style.display = 'none';
       if (boardSection) boardSection.style.display = 'block';
-      if (resultSection) resultSection.style.display = 'none';
       if (guideSection) guideSection.style.display = 'none';
       resizeCanvas();
     } else if (tabType === 'guide') {
-      if (inputSection) inputSection.style.display = 'none';
+      if (chatSection) chatSection.style.display = 'none';
       if (boardSection) boardSection.style.display = 'none';
-      if (resultSection) resultSection.style.display = 'none';
       if (guideSection) guideSection.style.display = 'block';
     }
   }
@@ -1309,11 +1334,9 @@
 
     let rawPrompt = promptInput ? promptInput.value.trim() : "";
     const targetLanguage = document.getElementById('languageSelect')?.value || "한국어";
-    const outputDiv = document.getElementById('resultOutput');
+    const userName = localStorage.getItem('user_profile_name') || 'User_01';
 
-    if (!rawPrompt) {
-      rawPrompt = "안녕하세요! 창작 도우미님, 어떤 식으로 세계관 아이디어를 제안받을 수 있는지 안내해 주세요.";
-    }
+    if (!rawPrompt) return;
 
     const MAX_INPUT_LEN = 4000;
     if (rawPrompt.length > MAX_INPUT_LEN) {
@@ -1321,13 +1344,28 @@
       showToast("입력문이 너무 길어 상위 4000자까지 축소되어 처리됩니다.");
     }
 
+    // 1. 유저 메시지를 화면 채팅장에 추가
+    appendChatMessage(userName, rawPrompt, "user");
+    promptInput.value = "";
+    triggerAutoSave();
+
     if (submitBtn) {
       submitBtn.disabled = true;
-      submitBtn.innerText = "[ 생성 처리 중... ]";
+      submitBtn.innerText = "생성중...";
     }
-    if (outputDiv) {
-      outputDiv.innerHTML = '<p style="color:var(--accent-color);">AI가 세계관 지시문과 입력 내용을 분석하여 생성 중입니다...</p>';
-    }
+
+    // 2. AI 대기 메시지 생성
+    const tempLoadingId = "loading-" + Date.now();
+    const chatContainer = document.getElementById('chatMessages');
+    const loadingDiv = document.createElement('div');
+    loadingDiv.className = 'chat-msg ai';
+    loadingDiv.id = tempLoadingId;
+    loadingDiv.innerHTML = `
+      <span class="chat-sender">AI Helper</span>
+      <div class="chat-bubble">AI가 생성 중입니다...</div>
+    `;
+    chatContainer.appendChild(loadingDiv);
+    chatContainer.scrollTop = chatContainer.scrollHeight;
 
     const systemPersonaPrompt = `[시스템 지시문: 세계관 아이디어 도우미 페르소나]
 너는 지금부터 창작자들의 세계관 기반 글/그림 작업을 도와주는 "세계관 아이디어 도우미"야.
@@ -1379,10 +1417,12 @@
       }
 
       rawMarkdownResult = cleanOutputText(data.result);
-      if (outputDiv) {
-        outputDiv.innerHTML = window.marked ? marked.parse(rawMarkdownResult) : rawMarkdownResult;
-      }
 
+      // 로딩 메시지 제거 후 AI의 실제 답변 출력
+      const loadingEl = document.getElementById(tempLoadingId);
+      if (loadingEl) loadingEl.remove();
+
+      appendChatMessage("AI Helper", rawMarkdownResult, "ai");
       saveToHistory("아이디어 대화", rawMarkdownResult);
 
     } catch (error) {
@@ -1391,13 +1431,15 @@
       if (error.name === 'AbortError') {
         showErrMsg = "서버 응답 시간이 초과되었습니다 (60초 타임아웃). 입력 내용을 조금 줄여서 다시 시도해보세요.";
       }
-      if (outputDiv) {
-        outputDiv.innerHTML = `<p style="color:red; font-weight:bold;">생성 실패:</p><p style="color:red;">${showErrMsg}</p>`;
+      
+      const loadingEl = document.getElementById(tempLoadingId);
+      if (loadingEl) {
+        loadingEl.querySelector('.chat-bubble').innerHTML = `<span style="color:red; font-weight:bold;">생성 실패: ${showErrMsg}</span>`;
       }
     } finally {
       if (submitBtn) {
         submitBtn.disabled = false;
-        submitBtn.innerText = "[ AI 아이디어 요청 ]";
+        submitBtn.innerText = "전송";
       }
     }
   }
