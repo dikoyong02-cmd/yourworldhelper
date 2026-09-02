@@ -230,6 +230,7 @@
     .shortcut-input { text-align: center; font-weight: bold; cursor: pointer; background-color: var(--input-bg); }
     .shortcut-input:focus { border-color: var(--accent-color); background-color: #fffde7; color: #000; }
 
+    /* 마크다운 스타일 정밀 보정 */
     .markdown-body { width: 100%; word-break: break-word; overflow-wrap: break-word; line-height: 1.6; }
     .markdown-body h1, .markdown-body h2, .markdown-body h3 { margin-top: 10px; margin-bottom: 6px; color: var(--accent-color); border-bottom: 1px dashed var(--border-color); padding-bottom: 4px; }
     .markdown-body p { margin-bottom: 8px; }
@@ -339,7 +340,7 @@
           </div>
 
           <div class="chat-input-box">
-            <textarea id="promptInput" placeholder="메시지나 세계관 설정을 입력하세요... (Shift+Enter 줄바꿈, Enter 전송)" onkeydown="handleChatKeyDown(event)" oninput="debounceAutoSave()"></textarea>
+            <textarea id="promptInput" placeholder="메시지나 세계관 설정을 입력하세요..." onkeydown="handleChatKeyDown(event)" oninput="debounceAutoSave()"></textarea>
             <button type="button" class="chat-send-btn" id="btnSubmit" onclick="generateContent()">전송</button>
           </div>
         </div>
@@ -509,6 +510,9 @@
 </div>
 
 <script>
+  // 모바일 환경 감지 변수
+  const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) || (window.innerWidth <= 768);
+
   let currentMainTab = 'helper';
   let boardTool = 'draw';
   let currentLineWidth = 2;
@@ -549,7 +553,8 @@
       btnSaveMd: "MD 저장",
       aiWelcome: WELCOME_NOTICE_TEXT,
       labelLang: "언어:",
-      placeholderPrompt: "메시지나 세계관 설정을 입력하세요... (Shift+Enter 줄바꿈, Enter 전송)",
+      placeholderPromptMobile: "메시지나 세계관 설정을 입력하세요... (Enter 줄바꿈)",
+      placeholderPromptPC: "메시지나 세계관 설정을 입력하세요... (Enter 전송, Shift+Enter 줄바꿈)",
       btnSend: "전송",
       btnRelation: "관계도 & 스토리 캔버스",
       placeholderMemo: "간단한 메모를 기록하세요...",
@@ -567,7 +572,8 @@
       btnSaveMd: "Save MD",
       aiWelcome: WELCOME_NOTICE_TEXT,
       labelLang: "Language:",
-      placeholderPrompt: "Type message or world settings... (Shift+Enter for newline, Enter to send)",
+      placeholderPromptMobile: "Type message... (Enter for newline)",
+      placeholderPromptPC: "Type message... (Enter to send, Shift+Enter for newline)",
       btnSend: "Send",
       btnRelation: "Relationship & Canvas",
       placeholderMemo: "Write down quick notes...",
@@ -585,7 +591,8 @@
       btnSaveMd: "MD保存",
       aiWelcome: WELCOME_NOTICE_TEXT,
       labelLang: "言語:",
-      placeholderPrompt: "メッセージを入力... (Shift+Enterで改行、Enterで送信)",
+      placeholderPromptMobile: "メッセージを入力... (Enterで改行)",
+      placeholderPromptPC: "メッセージ 입력... (Enterで送信, Shift+Enterで改行)",
       btnSend: "送信",
       btnRelation: "相関図 & ストーリーキャンバス",
       placeholderMemo: "簡単なメモを記録...",
@@ -603,7 +610,8 @@
       btnSaveMd: "保存为MD",
       aiWelcome: WELCOME_NOTICE_TEXT,
       labelLang: "语言:",
-      placeholderPrompt: "请输入消息... (Shift+Enter 换行，Enter 发送)",
+      placeholderPromptMobile: "请输入消息... (Enter 换行)",
+      placeholderPromptPC: "请输入消息... (Enter 发送, Shift+Enter 换行)",
       btnSend: "发送",
       btnRelation: "人物关系 & 故事画布",
       placeholderMemo: "记录简短便签...",
@@ -658,7 +666,11 @@
     if (document.getElementById('ui-btn-clearchat')) document.getElementById('ui-btn-clearchat').innerText = dict.btnClearChat;
     if (document.getElementById('ui-btn-savemd')) document.getElementById('ui-btn-savemd').innerText = dict.btnSaveMd;
     if (document.getElementById('ui-label-lang')) document.getElementById('ui-label-lang').innerText = dict.labelLang;
-    if (document.getElementById('promptInput')) document.getElementById('promptInput').placeholder = dict.placeholderPrompt;
+    
+    if (document.getElementById('promptInput')) {
+      document.getElementById('promptInput').placeholder = isMobile ? dict.placeholderPromptMobile : dict.placeholderPromptPC;
+    }
+
     if (document.getElementById('btnSubmit')) document.getElementById('btnSubmit').innerText = dict.btnSend;
     if (document.getElementById('relationSideBtn')) document.getElementById('relationSideBtn').innerText = dict.btnRelation;
     if (document.getElementById('memoInput')) document.getElementById('memoInput').placeholder = dict.placeholderMemo;
@@ -715,11 +727,15 @@
         if (data.language && document.getElementById('languageSelect')) {
           document.getElementById('languageSelect').value = data.language;
           changeLanguage(data.language);
+        } else {
+          changeLanguage("한국어");
         }
         if (data.prompt !== undefined && document.getElementById('promptInput')) document.getElementById('promptInput').value = data.prompt;
         if (data.memo && document.getElementById('memoInput')) document.getElementById('memoInput').value = data.memo;
         if (data.boardStoryText && document.getElementById('boardStoryText')) document.getElementById('boardStoryText').value = data.boardStoryText;
       } catch (e) {}
+    } else {
+      changeLanguage("한국어");
     }
   }
 
@@ -743,7 +759,8 @@
     msgDiv.className = `chat-msg ${type}`;
 
     const safeContent = content || "";
-    const parsedContent = (type === 'ai' && window.marked) ? marked.parse(safeContent) : safeContent.replace(/\n/g, '<br>');
+    // AI 메시지와 유저 메시지 모두 마크다운 파싱 적용
+    const parsedContent = window.marked ? marked.parse(safeContent) : safeContent.replace(/\n/g, '<br>');
 
     msgDiv.innerHTML = `
       <span class="chat-sender">${sender}</span>
@@ -768,10 +785,20 @@
     }
   }
 
+  /* 키보드 입력 핸들러: PC/모바일 구분 적용 */
   function handleChatKeyDown(e) {
-    if (e.key === 'Enter' && !e.shiftKey) {
-      e.preventDefault();
-      generateContent();
+    // 한글 등 IME 조합 중 중복 실행 방지
+    if (e.isComposing || e.keyCode === 229) return;
+
+    // 모바일 환경: Enter 기본 줄바꿈 동작, 전송 버튼 이용
+    if (isMobile) return;
+
+    // PC 환경: Enter는 전송, Shift+Enter는 줄바꿈
+    if (e.key === 'Enter') {
+      if (!e.shiftKey) {
+        e.preventDefault();
+        generateContent();
+      }
     }
   }
 
@@ -1400,6 +1427,7 @@
     event.target.value = '';
   }
 
+  /* AI 응답 예시 (마크다운 적용 구조) */
   function generateMockResponse(prompt, lang) {
     const safePrompt = prompt || "";
     const isMinimal = safePrompt.includes("최소개입") || safePrompt.includes("최소 개입");
@@ -1436,28 +1464,26 @@
 1. **갈등의 발단:** 숨겨진 진실이 밝혀지면서 기존 관계가 변하는 톤 전환
 2. **복선 제시:** 주변 인물들의 은밀한 대화나 전조 현상을 통한 복선 배치
 
-#### 3. 추천 작업
-* 확정된 인물 간 관계 구도는 우측 **'관계도 & 스토리 캔버스'**에 시각화해 두는 것을 추천합니다.`;
+#### 3. 추가 제안 사항
+* 확정된 인물 간 관계 구도는 우측 **관계도 & 스토리 캔버스**에 시각화해 두는 것을 권장합니다.`;
     }
 
-    return `### 세계관 분석 및 피드백 리포트
-
-작성해 주신 세계관 설정을 기반으로 정리한 구성안입니다.
+    return `작성해 주신 세계관 설정을 기반으로 정리한 구성안입니다.
 
 ---
 
-#### 1. 주요 개요
+### 1. 주요 개요
 * **입력 내용:** ${cleanPrompt}
 * **설정 분석:** 독창적인 소재와 세계관 구성 요소가 잘 들어맞아 있습니다.
 
-#### 2. 세부 피드백 및 보완점
+### 2. 세부 피드백 및 보완점
 1. **세계관 구성:**
    * 배경의 분위기와 설정상의 규칙이 일관되게 유지되고 있습니다.
 2. **캐릭터 & 관계:**
    * 인물 간의 대립 구조나 조력 관계를 시각적으로 가시화하면 더욱 명확해집니다.
 
-#### 3. 추가 제안 사항
-* 세부 플롯 및 관련 설정 카드는 우측 **'관계도 & 스토리 캔버스'**에 배치하여 정리하는 것을 권장합니다.`;
+### 3. 추가 제안 사항
+* 세부 플롯 및 관련 설정 카드는 우측 **관계도 & 스토리 캔버스**에 배치하여 정리하는 것을 권장합니다.`;
   }
 
   async function generateContent() {
