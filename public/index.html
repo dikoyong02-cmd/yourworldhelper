@@ -223,7 +223,7 @@
     input[type="text"], input[type="password"], select, textarea { width: 100%; border: 1px solid var(--border-color); padding: 6px; font-size: 12px; background: var(--input-bg); color: var(--text-color); outline: none; box-sizing: border-box; }
     textarea { height: 100px; resize: vertical; }
 
-    /* --- 새로 추가된 채팅방 스타일 --- */
+    /* 채팅방 스타일 */
     .chat-card { display: flex; flex-direction: column; height: 550px; border: 1px solid var(--border-color); background: var(--card-sub-bg); padding: 10px; }
     .chat-messages { flex: 1; overflow-y: auto; display: flex; flex-direction: column; gap: 12px; padding: 8px; background: var(--input-bg); border: 1px solid var(--border-color); margin-bottom: 10px; }
     
@@ -242,7 +242,6 @@
     .chat-input-box { display: flex; gap: 6px; }
     .chat-input-box textarea { flex: 1; height: 48px; resize: none; font-size: 12px; }
     .chat-send-btn { width: 70px; height: 48px; background: var(--accent-color); color: var(--accent-text); border: 1px solid var(--border-color); font-weight: bold; cursor: pointer; flex-shrink: 0; }
-    /* ---------------------------------- */
 
     .tool-label-grid, .shortcut-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
     .shortcut-input { text-align: center; font-weight: bold; cursor: pointer; background-color: var(--input-bg); }
@@ -287,13 +286,13 @@
 
   <div class="notice-card">
     <div class="notice-header" onclick="toggleNotice()">
-      <span>서비스 공지사항 (Notice)</span>
+      <span id="ui-notice-title">서비스 공지사항 (Notice)</span>
       <button type="button" class="notice-toggle-btn" id="noticeToggleBtn">접기</button>
     </div>
     <div class="notice-body" id="noticeBody">
       <ol>
-        <li><strong>가이드 확인부탁</strong></li>
-        <li>그외 추가할사항(차쯤 추가예정)</li>
+        <li id="ui-notice-1"><strong>가이드 확인부탁</strong></li>
+        <li id="ui-notice-2">그외 추가할사항(차쯤 추가예정)</li>
       </ol>
     </div>
   </div>
@@ -301,7 +300,7 @@
   <header>
     <h1>YOUR WORLD HELPER (v2.0)</h1>
     <div class="theme-selector-box">
-      <label for="themeSelect">COLOR THEME:</label>
+      <label for="themeSelect" id="ui-label-theme">COLOR THEME:</label>
       <select id="themeSelect" onchange="changeTheme(this.value)">
         <option value="classic-win" selected>Classic Windows 98</option>
         <option value="crt-terminal">Retro CRT Terminal</option>
@@ -324,13 +323,13 @@
 
   <main>
     <div class="content-area">
-      <!-- 기존 입력/결과 폼 대신 교체된 통합 AI 채팅방 영역 -->
+      <!-- 통합 AI 채팅방 영역 -->
       <section class="chat-card" id="chatSection">
         <div class="card-title">
           <span>AI WORLD HELPER CHAT</span>
           <div>
-            <button type="button" class="card-title-btn" onclick="clearChatMessages()">대화 비우기</button>
-            <button type="button" class="card-title-btn" onclick="downloadResultMD()">MD 저장</button>
+            <button type="button" class="card-title-btn" id="ui-btn-clearchat" onclick="clearChatMessages()">대화 비우기</button>
+            <button type="button" class="card-title-btn" id="ui-btn-savemd" onclick="downloadResultMD()">MD 저장</button>
           </div>
         </div>
 
@@ -338,7 +337,7 @@
         <div class="chat-messages" id="chatMessages">
           <div class="chat-msg ai">
             <span class="chat-sender">AI Helper</span>
-            <div class="chat-bubble markdown-body">
+            <div class="chat-bubble markdown-body" id="ui-ai-welcome">
               안녕하세요! 세계관 아이디어 도우미입니다.<br>
               이미 짜둔 세계관 설정 글이 있다면 입력창에 붙여넣어주시고, 없다면 관심 가는 장르(액션, 일상, 다크판타지, 로맨스, 미스터리/스릴러, SF, 포스트아포칼립스)를 입력해주세요!
             </div>
@@ -349,8 +348,8 @@
         <div class="chat-input-wrapper">
           <div class="chat-options-bar">
             <div class="chat-options-left">
-              <label style="font-weight:bold;">언어:</label>
-              <select id="languageSelect" style="width: auto; padding: 2px 4px;" onchange="triggerAutoSave()">
+              <label style="font-weight:bold;" id="ui-label-lang">언어:</label>
+              <select id="languageSelect" style="width: auto; padding: 2px 4px;" onchange="changeLanguage(this.value)">
                 <option value="한국어" selected>한국어</option>
                 <option value="English">English</option>
                 <option value="日本語">日本語</option>
@@ -358,7 +357,7 @@
               </select>
             </div>
             <div>
-              <button type="button" class="small-btn" onclick="document.getElementById('worldFileInput').click()">TXT 업로드</button>
+              <button type="button" class="small-btn" id="ui-btn-txtupload" onclick="document.getElementById('worldFileInput').click()">TXT 업로드</button>
               <input type="file" id="worldFileInput" accept=".txt" style="display:none;" onchange="loadWorldTxtFile(event)">
             </div>
           </div>
@@ -389,12 +388,12 @@
             <button class="small-btn" onclick="zoomCanvas(0.1)" title="확대">+</button>
             <button class="small-btn" id="zoomResetBtn" onclick="resetZoom()" title="원래 크기">100%</button>
             <button class="small-btn" onclick="zoomCanvas(-0.1)" title="축소">-</button>
-            <button class="small-btn" onclick="addTextCard()">+ 카드</button>
-            <button class="small-btn" onclick="document.getElementById('canvasImageInput').click()">+ 이미지</button>
+            <button class="small-btn" id="ui-btn-addcard" onclick="addTextCard()">+ 카드</button>
+            <button class="small-btn" id="ui-btn-addimg" onclick="document.getElementById('canvasImageInput').click()">+ 이미지</button>
             <input type="file" id="canvasImageInput" accept="image/*" style="display:none;" onchange="addCanvasImage(event)">
             <button class="small-btn" onclick="undoCanvas()" title="되돌리기">↩ Undo (<span id="btn-key-undo">Ctrl+Z</span>)</button>
             <button class="small-btn" onclick="redoCanvas()" title="다시실행">↪ Redo (<span id="btn-key-redo">Ctrl+Y</span>)</button>
-            <button class="small-btn" onclick="clearCanvasDrawing()">초기화</button>
+            <button class="small-btn" id="ui-btn-clearcanvas" onclick="clearCanvasDrawing()">초기화</button>
           </div>
         </div>
         <div class="board-container" id="boardContainer">
@@ -403,7 +402,7 @@
           </div>
         </div>
         <div class="form-group" style="margin-top: 10px;">
-          <label>통합 스토리 서술 노트</label>
+          <label id="ui-label-boardtext">통합 스토리 서술 노트</label>
           <textarea id="boardStoryText" placeholder="아이디어나 전체 스토리 흐름을 자유롭게 정리하세요..." oninput="debounceAutoSave()"></textarea>
         </div>
       </section>
@@ -458,18 +457,18 @@
         <div style="margin-bottom: 6px;">
           <input type="text" id="usernameInput" value="User_01" style="font-weight: bold; font-size: 12px; text-align: center;" oninput="saveUserProfile(); triggerAutoSave();">
         </div>
-        <button type="button" class="profile-btn" onclick="document.getElementById('profileInput').click()">파일 선택</button>
+        <button type="button" class="profile-btn" id="ui-btn-selectfile" onclick="document.getElementById('profileInput').click()">파일 선택</button>
         <input type="file" id="profileInput" accept="image/*" style="display: none;" onchange="loadProfileImageFromFile(event)">
       </div>
 
       <div class="card">
         <div class="card-title">
-          <span>SETTINGS (명령어 설정)</span>
+          <span id="ui-title-settings">SETTINGS (명령어 설정)</span>
           <button type="button" class="card-title-btn" id="settingsToggleBtn" onclick="toggleSettingsCard()">열기</button>
         </div>
         <div id="settingsContent" class="collapsible-content collapsed">
           <div class="form-group" style="margin-top: 8px;">
-            <label>툴 버튼 명칭 변경 (Label)</label>
+            <label id="ui-label-toolnames">툴 버튼 명칭 변경 (Label)</label>
             <div class="tool-label-grid">
               <div>
                 <label style="font-weight:normal; font-size:10px;">이동</label>
@@ -491,7 +490,7 @@
           </div>
 
           <div class="form-group" style="border-top: 1px dashed var(--border-color); padding-top: 8px;">
-            <label>키보드 명령어 (단축키)</label>
+            <label id="ui-label-shortcuts">키보드 명령어 (단축키)</label>
             <div class="shortcut-grid">
               <div>
                 <label style="font-weight:normal; font-size:10px;">이동</label>
@@ -515,7 +514,7 @@
       </div>
 
       <div class="card">
-        <div class="card-title">RECENT HISTORY</div>
+        <div class="card-title" id="ui-title-history">RECENT HISTORY</div>
         <select id="historySelect" style="font-size: 11px;" onchange="loadSelectedHistory(this.value)">
           <option value="">-- 최근 생성 기록 --</option>
         </select>
@@ -529,8 +528,8 @@
       <div class="card">
         <div class="card-title">DATA MANAGEMENT</div>
         <div style="display: flex; flex-direction: column; gap: 6px;">
-          <button type="button" class="small-btn" style="width: 100%; height: 28px;" onclick="exportDataJSON()">JSON으로 데이터 저장</button>
-          <button type="button" class="small-btn" style="width: 100%; height: 28px;" onclick="document.getElementById('importJsonInput').click()">JSON 데이터 불러오기</button>
+          <button type="button" class="small-btn" id="ui-btn-exportjson" style="width: 100%; height: 28px;" onclick="exportDataJSON()">JSON으로 데이터 저장</button>
+          <button type="button" class="small-btn" id="ui-btn-importjson" style="width: 100%; height: 28px;" onclick="document.getElementById('importJsonInput').click()">JSON 데이터 불러오기</button>
           <input type="file" id="importJsonInput" accept=".json" style="display: none;" onchange="importDataJSON(event)">
         </div>
       </div>
@@ -568,6 +567,90 @@
   const ctx = canvas ? canvas.getContext('2d') : null;
   let canvasSnapshot = null;
 
+  // 다국어 i18n 번역 딕셔너리
+  const i18n = {
+    "한국어": {
+      tabHelper: "AI 세계관 도우미",
+      tabGuide: "사용 가이드",
+      btnClearChat: "대화 비우기",
+      btnSaveMd: "MD 저장",
+      aiWelcome: "안녕하세요! 세계관 아이디어 도우미입니다.<br>이미 짜둔 세계관 설정 글이 있다면 입력창에 붙여넣어주시고, 없다면 관심 가는 장르(액션, 일상, 다크판타지, 로맨스, 미스터리/스릴러, SF, 포스트아포칼립스)를 입력해주세요!",
+      labelLang: "언어:",
+      btnTxtUpload: "TXT 업로드",
+      placeholderPrompt: "메시지를 입력하세요... (Shift+Enter 줄바꿈, Enter 전송)",
+      btnSend: "전송",
+      btnRelation: "관계도 & 스토리 캔버스",
+      placeholderMemo: "간단한 메모를 기록하세요...",
+      btnExportJson: "JSON으로 데이터 저장",
+      btnImportJson: "JSON 데이터 불러오기",
+      selectFile: "파일 선택",
+      historyDefault: "-- 최근 생성 기록 --",
+      toastSave: "저장됨",
+      toastSaving: "저장 중...",
+      txtLoaded: "세계관 파일 내용이 입력창에 추가되었습니다."
+    },
+    "English": {
+      tabHelper: "AI World Helper",
+      tabGuide: "User Guide",
+      btnClearChat: "Clear Chat",
+      btnSaveMd: "Save MD",
+      aiWelcome: "Hello! I am your Worldbuilding Assistant.<br>If you already have world setting text, paste it into the input box. Otherwise, tell me your favorite genre (Action, Daily, Dark Fantasy, Romance, Thriller, SF, Post-Apocalypse)!",
+      labelLang: "Language:",
+      btnTxtUpload: "Upload TXT",
+      placeholderPrompt: "Type your message... (Shift+Enter for newline, Enter to send)",
+      btnSend: "Send",
+      btnRelation: "Relationship & Canvas",
+      placeholderMemo: "Write down quick notes...",
+      btnExportJson: "Export Data to JSON",
+      btnImportJson: "Import Data JSON",
+      selectFile: "Select File",
+      historyDefault: "-- Recent History --",
+      toastSave: "Saved",
+      toastSaving: "Saving...",
+      txtLoaded: "World file content loaded into input box."
+    },
+    "日本語": {
+      tabHelper: "AI世界観ヘルパー",
+      tabGuide: "利用ガイド",
+      btnClearChat: "会話をクリア",
+      btnSaveMd: "MD保存",
+      aiWelcome: "こんにちは！世界観アイデアヘルパーです。<br>すでに作成した世界観設定がある場合は入力欄に貼り付けてください。ない場合は興味のあるジャンル（アクション、日常、ダークファンタジー、ロマンス、ミステリー/スリラー、SF、ポストアポカリプス）を入力してください！",
+      labelLang: "言語:",
+      btnTxtUpload: "TXTアップロード",
+      placeholderPrompt: "メッセージを入力... (Shift+Enterで改行、Enterで送信)",
+      btnSend: "送信",
+      btnRelation: "相関図 & ストーリーキャンバス",
+      placeholderMemo: "簡単なメモを記録...",
+      btnExportJson: "JSONデータ保存",
+      btnImportJson: "JSONデータ読み込み",
+      selectFile: "ファイル選択",
+      historyDefault: "-- 最近の生成履歴 --",
+      toastSave: "保存済み",
+      toastSaving: "保存中...",
+      txtLoaded: "世界観ファイルの内容が入力欄に追加されました。"
+    },
+    "中文": {
+      tabHelper: "AI世界观助手",
+      tabGuide: "使用指南",
+      btnClearChat: "清空对话",
+      btnSaveMd: "保存为MD",
+      aiWelcome: "您好！我是世界观创意助手。<br>如果您已有构建好的世界观设定，请直接粘贴到输入框中；如果没有，请输入您感兴趣的流派（动作、日常、暗黑奇幻、言情、悬疑/惊悚、科幻、末日废土）！",
+      labelLang: "语言:",
+      btnTxtUpload: "上传TXT",
+      placeholderPrompt: "请输入消息... (Shift+Enter 换行，Enter 发送)",
+      btnSend: "发送",
+      btnRelation: "人物关系 & 故事画布",
+      placeholderMemo: "记录简短便签...",
+      btnExportJson: "导出JSON数据",
+      btnImportJson: "导入JSON数据",
+      selectFile: "选择文件",
+      historyDefault: "-- 最近生成记录 --",
+      toastSave: "已保存",
+      toastSaving: "保存中...",
+      txtLoaded: "世界观文件内容已加载至输入框。"
+    }
+  };
+
   window.addEventListener('DOMContentLoaded', () => {
     initCanvas();
     loadKeybindings();
@@ -587,16 +670,40 @@
     setTimeout(() => { toast.style.display = 'none'; }, 2000);
   }
 
+  function changeLanguage(lang) {
+    const dict = i18n[lang] || i18n["한국어"];
+    
+    // UI 주요 텍스트 다국어 변경
+    if (document.getElementById('tab-helper')) document.getElementById('tab-helper').innerText = dict.tabHelper;
+    if (document.getElementById('tab-guide')) document.getElementById('tab-guide').innerText = dict.tabGuide;
+    if (document.getElementById('ui-btn-clearchat')) document.getElementById('ui-btn-clearchat').innerText = dict.btnClearChat;
+    if (document.getElementById('ui-btn-savemd')) document.getElementById('ui-btn-savemd').innerText = dict.btnSaveMd;
+    if (document.getElementById('ui-label-lang')) document.getElementById('ui-label-lang').innerText = dict.labelLang;
+    if (document.getElementById('ui-btn-txtupload')) document.getElementById('ui-btn-txtupload').innerText = dict.btnTxtUpload;
+    if (document.getElementById('promptInput')) document.getElementById('promptInput').placeholder = dict.placeholderPrompt;
+    if (document.getElementById('btnSubmit')) document.getElementById('btnSubmit').innerText = dict.btnSend;
+    if (document.getElementById('relationSideBtn')) document.getElementById('relationSideBtn').innerText = dict.btnRelation;
+    if (document.getElementById('memoInput')) document.getElementById('memoInput').placeholder = dict.placeholderMemo;
+    if (document.getElementById('ui-btn-exportjson')) document.getElementById('ui-btn-exportjson').innerText = dict.btnExportJson;
+    if (document.getElementById('ui-btn-importjson')) document.getElementById('ui-btn-importjson').innerText = dict.btnImportJson;
+    if (document.getElementById('ui-btn-selectfile')) document.getElementById('ui-btn-selectfile').innerText = dict.selectFile;
+
+    triggerAutoSave();
+  }
+
   function triggerAutoSave() {
+    const lang = document.getElementById('languageSelect')?.value || "한국어";
+    const dict = i18n[lang] || i18n["한국어"];
     const badge = document.getElementById('saveBadge');
+    
     if (badge) {
-      badge.innerText = "저장 중...";
+      badge.innerText = dict.toastSaving;
       badge.style.color = "#ff0000";
     }
 
     const draftData = {
       prompt: document.getElementById('promptInput')?.value || "",
-      language: document.getElementById('languageSelect')?.value || "",
+      language: lang,
       memo: document.getElementById('memoInput')?.value || "",
       boardStoryText: document.getElementById('boardStoryText')?.value || ""
     };
@@ -609,7 +716,7 @@
 
     setTimeout(() => {
       if (badge) {
-        badge.innerText = "저장됨";
+        badge.innerText = dict.toastSave;
         badge.style.color = "var(--text-color)";
       }
     }, 500);
@@ -627,14 +734,18 @@
     if (saved) {
       try {
         const data = JSON.parse(saved);
+        if (data.language && document.getElementById('languageSelect')) {
+          document.getElementById('languageSelect').value = data.language;
+          changeLanguage(data.language);
+        }
         if (data.prompt !== undefined && document.getElementById('promptInput')) document.getElementById('promptInput').value = data.prompt;
-        if (data.language && document.getElementById('languageSelect')) document.getElementById('languageSelect').value = data.language;
         if (data.memo && document.getElementById('memoInput')) document.getElementById('memoInput').value = data.memo;
         if (data.boardStoryText && document.getElementById('boardStoryText')) document.getElementById('boardStoryText').value = data.boardStoryText;
       } catch (e) {}
     }
   }
 
+  // [수정 포인트 1]: TXT 업로드 시 덮어쓰기/덧붙이기 처리
   function loadWorldTxtFile(event) {
     const file = event.target.files[0];
     if (!file) return;
@@ -643,13 +754,26 @@
     reader.onload = function(e) {
       const content = e.target.result;
       const promptInput = document.getElementById('promptInput');
+      const lang = document.getElementById('languageSelect')?.value || "한국어";
+      const dict = i18n[lang] || i18n["한국어"];
+
       if (promptInput) {
-        promptInput.value = `[파일명: ${file.name}]\n${content}`;
+        // 기존 작성글이 있다면 덮어쓸지 확인
+        if (promptInput.value.trim().length > 0) {
+          if (confirm("기존 입력창의 내용을 새로 불러온 파일 내용으로 대체하시겠습니까? (취소 시 뒤에 연결됩니다)")) {
+            promptInput.value = `[${file.name}]\n${content}`;
+          } else {
+            promptInput.value += `\n\n[${file.name}]\n${content}`;
+          }
+        } else {
+          promptInput.value = `[${file.name}]\n${content}`;
+        }
         triggerAutoSave();
-        showToast("세계관 파일 내용이 입력창에 추가되었습니다.");
+        showToast(dict.txtLoaded);
       }
     };
     reader.readAsText(file, "UTF-8");
+    event.target.value = ''; // 동일 파일 재업로드 지원
   }
 
   function cleanOutputText(text) {
@@ -682,13 +806,16 @@
   }
 
   function clearChatMessages() {
+    const lang = document.getElementById('languageSelect')?.value || "한국어";
+    const dict = i18n[lang] || i18n["한국어"];
+
     if (confirm("대화 메시지를 모두 지우시겠습니까?")) {
       const chatContainer = document.getElementById('chatMessages');
       if (chatContainer) {
         chatContainer.innerHTML = `
           <div class="chat-msg ai">
             <span class="chat-sender">AI Helper</span>
-            <div class="chat-bubble markdown-body">대화 내용이 초기화되었습니다. 편하게 질문이나 세계관 설정을 남겨주세요!</div>
+            <div class="chat-bubble markdown-body">${dict.aiWelcome}</div>
           </div>`;
       }
     }
@@ -700,7 +827,6 @@
       generateContent();
     }
   }
-  /* ------------------------------------- */
 
   function saveToHistory(type, markdownContent) {
     let histories = [];
@@ -730,7 +856,10 @@
   function updateHistoryDropdown() {
     const select = document.getElementById('historySelect');
     if (!select) return;
-    select.innerHTML = '<option value="">-- 최근 생성 기록 --</option>';
+    const lang = document.getElementById('languageSelect')?.value || "한국어";
+    const dict = i18n[lang] || i18n["한국어"];
+
+    select.innerHTML = `<option value="">${dict.historyDefault}</option>`;
     
     const saved = localStorage.getItem('ai_result_history');
     if (saved) {
@@ -1344,14 +1473,16 @@
       showToast("입력문이 너무 길어 상위 4000자까지 축소되어 처리됩니다.");
     }
 
-    // 1. 유저 메시지를 화면 채팅장에 추가
+    // 1. 유저 메시지를 채팅창에 추가
     appendChatMessage(userName, rawPrompt, "user");
+    
+    // [수정 포인트 2]: 전송 시 입력 창 및 자동 저장 드래프트 초기화
     promptInput.value = "";
     triggerAutoSave();
 
     if (submitBtn) {
       submitBtn.disabled = true;
-      submitBtn.innerText = "생성중...";
+      submitBtn.innerText = "...";
     }
 
     // 2. AI 대기 메시지 생성
@@ -1362,29 +1493,25 @@
     loadingDiv.id = tempLoadingId;
     loadingDiv.innerHTML = `
       <span class="chat-sender">AI Helper</span>
-      <div class="chat-bubble">AI가 생성 중입니다...</div>
+      <div class="chat-bubble">AI is generating response...</div>
     `;
     chatContainer.appendChild(loadingDiv);
     chatContainer.scrollTop = chatContainer.scrollHeight;
 
-    const systemPersonaPrompt = `[시스템 지시문: 세계관 아이디어 도우미 페르소나]
-너는 지금부터 창작자들의 세계관 기반 글/그림 작업을 도와주는 "세계관 아이디어 도우미"야.
+    // [수정 포인트 3]: 글로벌/해외 유저 대응을 위한 강한 다국어 지시 프롬프트
+    const systemPersonaPrompt = `[System Instruction: Multilingual Worldbuilding Assistant]
+You are a friendly "Worldbuilding & Storytelling Helper AI" for creators.
 
-1. **초기 안내 및 의도 파악**:
-   - 사용자가 아직 세계관이나 장르를 지정하지 않았다면: "이미 짜둔 세계관 설정 글이 있다면 붙여넣어주시고, 없다면 아래 장르 중 관심 가는 걸 골라주세요"라고 물어보고, 장르 예시(액션·일상·다크판타지·로맨스·미스터리/스릴러·SF·포스트아포칼립스) 6가지와 "귀여운 그림체로 무서운 이야기를 그리고 싶다" 같은 "톤 반전" 옵션도 골라도 된다고 안내해줘.
-   - 장르를 고르는 쪽을 고르면: "1) 세계관은 이미 다 짜왔고 막힐 때만 도움이 필요하다, 2) 큰 틀만 있고 세부는 채워줬으면 한다, 3) 정말 아무것도 없어서 세계관 초안부터 필요하다" 중 개입 정도를 선택하게 한 후 조절해줘.
+[Language Constraint - CRITICAL]
+- You MUST write your entire response completely and fluently in target language: **${targetLanguage}**.
+- Respond directly in ${targetLanguage} regardless of the user's input language.
 
-2. **기존 세계관 존중**:
-   - 사용자가 이미 세계관 설정을 제공하면, 그 설정을 최대한 존중하며 틀 안에서만 아이디어를 제안해. 설정에 없는 새로운 요소(새 종족, 새 규칙 등)를 추가하려 할 때는 사용자에게 먼저 물어보고 진행해.
+[Interaction Guidelines]
+1. If the user provides an existing world setting/file, respect their lore and build ideas within that framework.
+2. Provide concise, creative keywords, situation prompts, or worldbuilding plot points.
+3. Keep a helpful and encouraging tone for writers and artists.`;
 
-3. **소재 제안 방식**:
-   - 사용자가 글/그림 소재나 아이디어를 요청하면: "운명, 열쇠"처럼 짧은 단어 2~3개 조합이나 "비가 내리던 날"처럼 짧은 상황을 묘사하는 문장형 주제를 던져주되, 절대로 특정 캐릭터나 인물 설정을 포함시키지 말고 순수하게 소재와 분위기만 제시해서 창작자가 직접 채울 수 있도록 여지를 남겨줘.
-
-4. **언어 제한**:
-   - 답변은 완벽하고 자연스러운 ${targetLanguage}로만 작성해.
-   - 타 언어나 시스템 코드(예: _EXTENSIONS 등)를 절대 출력하지 마.`;
-
-    const fullUserPrompt = `${systemPersonaPrompt}\n\n[사용자 입력/요청 내용]:\n${rawPrompt}`;
+    const fullUserPrompt = `${systemPersonaPrompt}\n\n[User Input]:\n${rawPrompt}`;
 
     const controller = new AbortController();
     const timeoutId = setTimeout(() => controller.abort(), 60000);
@@ -1402,7 +1529,7 @@
       clearTimeout(timeoutId);
 
       if (!response.ok) {
-        let errMessage = `서버 응답 오류 (코드: ${response.status})`;
+        let errMessage = `Server error code: ${response.status}`;
         try {
           const errData = await response.json();
           if (errData.error) errMessage = errData.error;
@@ -1413,33 +1540,33 @@
       const data = await response.json();
       
       if (!data.result) {
-        throw new Error("서버에서 빈 결과가 반환되었습니다.");
+        throw new Error("Empty response from server.");
       }
 
       rawMarkdownResult = cleanOutputText(data.result);
 
-      // 로딩 메시지 제거 후 AI의 실제 답변 출력
       const loadingEl = document.getElementById(tempLoadingId);
       if (loadingEl) loadingEl.remove();
 
       appendChatMessage("AI Helper", rawMarkdownResult, "ai");
-      saveToHistory("아이디어 대화", rawMarkdownResult);
+      saveToHistory("World Idea", rawMarkdownResult);
 
     } catch (error) {
-      console.error("오류 상세 내용:", error);
+      console.error("Error details:", error);
       let showErrMsg = error.message;
       if (error.name === 'AbortError') {
-        showErrMsg = "서버 응답 시간이 초과되었습니다 (60초 타임아웃). 입력 내용을 조금 줄여서 다시 시도해보세요.";
+        showErrMsg = "Request timed out (60s). Please shorten your input.";
       }
       
       const loadingEl = document.getElementById(tempLoadingId);
       if (loadingEl) {
-        loadingEl.querySelector('.chat-bubble').innerHTML = `<span style="color:red; font-weight:bold;">생성 실패: ${showErrMsg}</span>`;
+        loadingEl.querySelector('.chat-bubble').innerHTML = `<span style="color:red; font-weight:bold;">Error: ${showErrMsg}</span>`;
       }
     } finally {
       if (submitBtn) {
         submitBtn.disabled = false;
-        submitBtn.innerText = "전송";
+        const dict = i18n[targetLanguage] || i18n["한국어"];
+        submitBtn.innerText = dict.btnSend;
       }
     }
   }
