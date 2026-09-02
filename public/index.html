@@ -185,12 +185,12 @@
     .theme-selector-box { display: flex; align-items: center; gap: 6px; color: #ffffff; font-size: 11px; }
     .theme-selector-box select { padding: 3px 6px; font-size: 11px; border: 1px solid var(--border-color); background-color: var(--input-bg); color: var(--text-color); }
     
-    .tab-btn, .sub-tab-btn, button.primary-btn, .profile-btn, .board-tool-btn, .side-nav-btn, .small-btn, .preset-btn {
+    .tab-btn, .sub-tab-btn, button.primary-btn, .profile-btn, .board-tool-btn, .side-nav-btn, .small-btn {
       display: inline-flex; align-items: center; justify-content: center; height: 28px; padding: 0 10px;
       border: 1px solid var(--border-color); background: var(--card-bg); color: var(--text-color);
       font-size: 11px; font-weight: bold; cursor: pointer; outline: none; user-select: none; flex-shrink: 0;
     }
-    .tab-btn.active, .sub-tab-btn.active, .board-tool-btn.active, .side-nav-btn.active, .preset-btn.active { background: var(--accent-color); color: var(--accent-text); }
+    .tab-btn.active, .sub-tab-btn.active, .board-tool-btn.active, .side-nav-btn.active { background: var(--accent-color); color: var(--accent-text); }
     .side-nav-btn { width: 100%; height: 36px; font-size: 11px; border: 1px solid var(--border-color); }
     button.primary-btn, .profile-btn { width: 100%; }
 
@@ -219,10 +219,6 @@
     .chat-bubble { padding: 8px 12px; border: 1px solid var(--border-color); word-break: break-word; overflow-wrap: break-word; }
     .chat-msg.user .chat-bubble { background: var(--accent-color); color: var(--accent-text); border-radius: 8px 8px 0px 8px; }
     .chat-msg.ai .chat-bubble { background: var(--card-bg); color: var(--text-color); border-radius: 8px 8px 8px 0px; }
-
-    .preset-panel { background: var(--card-bg); border: 1px solid var(--border-color); padding: 6px; margin-bottom: 8px; font-size: 11px; display: flex; flex-direction: column; gap: 6px; }
-    .preset-row { display: flex; gap: 4px; align-items: center; flex-wrap: wrap; }
-    .preset-label { font-weight: bold; width: 65px; flex-shrink: 0; }
 
     .chat-input-wrapper { display: flex; flex-direction: column; gap: 6px; }
     .chat-options-bar { display: flex; justify-content: space-between; align-items: center; gap: 8px; font-size: 11px; flex-wrap: wrap; }
@@ -282,7 +278,7 @@
     </div>
     <div class="notice-body" id="noticeBody">
       <ol>
-        <li id="ui-notice-1"><strong>세계관 창작 도우미 v2.0 업데이트</strong> - 장르 선택, 톤 반전 및 개입도 설정 옵션 추가</li>
+        <li id="ui-notice-1"><strong>세계관 창작 도우미 v2.0 업데이트</strong> - 자유로운 채팅형 세계관 창작 지원</li>
         <li id="ui-notice-2">마크다운, 이모티콘(😊🚀✨), 특수문자 입력 지원 강화</li>
       </ol>
     </div>
@@ -331,31 +327,6 @@
             <div class="chat-bubble markdown-body" id="ui-ai-welcome">
               <!-- 안내사항 스크립트에서 자동 동적 삽입 -->
             </div>
-          </div>
-        </div>
-
-        <!-- 빠른 선택 옵션 패널 -->
-        <div class="preset-panel">
-          <div class="preset-row">
-            <span class="preset-label">장르 선택:</span>
-            <button type="button" class="preset-btn" onclick="toggleGenre('액션', this)">액션</button>
-            <button type="button" class="preset-btn" onclick="toggleGenre('일상', this)">일상</button>
-            <button type="button" class="preset-btn" onclick="toggleGenre('다크판타지', this)">다크판타지</button>
-            <button type="button" class="preset-btn" onclick="toggleGenre('로맨스', this)">로맨스</button>
-            <button type="button" class="preset-btn" onclick="toggleGenre('미스터리/스릴러', this)">미스터리/스릴러</button>
-            <button type="button" class="preset-btn" onclick="toggleGenre('SF', this)">SF</button>
-            <button type="button" class="preset-btn" onclick="toggleGenre('포스트아포칼립스', this)">포스트아포칼립스</button>
-          </div>
-          <div class="preset-row">
-            <span class="preset-label">개입 정도:</span>
-            <button type="button" class="preset-btn" onclick="selectIntervention('최소 개입', this)">최소 개입</button>
-            <button type="button" class="preset-btn" onclick="selectIntervention('세부 설정 제안', this)">세부 설정 제안</button>
-            <button type="button" class="preset-btn" onclick="selectIntervention('초안 제안', this)">초안 제안</button>
-          </div>
-          <div class="preset-row">
-            <span class="preset-label">톤 반전:</span>
-            <input type="checkbox" id="toneTwistCheck" onchange="toggleToneTwist(this.checked)">
-            <label for="toneTwistCheck" style="font-size: 11px; cursor: pointer;">"겉모습(톤)과 내용이 어긋나는 톤 반전 요소 포함 (예: 귀여운 그림체 + 스릴러 스토리)"</label>
           </div>
         </div>
 
@@ -431,8 +402,8 @@
           <h3>1. 안내말 및 추천 기능</h3>
           <p>안녕하세요! <strong>YOUR WORLD HELPER</strong>를 이용해 주셔서 감사합니다.</p>
           <ul>
-            <li><strong>초보자 추천 (세계관 초안 생성):</strong> 구체적인 아이디어가 없더라도 상단 패널에서 선호하는 장르(액션, 다크판타지, SF 등) 및 톤 반전 옵션, 개입도('초안 제안')를 선택해 AI에게 초안을 추천받으세요.</li>
-            <li><strong>창작자 추천 (맞춤 소재 제안):</strong> 이미 구상된 세계관 TXT 파일이나 설정글을 붙여넣으신 후 '최소 개입'이나 '세부 설정 제안' 옵션을 활용하세요.</li>
+            <li><strong>초보자 추천:</strong> 구체적인 아이디어가 없더라도 채팅창에 원하는 장르나 상상하는 소재를 자유롭게 적어 AI에게 초안을 요청해보세요.</li>
+            <li><strong>창작자 추천:</strong> 구상 중인 세계관 TXT 파일을 업로드하거나 채팅창에 직접 붙여넣어 피드백과 세부 설정을 제안받을 수 있습니다.</li>
           </ul>
 
           <h3>2. 마크다운 및 특수문자 표현 지원</h3>
@@ -553,10 +524,6 @@
   let canvasScale = 1.0;
   let rawMarkdownResult = "";
 
-  let selectedGenres = [];
-  let selectedInterventionMode = "";
-  let isToneTwistEnabled = false;
-
   let isDrawing = false;
   let lastX = 0, lastY = 0;
   let startX = 0, startY = 0;
@@ -573,25 +540,9 @@
   let canvasSnapshot = null;
 
   const WELCOME_NOTICE_TEXT = `안녕하세요! 창작자님의 글과 그림 작업을 도와드릴 세계관 아이디어 도우미입니다. 🎨✨
-이미 짜둔 세계관 설정 글이 있다면 이곳에 편하게 붙여넣어주시고, 없다면 아래 장르 중 관심 가는 걸 골라주세요.
 
-**[ 장르 목록 ]**
-* 액션
-* 일상
-* 다크판타지
-* 로맨스
-* 미스터리/스릴러
-* SF
-* 포스트아포칼립스
-
-*(💡 **TIP**: "귀여운 그림체로 무서운 이야기를 그리고 싶다"처럼 겉모습(톤)과 내용이 일부러 어긋나는 **'톤 반전'**도 원하신다면 장르와 함께 옵션을 체크해 주세요!)*
-
-만약 장르를 고르는 쪽을 선택하신다면, 도우미의 개입 정도를 조절하기 위해 아래 3가지 중 하나도 함께 골라주세요.
-* **최소 개입**: 세계관은 이미 다 짜왔고, 막힐 때만 가볍게 도움이 필요함
-* **세부 설정 제안**: 큰 틀만 있고, 캐릭터나 갈등 등 세부 요소를 채워주길 원함
-* **초안 제안**: 정말 아무것도 없어서 세계관 초안 자체부터 새로 잡아주길 원함
-
-준비되셨다면 설정 글을 붙여넣어 주시거나, 원하시는 장르와 진행 방식을 상단 옵션에서 선택해 주세요!`;
+원하시는 장르, 세계관 분위기, 인물 설정, 연출 방식(예: 톤 반전 등)을 아래 채팅창에 자유롭게 작성해 주세요. 
+기존에 작성해 두신 세계관 설정 TXT 파일이 있다면 업로드하여 이어서 창작하실 수도 있습니다.`;
 
   // 다국어 i18n 번역 딕셔너리
   const i18n = {
@@ -650,7 +601,7 @@
       btnExportJson: "JSONデータ保存",
       btnImportJson: "JSONデータ読み込み",
       selectFile: "ファイル選択",
-      historyDefault: "-- 最近の生成履歴 --",
+      historyDefault: "-- 최근 생성 기록 --",
       toastSave: "保存済み",
       toastSaving: "保存中...",
       txtLoaded: "世界観ファイルの内容が入力欄に追加されました。"
@@ -712,38 +663,6 @@
     setTimeout(() => { toast.style.display = 'none'; }, 2000);
   }
 
-  function toggleGenre(genre, btn) {
-    const idx = selectedGenres.indexOf(genre);
-    if (idx > -1) {
-      selectedGenres.splice(idx, 1);
-      btn.classList.remove('active');
-    } else {
-      selectedGenres.push(genre);
-      btn.classList.add('active');
-    }
-    triggerAutoSave();
-  }
-
-  function selectIntervention(mode, btn) {
-    document.querySelectorAll('.preset-row button').forEach(b => {
-      if (['최소 개입', '세부 설정 제안', '초안 제안'].includes(b.innerText)) {
-        b.classList.remove('active');
-      }
-    });
-    if (selectedInterventionMode === mode) {
-      selectedInterventionMode = "";
-    } else {
-      selectedInterventionMode = mode;
-      btn.classList.add('active');
-    }
-    triggerAutoSave();
-  }
-
-  function toggleToneTwist(checked) {
-    isToneTwistEnabled = checked;
-    triggerAutoSave();
-  }
-
   function changeLanguage(lang) {
     const dict = i18n[lang] || i18n["한국어"];
     
@@ -778,10 +697,7 @@
       prompt: document.getElementById('promptInput')?.value || "",
       language: lang,
       memo: document.getElementById('memoInput')?.value || "",
-      boardStoryText: document.getElementById('boardStoryText')?.value || "",
-      selectedGenres: selectedGenres,
-      selectedInterventionMode: selectedInterventionMode,
-      isToneTwistEnabled: isToneTwistEnabled
+      boardStoryText: document.getElementById('boardStoryText')?.value || ""
     };
 
     try {
@@ -817,24 +733,6 @@
         if (data.prompt !== undefined && document.getElementById('promptInput')) document.getElementById('promptInput').value = data.prompt;
         if (data.memo && document.getElementById('memoInput')) document.getElementById('memoInput').value = data.memo;
         if (data.boardStoryText && document.getElementById('boardStoryText')) document.getElementById('boardStoryText').value = data.boardStoryText;
-        
-        if (data.selectedGenres) {
-          selectedGenres = data.selectedGenres;
-          document.querySelectorAll('.preset-row button').forEach(btn => {
-            if (selectedGenres.includes(btn.innerText)) btn.classList.add('active');
-          });
-        }
-        if (data.selectedInterventionMode) {
-          selectedInterventionMode = data.selectedInterventionMode;
-          document.querySelectorAll('.preset-row button').forEach(btn => {
-            if (btn.innerText === selectedInterventionMode) btn.classList.add('active');
-          });
-        }
-        if (data.isToneTwistEnabled) {
-          isToneTwistEnabled = data.isToneTwistEnabled;
-          const check = document.getElementById('toneTwistCheck');
-          if (check) check.checked = isToneTwistEnabled;
-        }
       } catch (e) {}
     }
   }
@@ -1543,16 +1441,9 @@
   }
 
   // 서버 통신 및 로컬 백업 Mock 응답 생성기
-  function generateMockResponse(prompt, genres, mode, isTwist, lang) {
-    const genreStr = genres.length > 0 ? genres.join(', ') : '기본 창작';
-    const twistStr = isTwist ? "⚠️ **[톤 반전 연출 적용]** (귀여운 visual/톤 ↔ 반전 서사/스릴러 요소 결합)\n" : "";
-    const modeStr = mode || "맞춤 창작 지원";
-
+  function generateMockResponse(prompt, lang) {
     return `### 🔮 AI 세계관 아이디어 기획서
 
-${twistStr}
-* **선택 장르:** ${genreStr}
-* **개입 모드:** ${modeStr}
 * **타겟 언어:** ${lang}
 
 ---
@@ -1560,7 +1451,7 @@ ${twistStr}
 #### 1. 🌟 핵심 컨셉 (Core Concept)
 > "${prompt.substring(0, 80)}..." 질문을 바탕으로 한 맞춤 세계관 구조입니다.
 
-* **메인 무대:** 비현실과 일상이 교차하는 하이브리드 디스토피아/도시
+* **메인 무대:** 비현실과 일상이 교차하는 하이브리드 공간
 * **핵심 규칙:** 세계의 표면적 평화 뒤에는 숨겨진 법칙(Rule)이 작동 중
 * **갈등 축:** 기존 질서를 유지하려는 세력 vs 비밀을 파헤치려는 창작 주체
 
@@ -1585,8 +1476,8 @@ ${twistStr}
     const targetLanguage = document.getElementById('languageSelect')?.value || "한국어";
     const userName = localStorage.getItem('user_profile_name') || 'User_01';
 
-    if (!rawPrompt && selectedGenres.length === 0 && !selectedInterventionMode) {
-      alert("세계관 설정 글이나 메시지를 입력하거나, 상단 장르/개입 옵션을 선택해 주세요!");
+    if (!rawPrompt) {
+      alert("세계관 설정 글이나 메시지를 입력해 주세요!");
       return;
     }
 
@@ -1596,18 +1487,7 @@ ${twistStr}
       showToast("입력문이 너무 길어 상위 4000자까지 축소되어 처리됩니다.");
     }
 
-    // 유저 메시지 가공 및 출력
-    let userDisplayMsg = rawPrompt;
-    let metaTags = [];
-    if (selectedGenres.length > 0) metaTags.push(`장르: ${selectedGenres.join(', ')}`);
-    if (selectedInterventionMode) metaTags.push(`개입도: ${selectedInterventionMode}`);
-    if (isToneTwistEnabled) metaTags.push(`톤 반전 포함`);
-
-    if (metaTags.length > 0) {
-      userDisplayMsg = `[${metaTags.join(' | ')}]\n${rawPrompt}`;
-    }
-
-    appendChatMessage(userName, userDisplayMsg, "user");
+    appendChatMessage(userName, rawPrompt, "user");
     
     promptInput.value = "";
     triggerAutoSave();
@@ -1631,9 +1511,6 @@ ${twistStr}
 
     const systemPersonaPrompt = `[System Instruction: Multilingual Worldbuilding Assistant]
 You are a friendly "Worldbuilding & Storytelling Helper AI" for creators.
-Selected Genres: ${selectedGenres.join(', ')}
-Intervention Level: ${selectedInterventionMode}
-Tone Twist: ${isToneTwistEnabled ? "Yes" : "No"}
 
 [Language Constraint - CRITICAL]
 - Write your entire response completely and fluently in target language: ${targetLanguage}.`;
@@ -1668,7 +1545,7 @@ Tone Twist: ${isToneTwistEnabled ? "Yes" : "No"}
       // 서버 연결이 없는 독립 실행 환경일 경우 내장 로컬 엔진 사용
       if (!resultMarkdown) {
         await new Promise(resolve => setTimeout(resolve, 800)); // 자연스러운 연출
-        resultMarkdown = generateMockResponse(rawPrompt || "새로운 세계관 요청", selectedGenres, selectedInterventionMode, isToneTwistEnabled, targetLanguage);
+        resultMarkdown = generateMockResponse(rawPrompt, targetLanguage);
       }
 
       rawMarkdownResult = cleanOutputText(resultMarkdown);
