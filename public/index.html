@@ -276,7 +276,7 @@
     </div>
     <div class="notice-body" id="noticeBody">
       <ol>
-        <li id="ui-notice-1"><strong>세계관 창작 도우미 v2.0 업데이트</strong> - 자유로운 채팅형 세계관 창작 지원 및 개입도 설정 안내 추가</li>
+        <li id="ui-notice-1"><strong>세계관 창작 도우미 v2.0 업데이트</strong> - 자유로운 채팅형 세계관 창작 지원 및 개입도 설정 가능</li>
         <li id="ui-notice-2">마크다운 전용 출력 모드 적용 (이모티콘 미사용)</li>
       </ol>
     </div>
@@ -336,10 +336,6 @@
                 <option value="中文">中文</option>
               </select>
             </div>
-            <div>
-              <button type="button" class="small-btn" id="ui-btn-txtupload" onclick="document.getElementById('worldFileInput').click()">TXT 업로드</button>
-              <input type="file" id="worldFileInput" accept=".txt" style="display:none;" onchange="loadWorldTxtFile(event)">
-            </div>
           </div>
 
           <div class="chat-input-box">
@@ -397,7 +393,7 @@
           <p>안녕하세요. <strong>YOUR WORLD HELPER</strong>를 이용해 주셔서 감사합니다.</p>
           <ul>
             <li><strong>초보자 추천:</strong> 구체적인 아이디어가 없더라도 채팅창에 원하는 장르나 상상하는 소재를 자유롭게 적어 AI에게 초안을 요청해보세요.</li>
-            <li><strong>창작자 추천:</strong> 구상 중인 세계관 TXT 파일을 업로드하거나 채팅창에 직접 붙여넣어 피드백과 세부 설정을 제안받을 수 있습니다.</li>
+            <li><strong>창작자 추천:</strong> 구상 중인 세계관 내용을 직접 붙여넣어 피드백과 세부 설정을 제안받을 수 있습니다.</li>
             <li><strong>작업 스타일/개입 방식 지정:</strong> AI의 개입 수준(최소 개입/피드백 중심/주도적 자동 생성 등)을 요청 시 함께 적어주시면 사용자의 창작 스타일에 딱 맞춰 답변합니다.</li>
           </ul>
 
@@ -536,11 +532,10 @@
 
   const WELCOME_NOTICE_TEXT = `안녕하세요. 창작자님의 글과 그림 작업을 도와드릴 세계관 아이디어 도우미입니다.
 
-원하시는 장르, 세계관 분위기, 인물 설정, 연출 방식(예: 톤 반전 등)을 아래 채팅창에 자유롭게 작성해 주세요. 
-기존에 작성해 두신 세계관 설정 TXT 파일이 있다면 업로드하여 이어서 창작하실 수도 있습니다.
+원하시는 장르, 세계관 분위기, 인물 설정, 연출 방식(예: 톤 반전 등)을 아래 채팅창에 자유롭게 작성해 주세요.
 
 **작업 스타일 지정 가능:**
-* **최소 개입:** AI의 개입을 줄이고 질문이나 방향성 제안 위주로 답변
+* **최소 개입:** AI의 개입을 줄이고 간단한 질문이나 핵심 정리 위주로 답변
 * **피드백 & 보완:** 작성한 설정을 바탕으로 빈틈 채우기 및 매끄럽게 정리
 * **주도적 생성:** 제시한 키워드로 AI가 적극적으로 세계관 확장하기
 
@@ -554,7 +549,6 @@
       btnSaveMd: "MD 저장",
       aiWelcome: WELCOME_NOTICE_TEXT,
       labelLang: "언어:",
-      btnTxtUpload: "TXT 업로드",
       placeholderPrompt: "메시지나 세계관 설정을 입력하세요... (Shift+Enter 줄바꿈, Enter 전송)",
       btnSend: "전송",
       btnRelation: "관계도 & 스토리 캔버스",
@@ -564,8 +558,7 @@
       selectFile: "파일 선택",
       historyDefault: "-- 최근 생성 기록 --",
       toastSave: "저장됨",
-      toastSaving: "저장 중...",
-      txtLoaded: "세계관 파일 내용이 입력창에 추가되었습니다."
+      toastSaving: "저장 중..."
     },
     "English": {
       tabHelper: "AI World Helper",
@@ -574,7 +567,6 @@
       btnSaveMd: "Save MD",
       aiWelcome: WELCOME_NOTICE_TEXT,
       labelLang: "Language:",
-      btnTxtUpload: "Upload TXT",
       placeholderPrompt: "Type message or world settings... (Shift+Enter for newline, Enter to send)",
       btnSend: "Send",
       btnRelation: "Relationship & Canvas",
@@ -584,8 +576,7 @@
       selectFile: "Select File",
       historyDefault: "-- Recent History --",
       toastSave: "Saved",
-      toastSaving: "Saving...",
-      txtLoaded: "World file content loaded into input box."
+      toastSaving: "Saving..."
     },
     "日本語": {
       tabHelper: "AI世界観ヘルパー",
@@ -594,7 +585,6 @@
       btnSaveMd: "MD保存",
       aiWelcome: WELCOME_NOTICE_TEXT,
       labelLang: "言語:",
-      btnTxtUpload: "TXTアップロード",
       placeholderPrompt: "メッセージを入力... (Shift+Enterで改行、Enterで送信)",
       btnSend: "送信",
       btnRelation: "相関図 & ストーリーキャンバス",
@@ -604,8 +594,7 @@
       selectFile: "ファイル選択",
       historyDefault: "-- 최근 생성 기록 --",
       toastSave: "保存済み",
-      toastSaving: "保存中...",
-      txtLoaded: "世界観ファイルの内容が入力欄に追加されました。"
+      toastSaving: "保存中..."
     },
     "中文": {
       tabHelper: "AI世界观助手",
@@ -614,7 +603,6 @@
       btnSaveMd: "保存为MD",
       aiWelcome: WELCOME_NOTICE_TEXT,
       labelLang: "语言:",
-      btnTxtUpload: "上传TXT",
       placeholderPrompt: "请输入消息... (Shift+Enter 换行，Enter 发送)",
       btnSend: "发送",
       btnRelation: "人物关系 & 故事画布",
@@ -624,8 +612,7 @@
       selectFile: "选择文件",
       historyDefault: "-- 최근 생성 기록 --",
       toastSave: "已保存",
-      toastSaving: "保存中...",
-      txtLoaded: "世界观文件内容已加载至输入框。"
+      toastSaving: "保存中..."
     }
   };
 
@@ -671,7 +658,6 @@
     if (document.getElementById('ui-btn-clearchat')) document.getElementById('ui-btn-clearchat').innerText = dict.btnClearChat;
     if (document.getElementById('ui-btn-savemd')) document.getElementById('ui-btn-savemd').innerText = dict.btnSaveMd;
     if (document.getElementById('ui-label-lang')) document.getElementById('ui-label-lang').innerText = dict.labelLang;
-    if (document.getElementById('ui-btn-txtupload')) document.getElementById('ui-btn-txtupload').innerText = dict.btnTxtUpload;
     if (document.getElementById('promptInput')) document.getElementById('promptInput').placeholder = dict.placeholderPrompt;
     if (document.getElementById('btnSubmit')) document.getElementById('btnSubmit').innerText = dict.btnSend;
     if (document.getElementById('relationSideBtn')) document.getElementById('relationSideBtn').innerText = dict.btnRelation;
@@ -737,39 +723,10 @@
     }
   }
 
-  function loadWorldTxtFile(event) {
-    const file = event.target.files[0];
-    if (!file) return;
-
-    const reader = new FileReader();
-    reader.onload = function(e) {
-      const content = e.target.result;
-      const promptInput = document.getElementById('promptInput');
-      const lang = document.getElementById('languageSelect')?.value || "한국어";
-      const dict = i18n[lang] || i18n["한국어"];
-
-      if (promptInput) {
-        if (promptInput.value.trim().length > 0) {
-          if (confirm("기존 입력창의 내용을 새로 불러온 파일 내용으로 대체하시겠습니까? (취소 시 뒤에 연결됩니다)")) {
-            promptInput.value = `[${file.name}]\n${content}`;
-          } else {
-            promptInput.value += `\n\n[${file.name}]\n${content}`;
-          }
-        } else {
-          promptInput.value = `[${file.name}]\n${content}`;
-        }
-        triggerAutoSave();
-        showToast(dict.txtLoaded);
-      }
-    };
-    reader.readAsText(file, "UTF-8");
-    event.target.value = '';
-  }
-
-  // 시스템 태그 및 이모티콘 제거 정규식 필터
   function cleanOutputText(text) {
-    if (!text) return "";
-    return text
+    if (text === null || text === undefined) return "";
+    let str = String(text);
+    return str
       .replace(/_EXTENSIONS/g, "")
       .replace(/_SYSTEM/g, "")
       .replace(/_INSTRUCTION/g, "")
@@ -785,7 +742,8 @@
     const msgDiv = document.createElement('div');
     msgDiv.className = `chat-msg ${type}`;
 
-    const parsedContent = (type === 'ai' && window.marked) ? marked.parse(content) : content.replace(/\n/g, '<br>');
+    const safeContent = content || "";
+    const parsedContent = (type === 'ai' && window.marked) ? marked.parse(safeContent) : safeContent.replace(/\n/g, '<br>');
 
     msgDiv.innerHTML = `
       <span class="chat-sender">${sender}</span>
@@ -837,7 +795,7 @@
     try {
       localStorage.setItem('ai_result_history', JSON.stringify(histories));
     } catch(e) {
-      console.warn("히스토리 저장 실패(용량 부족):", e);
+      console.warn("히스토리 저장 실패:", e);
     }
     updateHistoryDropdown();
   }
@@ -1443,30 +1401,60 @@
   }
 
   function generateMockResponse(prompt, lang) {
-    return `### AI 세계관 아이디어 기획서
+    const safePrompt = prompt || "";
+    const isMinimal = safePrompt.includes("최소개입") || safePrompt.includes("최소 개입");
+    const isProactive = safePrompt.includes("주도적") || safePrompt.includes("자동 생성");
+    const cleanPrompt = safePrompt.length > 50 ? safePrompt.substring(0, 50) + "..." : safePrompt;
 
-* **타겟 언어:** ${lang}
+    if (isMinimal) {
+      return `### 요청 사항 확인 및 최소 개입 검토
+
+작성해 주신 내용을 바탕으로 최소한의 가이드라인과 핵심 피드백만 정리해 드립니다.
+
+* **입력 핵심 요약:** "${cleanPrompt}"
+* **기본 검토:** 제출하신 설정의 개연성과 흐름이 전반적으로 양호합니다.
+* **핵심 질문 및 체크 포인트:**
+  1. 인물의 핵심 행동 동기가 조금 더 구체적이면 스토리가 더 선명해집니다.
+  2. 사건의 전개 속도 및 배경 전환 시점의 완급을 고려해 보세요.`;
+    }
+
+    if (isProactive) {
+      return `### 적극적 세계관 확장 및 플롯 제안
+
+제시해주신 키워드와 설정을 바탕으로 확장된 세계관 구상을 제안해 드립니다.
 
 ---
 
-#### 1. 핵심 컨셉 (Core Concept)
-> "${prompt.substring(0, 80)}..." 질문을 바탕으로 한 맞춤 세계관 구조입니다.
+#### 1. 심화 배경 및 세부 설정
+* **기본 모티프:** ${cleanPrompt}
+* **확장 세계관 규칙:** 세력 간 비공개 협약 또는 특정 자원의 제한된 이용 가능성 추가
 
-* **메인 무대:** 비현실과 일상이 교차하는 하이브리드 공간
-* **핵심 규칙:** 세계의 표면적 평화 뒤에는 숨겨진 법칙(Rule)이 작동 중
-* **갈등 축:** 기존 질서를 유지하려는 세력 vs 비밀을 파헤치려는 창작 주체
+#### 2. 주요 연출 및 심화 스토리 구성
+1. **갈등의 발단:** 숨겨진 진실이 밝혀지면서 기존 관계가 변하는 톤 전환
+2. **복선 제시:** 주변 인물들의 은밀한 대화나 전조 현상을 통한 복선 배치
 
-#### 2. 주요 캐릭터 & 갈등 요소
-1. **주인공 (Protagonist):**
-   * *특징:* 평범해 보이지만 세계관의 금기를 깨뜨릴 열쇠를 쥐고 있음.
-   * *동기:* 잃어버린 기억이나 핵심 인물의 진실을 찾기 위함.
-2. **대립자/조력자 (Antagonist / Helper):**
-   * *특징:* 겉으로는 다정하나 목적을 위해 수단을 가리지 않는 미스터리 인물.
+#### 3. 추천 작업
+* 확정된 인물 간 관계 구도는 우측 **'관계도 & 스토리 캔버스'**에 시각화해 두는 것을 추천합니다.`;
+    }
 
-#### 3. 추천 스토리 플롯 키워드
-* \`#비밀결사\` \`#반전복선\` \`#세계관의_이중성\` \`#운명의_선택\`
+    return `### 세계관 분석 및 피드백 리포트
 
-*(Tip: 생성된 아이디어를 오른쪽 **'관계도 & 스토리 캔버스'**에 옮겨 노드로 시각화해보세요!)*`;
+작성해 주신 세계관 설정을 기반으로 정리한 구성안입니다.
+
+---
+
+#### 1. 주요 개요
+* **입력 내용:** ${cleanPrompt}
+* **설정 분석:** 독창적인 소재와 세계관 구성 요소가 잘 들어맞아 있습니다.
+
+#### 2. 세부 피드백 및 보완점
+1. **세계관 구성:**
+   * 배경의 분위기와 설정상의 규칙이 일관되게 유지되고 있습니다.
+2. **캐릭터 & 관계:**
+   * 인물 간의 대립 구조나 조력 관계를 시각적으로 가시화하면 더욱 명확해집니다.
+
+#### 3. 추가 제안 사항
+* 세부 플롯 및 관련 설정 카드는 우측 **'관계도 & 스토리 캔버스'**에 배치하여 정리하는 것을 권장합니다.`;
   }
 
   async function generateContent() {
@@ -1510,16 +1498,13 @@
     chatContainer.appendChild(loadingDiv);
     chatContainer.scrollTop = chatContainer.scrollHeight;
 
-    // 이모티콘 금지 및 마크다운 전용 출력 강제 시스템 지시어
-    const systemPersonaPrompt = `[System Instruction: Multilingual Worldbuilding Assistant]
-You are a friendly "Worldbuilding & Storytelling Helper AI" for creators.
+    const fullUserPrompt = `[System Instruction]
+You are a friendly Worldbuilding Assistant AI.
+Answer strictly in target language: ${targetLanguage}.
+Do NOT use any emojis or emoticons. Use clean Markdown only.
 
-[Output Format Rules - STRICT]
-1. DO NOT use any emojis, emoticons, or unicode symbols under any circumstances.
-2. Use ONLY Markdown syntax (headers, bold, lists, code blocks, tables, blockquotes).
-3. Write your entire response completely and fluently in target language: ${targetLanguage}.`;
-
-    const fullUserPrompt = `${systemPersonaPrompt}\n\n[User Input]:\n${rawPrompt}`;
+[User Request]
+${rawPrompt}`;
 
     const controller = new AbortController();
     const timeoutId = setTimeout(() => controller.abort(), 60000);
@@ -1537,16 +1522,18 @@ You are a friendly "Worldbuilding & Storytelling Helper AI" for creators.
 
         clearTimeout(timeoutId);
 
-        if (response.ok) {
+        if (response && response.ok) {
           const data = await response.json();
-          if (data.result) resultMarkdown = data.result;
+          if (data && data.result) {
+            resultMarkdown = data.result;
+          }
         }
       } catch (e) {
-        console.warn("서버 API 미연결 또는 네트워크 오프라인. 클라이언트 내장 생성 엔진으로 전환합니다.");
+        console.warn("서버 API 미연결 또는 네트워크 오프라인. 로컬 응답 모드로 처리합니다.");
       }
 
       if (!resultMarkdown) {
-        await new Promise(resolve => setTimeout(resolve, 800));
+        await new Promise(resolve => setTimeout(resolve, 300));
         resultMarkdown = generateMockResponse(rawPrompt, targetLanguage);
       }
 
