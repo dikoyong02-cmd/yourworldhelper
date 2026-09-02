@@ -169,7 +169,7 @@
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Tahoma', 'Dotum', '굴림', sans-serif; }
     html, body { width: 100%; overflow-x: hidden; }
     body { background-color: var(--bg-color); color: var(--text-color); padding: 15px; touch-action: manipulation; }
-    .container { max-width: 1000px; width: 100%; margin: 0 auto; background: var(--card-bg); border: 2px solid var(--border-color); padding: 10px; box-shadow: 4px 4px 0px #000000; position: relative; overflow: hidden; }
+    .container { max-width: 1200px; width: 100%; margin: 0 auto; background: var(--card-bg); border: 2px solid var(--border-color); padding: 10px; box-shadow: 4px 4px 0px #000000; position: relative; overflow: hidden; }
     
     .save-badge { position: absolute; top: 12px; right: 15px; font-size: 10px; padding: 2px 6px; background: var(--input-bg); border: 1px solid var(--border-color); font-weight: bold; }
 
@@ -196,7 +196,22 @@
 
     .tab-container { display: flex; gap: 4px; margin-bottom: 8px; overflow-x: auto; padding-bottom: 4px; -webkit-overflow-scrolling: touch; }
     
-    main { display: grid; grid-template-columns: 1fr 260px; gap: 12px; width: 100%; }
+    main { display: grid; grid-template-columns: 220px 1fr 240px; gap: 12px; width: 100%; }
+    
+    /* 레트로 패널 및 채팅 목록 전용 스타일 */
+    .chat-sidebar { display: flex; flex-direction: column; gap: 10px; }
+    .new-chat-btn { background: var(--accent-color); color: var(--accent-text); border: 1px solid var(--border-color); font-weight: bold; cursor: pointer; height: 32px; width: 100%; font-size: 11px; text-align: left; padding: 0 8px; display: flex; align-items: center; gap: 6px; }
+    .chat-list-container { border: 1px solid var(--border-color); background: var(--input-bg); max-height: 400px; overflow-y: auto; display: flex; flex-direction: column; gap: 2px; padding: 4px; }
+    .chat-item { font-size: 11px; padding: 8px 6px; border: 1px solid transparent; cursor: pointer; display: flex; justify-content: space-between; align-items: center; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; user-select: none; -webkit-user-select: none; }
+    .chat-item:hover { background: var(--card-sub-bg); border-color: var(--border-color); }
+    .chat-item.active { background: var(--accent-color); color: var(--accent-text); font-weight: bold; }
+    .chat-item-title { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; width: 100%; }
+    
+    /* 컨텍스트 메뉴 스타일 */
+    .context-menu { display: none; position: fixed; z-index: 10000; background: var(--card-bg); border: 1px solid var(--border-color); box-shadow: 2px 2px 0px #000; min-width: 100px; }
+    .context-menu-item { padding: 6px 10px; font-size: 11px; cursor: pointer; color: var(--text-color); font-weight: bold; }
+    .context-menu-item:hover { background: var(--accent-color); color: var(--accent-text); }
+
     .content-area { display: flex; flex-direction: column; gap: 12px; min-width: 0; }
     .card { border: 1px solid var(--border-color); background: var(--card-sub-bg); padding: 12px; width: 100%; box-sizing: border-box; }
     .card-title { font-size: 12px; font-weight: bold; margin-bottom: 10px; background: var(--accent-color); color: var(--accent-text); padding: 4px 8px; border: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 4px; }
@@ -259,12 +274,17 @@
     .toast { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); background: var(--window-title-bg); color: #fff; padding: 6px 12px; border: 1px solid #000; font-size: 11px; z-index: 9999; display: none; }
 
     footer { margin-top: 15px; border-top: 1px solid var(--border-color); padding-top: 8px; text-align: center; font-size: 11px; color: var(--footer-text); }
-    @media (max-width: 768px) { main { grid-template-columns: 1fr; } }
+    @media (max-width: 900px) { main { grid-template-columns: 1fr; } }
   </style>
 </head>
 <body data-theme="classic-win">
 
 <div class="toast" id="toastMsg">알림</div>
+
+<div class="context-menu" id="chatContextMenu">
+  <div class="context-menu-item" onclick="renameCurrentChat()">이름 변경</div>
+  <div class="context-menu-item" onclick="deleteCurrentChat()">삭제</div>
+</div>
 
 <div class="container">
   <span class="save-badge" id="saveBadge">저장됨</span>
@@ -307,10 +327,20 @@
   </div>
 
   <main>
+    <div class="chat-sidebar">
+      <button class="new-chat-btn" onclick="createNewChat()">✏️ 새 채팅</button>
+      <div class="card" style="padding: 6px;">
+        <div class="card-title" style="margin-bottom: 6px;">RECENT CHATS</div>
+        <div class="chat-list-container" id="chatListContainer">
+          <!-- 채팅 목록이 자바스크립트로 자동 생성됩니다. -->
+        </div>
+      </div>
+    </div>
+
     <div class="content-area">
       <section class="chat-card" id="chatSection">
         <div class="card-title">
-          <span>AI WORLD HELPER CHAT</span>
+          <span id="currentChatTitleDisplay">AI WORLD HELPER CHAT</span>
           <div>
             <button type="button" class="card-title-btn" id="ui-btn-clearchat" onclick="clearChatMessages()">대화 비우기</button>
             <button type="button" class="card-title-btn" id="ui-btn-savemd" onclick="downloadResultMD()">MD 저장</button>
@@ -528,8 +558,10 @@
   let canvasScale = 1.0;
   let rawMarkdownResult = "";
 
-  // AI 대화 맥락 기억용 컨텍스트 배열
-  let chatHistory = [];
+  // 다중 채팅 상태 관리 구조
+  let chatSessions = [];
+  let currentChatId = null;
+  let targetContextMenuChatId = null;
 
   let isDrawing = false;
   let lastX = 0, lastY = 0;
@@ -649,11 +681,183 @@
     loadSavedTheme();
     loadSavedLabels();
     loadUserProfile();
+    initChatSessions();
     loadDraftInputs();
     updateHistoryDropdown();
-    renderWelcomeMessage();
     window.addEventListener('keydown', handleGlobalShortcuts);
+
+    // 글로벌 클릭 시 메뉴 닫기
+    document.addEventListener('click', () => {
+      const menu = document.getElementById('chatContextMenu');
+      if (menu) menu.style.display = 'none';
+    });
   });
+
+  // 다중 채팅 로직 구현
+  function initChatSessions() {
+    const saved = localStorage.getItem('chat_sessions_data');
+    if (saved) {
+      try {
+        chatSessions = JSON.parse(saved);
+      } catch(e) { chatSessions = []; }
+    }
+
+    if (!Array.isArray(chatSessions) || chatSessions.length === 0) {
+      const defaultId = "chat_" + Date.now();
+      chatSessions = [{
+        id: defaultId,
+        title: "세계관 아이디어 도우미",
+        history: [],
+        messagesHtml: `<div class="chat-msg ai"><span class="chat-sender">AI Helper</span><div class="chat-bubble markdown-body" id="ui-ai-welcome"></div></div>`
+      }];
+      currentChatId = defaultId;
+    } else {
+      currentChatId = chatSessions[0].id;
+    }
+
+    renderChatList();
+    loadChatSession(currentChatId);
+  }
+
+  function renderChatList() {
+    const listContainer = document.getElementById('chatListContainer');
+    if (!listContainer) return;
+    listContainer.innerHTML = "";
+
+    chatSessions.forEach(session => {
+      const item = document.createElement('div');
+      item.className = `chat-item ${session.id === currentChatId ? 'active' : ''}`;
+      
+      const titleSpan = document.createElement('span');
+      titleSpan.className = 'chat-item-title';
+      titleSpan.innerText = session.title;
+      item.appendChild(titleSpan);
+
+      // 일반 클릭: 세션 전환
+      item.onclick = () => switchChatSession(session.id);
+
+      // 우클릭 및 꾹 누르기(Long Press) 이벤트 처리
+      let pressTimer;
+
+      item.oncontextmenu = (e) => {
+        e.preventDefault();
+        showContextMenu(e.clientX, e.clientY, session.id);
+      };
+
+      item.ontouchstart = (e) => {
+        pressTimer = setTimeout(() => {
+          const touch = e.touches[0];
+          showContextMenu(touch.clientX, touch.clientY, session.id);
+        }, 600); // 0.6초 꾹 누를 때
+      };
+
+      item.ontouchend = () => clearTimeout(pressTimer);
+      item.ontouchmove = () => clearTimeout(pressTimer);
+
+      listContainer.appendChild(item);
+    });
+  }
+
+  function showContextMenu(x, y, chatId) {
+    targetContextMenuChatId = chatId;
+    const menu = document.getElementById('chatContextMenu');
+    if (menu) {
+      menu.style.left = x + 'px';
+      menu.style.top = y + 'px';
+      menu.style.display = 'block';
+    }
+  }
+
+  function createNewChat() {
+    const newId = "chat_" + Date.now();
+    const newSession = {
+      id: newId,
+      title: `새 채팅 (${chatSessions.length + 1})`,
+      history: [],
+      messagesHtml: `<div class="chat-msg ai"><span class="chat-sender">AI Helper</span><div class="chat-bubble markdown-body" id="ui-ai-welcome"></div></div>`
+    };
+
+    chatSessions.unshift(newSession);
+    currentChatId = newId;
+    saveChatSessions();
+    renderChatList();
+    loadChatSession(newId);
+    showToast("새 채팅이 추가되었습니다.");
+  }
+
+  function switchChatSession(id) {
+    saveCurrentChatState();
+    currentChatId = id;
+    renderChatList();
+    loadChatSession(id);
+  }
+
+  function saveCurrentChatState() {
+    const session = chatSessions.find(s => s.id === currentChatId);
+    if (session) {
+      const chatContainer = document.getElementById('chatMessages');
+      if (chatContainer) session.messagesHtml = chatContainer.innerHTML;
+      saveChatSessions();
+    }
+  }
+
+  function loadChatSession(id) {
+    const session = chatSessions.find(s => s.id === id);
+    if (!session) return;
+
+    const chatContainer = document.getElementById('chatMessages');
+    const titleDisplay = document.getElementById('currentChatTitleDisplay');
+
+    if (titleDisplay) titleDisplay.innerText = session.title;
+    if (chatContainer) {
+      chatContainer.innerHTML = session.messagesHtml;
+      renderWelcomeMessage();
+      chatContainer.scrollTop = chatContainer.scrollHeight;
+    }
+  }
+
+  function renameCurrentChat() {
+    if (!targetContextMenuChatId) return;
+    const session = chatSessions.find(s => s.id === targetContextMenuChatId);
+    if (session) {
+      const newTitle = prompt("채팅 이름을 입력하세요:", session.title);
+      if (newTitle && newTitle.trim() !== "") {
+        session.title = newTitle.trim();
+        saveChatSessions();
+        renderChatList();
+        if (session.id === currentChatId) {
+          document.getElementById('currentChatTitleDisplay').innerText = session.title;
+        }
+      }
+    }
+  }
+
+  function deleteCurrentChat() {
+    if (!targetContextMenuChatId) return;
+    if (chatSessions.length <= 1) {
+      alert("최소 하나 이상의 채팅방이 존재해야 합니다.");
+      return;
+    }
+
+    if (confirm("이 채팅을 삭제하시겠습니까?")) {
+      chatSessions = chatSessions.filter(s => s.id !== targetContextMenuChatId);
+      if (currentChatId === targetContextMenuChatId) {
+        currentChatId = chatSessions[0].id;
+      }
+      saveChatSessions();
+      renderChatList();
+      loadChatSession(currentChatId);
+      showToast("채팅이 삭제되었습니다.");
+    }
+  }
+
+  function saveChatSessions() {
+    try {
+      localStorage.setItem('chat_sessions_data', JSON.stringify(chatSessions));
+    } catch(e) {
+      console.warn("채팅 세션 저장 실패:", e);
+    }
+  }
 
   function renderWelcomeMessage() {
     const welcomeEl = document.getElementById('ui-ai-welcome');
@@ -703,12 +907,13 @@
       badge.style.color = "#ff0000";
     }
 
+    saveCurrentChatState();
+
     const draftData = {
       prompt: document.getElementById('promptInput')?.value || "",
       language: lang,
       memo: document.getElementById('memoInput')?.value || "",
-      boardStoryText: document.getElementById('boardStoryText')?.value || "",
-      chatHistory: chatHistory
+      boardStoryText: document.getElementById('boardStoryText')?.value || ""
     };
 
     try {
@@ -746,7 +951,6 @@
         if (data.prompt !== undefined && document.getElementById('promptInput')) document.getElementById('promptInput').value = data.prompt;
         if (data.memo && document.getElementById('memoInput')) document.getElementById('memoInput').value = data.memo;
         if (data.boardStoryText && document.getElementById('boardStoryText')) document.getElementById('boardStoryText').value = data.boardStoryText;
-        if (Array.isArray(data.chatHistory)) chatHistory = data.chatHistory;
       } catch (e) {}
     } else {
       changeLanguage("한국어");
@@ -782,11 +986,13 @@
 
     chatContainer.appendChild(msgDiv);
     chatContainer.scrollTop = chatContainer.scrollHeight;
+    saveCurrentChatState();
   }
 
   function clearChatMessages() {
-    if (confirm("대화 메시지 및 맥락 기억을 모두 지우시겠습니까?")) {
-      chatHistory = []; // AI 대화 맥락 기억 초기화
+    if (confirm("현재 채팅방 메시지 내역을 비우시겠습니까?")) {
+      const session = chatSessions.find(s => s.id === currentChatId);
+      if (session) session.history = [];
       const chatContainer = document.getElementById('chatMessages');
       if (chatContainer) {
         chatContainer.innerHTML = `
@@ -1375,6 +1581,7 @@
 
   function exportDataJSON() {
     const data = {
+      chats: chatSessions,
       profile: {
         name: localStorage.getItem('user_profile_name') || 'User_01',
         img: localStorage.getItem('user_profile_img') || ''
@@ -1404,6 +1611,14 @@
     reader.onload = function(e) {
       try {
         const data = JSON.parse(e.target.result);
+
+        if (data.chats && Array.isArray(data.chats)) {
+          chatSessions = data.chats;
+          currentChatId = chatSessions[0]?.id || null;
+          saveChatSessions();
+          renderChatList();
+          loadChatSession(currentChatId);
+        }
 
         if (data.profile) {
           if (data.profile.name) localStorage.setItem('user_profile_name', data.profile.name);
@@ -1437,20 +1652,14 @@
     event.target.value = '';
   }
 
-  /* 로컬 테스트용 로직 (이전 대화 기억 반영) */
   function generateMockResponse(prompt, lang) {
     const safePrompt = prompt || "";
     const isMinimal = safePrompt.includes("최소개입") || safePrompt.includes("최소 개입");
     const isProactive = safePrompt.includes("주도적") || safePrompt.includes("자동 생성");
     const cleanPrompt = safePrompt.length > 50 ? safePrompt.substring(0, 50) + "..." : safePrompt;
 
-    let historyContextText = "";
-    if (chatHistory.length > 2) {
-      historyContextText = `\n\n*(이전 누적된 세계관 대화 맥락 ${Math.floor(chatHistory.length / 2)}건을 지속 반영하고 있습니다.)*`;
-    }
-
     if (isMinimal) {
-      return `### 최소개입 연관 소재 및 상황 제안${historyContextText}
+      return `### 최소개입 연관 소재 및 상황 제안
 
 제공해주신 세계관 요소를 반영하여 단어 키워드와 3가지 상황을 구성했습니다.
 
@@ -1465,7 +1674,7 @@
     }
 
     if (isProactive) {
-      return `### 적극적 세계관 확장 및 플롯 제안${historyContextText}
+      return `### 적극적 세계관 확장 및 플롯 제안
 
 제시해주신 키워드와 설정을 바탕으로 확장된 세계관 구상을 제안해 드립니다.
 
@@ -1483,7 +1692,7 @@
 * 확정된 인물 간 관계 구도는 우측 **관계도 & 스토리 캔버스**에 시각화해 두는 것을 권장합니다.`;
     }
 
-    return `작성해 주신 세계관 설정을 기반으로 정리한 구성안입니다.${historyContextText}
+    return `작성해 주신 세계관 설정을 기반으로 정리한 구성안입니다.
 
 ---
 
@@ -1520,15 +1729,22 @@
       showToast("입력문이 너무 길어 상위 4000자까지 축소되어 처리됩니다.");
     }
 
-    // 화면에 사용자 메시지 표시
-    appendChatMessage(userName, rawPrompt, "user");
-    
-    // AI 메모리(대화 맥락)에 사용자 메시지 추가
-    chatHistory.push({ role: "user", content: rawPrompt });
+    const currentSession = chatSessions.find(s => s.id === currentChatId);
 
-    // 토큰 관리를 위해 최근 10개 대화(5쌍)만 유지
-    if (chatHistory.length > 10) {
-      chatHistory = chatHistory.slice(chatHistory.length - 10);
+    // 채팅의 첫 메시지 시 자동으로 제목 변경
+    if (currentSession && currentSession.title.startsWith("새 채팅")) {
+      currentSession.title = rawPrompt.substring(0, 15);
+      document.getElementById('currentChatTitleDisplay').innerText = currentSession.title;
+      renderChatList();
+    }
+
+    appendChatMessage(userName, rawPrompt, "user");
+
+    if (currentSession) {
+      currentSession.history.push({ role: "user", content: rawPrompt });
+      if (currentSession.history.length > 10) {
+        currentSession.history = currentSession.history.slice(currentSession.history.length - 10);
+      }
     }
 
     promptInput.value = "";
@@ -1582,7 +1798,6 @@ ${minimalRuleInstruction}`;
       let resultMarkdown = "";
 
       try {
-        // 서버 요청 시 대화 맥락(chatHistory)을 함께 전달
         const response = await fetch('/generate', {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -1590,7 +1805,7 @@ ${minimalRuleInstruction}`;
           body: JSON.stringify({ 
             prompt: rawPrompt,
             systemInstruction: systemPrompt,
-            history: chatHistory
+            history: currentSession ? currentSession.history : []
           })
         });
 
@@ -1613,8 +1828,9 @@ ${minimalRuleInstruction}`;
 
       rawMarkdownResult = cleanOutputText(resultMarkdown);
 
-      // AI 메모리에 AI 응답 저장
-      chatHistory.push({ role: "assistant", content: rawMarkdownResult });
+      if (currentSession) {
+        currentSession.history.push({ role: "assistant", content: rawMarkdownResult });
+      }
 
       const loadingEl = document.getElementById(tempLoadingId);
       if (loadingEl) loadingEl.remove();
@@ -1641,4 +1857,3 @@ ${minimalRuleInstruction}`;
 
 </body>
 </html>
-
