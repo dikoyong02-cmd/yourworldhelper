@@ -230,7 +230,6 @@
     .shortcut-input { text-align: center; font-weight: bold; cursor: pointer; background-color: var(--input-bg); }
     .shortcut-input:focus { border-color: var(--accent-color); background-color: #fffde7; color: #000; }
 
-    /* 마크다운 스타일 정밀 보정 */
     .markdown-body { width: 100%; word-break: break-word; overflow-wrap: break-word; line-height: 1.6; }
     .markdown-body h1, .markdown-body h2, .markdown-body h3 { margin-top: 10px; margin-bottom: 6px; color: var(--accent-color); border-bottom: 1px dashed var(--border-color); padding-bottom: 4px; }
     .markdown-body p { margin-bottom: 8px; }
@@ -277,7 +276,7 @@
     </div>
     <div class="notice-body" id="noticeBody">
       <ol>
-        <li id="ui-notice-1"><strong>세계관 창작 도우미 v2.0 업데이트</strong> - 자유로운 채팅형 세계관 창작 지원 및 개입도 설정 가능</li>
+        <li id="ui-notice-1"><strong>세계관 창작 도우미 v2.0 업데이트</strong> - 자유로운 채팅형 세계관 창작 지원 및 맥락 기억(Memory) 기능 추가</li>
         <li id="ui-notice-2">마크다운 전용 출력 모드 적용 (이모티콘 미사용)</li>
       </ol>
     </div>
@@ -393,6 +392,7 @@
           <h3>1. 안내말 및 추천 기능</h3>
           <p>안녕하세요. <strong>YOUR WORLD HELPER</strong>를 이용해 주셔서 감사합니다.</p>
           <ul>
+            <li><strong>대화 맥락 기억:</strong> AI가 이전 답변과 사용자가 전달한 세계관 맥락을 계속 기억하며 연쇄 질문 및 세부 지시를 처리합니다.</li>
             <li><strong>초보자 추천:</strong> 구체적인 아이디어가 없더라도 채팅창에 원하는 장르나 상상하는 소재를 자유롭게 적어 AI에게 초안을 요청해보세요.</li>
             <li><strong>창작자 추천:</strong> 구상 중인 세계관 내용을 직접 붙여넣어 피드백과 세부 설정을 제안받을 수 있습니다.</li>
             <li><strong>작업 스타일/개입 방식 지정:</strong> AI의 개입 수준(최소 개입/피드백 중심/주도적 자동 생성 등)을 요청 시 함께 적어주시면 사용자의 창작 스타일에 딱 맞춰 답변합니다.</li>
@@ -510,7 +510,6 @@
 </div>
 
 <script>
-  // 모바일 환경 감지 변수
   const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) || (window.innerWidth <= 768);
 
   let currentMainTab = 'helper';
@@ -518,6 +517,9 @@
   let currentLineWidth = 2;
   let canvasScale = 1.0;
   let rawMarkdownResult = "";
+
+  // AI 대화 맥락 기억용 컨텍스트 배열
+  let chatHistory = [];
 
   let isDrawing = false;
   let lastX = 0, lastY = 0;
@@ -536,7 +538,7 @@
 
   const WELCOME_NOTICE_TEXT = `안녕하세요. 창작자님의 글과 그림 작업을 도와드릴 세계관 아이디어 도우미입니다.
 
-원하시는 장르, 세계관 분위기, 인물 설정, 연출 방식(예: 톤 반전 등)을 아래 채팅창에 자유롭게 작성해 주세요.
+원하시는 장르, 세계관 분위기, 인물 설정, 연출 방식(예: 톤 반전 등)을 아래 채팅창에 자유롭게 작성해 주세요. 대화했던 맥락을 기억하므로 연속해서 요구사항을 추가하실 수 있습니다.
 
 **작업 스타일 지정 가능:**
 * **최소 개입:** AI가 제출한 세계관을 보고 연관 단어 3개와 상황 3개를 매칭하여 제공
@@ -592,7 +594,7 @@
       aiWelcome: WELCOME_NOTICE_TEXT,
       labelLang: "言語:",
       placeholderPromptMobile: "メッセージを入力... (Enterで改行)",
-      placeholderPromptPC: "メッセージ 입력... (Enterで送信, Shift+Enterで改行)",
+      placeholderPromptPC: "メッセージ入力... (Enterで送信, Shift+Enterで改行)",
       btnSend: "送信",
       btnRelation: "相関図 & ストーリーキャンバス",
       placeholderMemo: "簡単なメモを記録...",
@@ -695,7 +697,8 @@
       prompt: document.getElementById('promptInput')?.value || "",
       language: lang,
       memo: document.getElementById('memoInput')?.value || "",
-      boardStoryText: document.getElementById('boardStoryText')?.value || ""
+      boardStoryText: document.getElementById('boardStoryText')?.value || "",
+      chatHistory: chatHistory
     };
 
     try {
@@ -733,6 +736,7 @@
         if (data.prompt !== undefined && document.getElementById('promptInput')) document.getElementById('promptInput').value = data.prompt;
         if (data.memo && document.getElementById('memoInput')) document.getElementById('memoInput').value = data.memo;
         if (data.boardStoryText && document.getElementById('boardStoryText')) document.getElementById('boardStoryText').value = data.boardStoryText;
+        if (Array.isArray(data.chatHistory)) chatHistory = data.chatHistory;
       } catch (e) {}
     } else {
       changeLanguage("한국어");
@@ -759,7 +763,6 @@
     msgDiv.className = `chat-msg ${type}`;
 
     const safeContent = content || "";
-    // AI 메시지와 유저 메시지 모두 마크다운 파싱 적용
     const parsedContent = window.marked ? marked.parse(safeContent) : safeContent.replace(/\n/g, '<br>');
 
     msgDiv.innerHTML = `
@@ -772,7 +775,8 @@
   }
 
   function clearChatMessages() {
-    if (confirm("대화 메시지를 모두 지우시겠습니까?")) {
+    if (confirm("대화 메시지 및 맥락 기억을 모두 지우시겠습니까?")) {
+      chatHistory = []; // AI 대화 맥락 기억 초기화
       const chatContainer = document.getElementById('chatMessages');
       if (chatContainer) {
         chatContainer.innerHTML = `
@@ -782,18 +786,14 @@
           </div>`;
         renderWelcomeMessage();
       }
+      triggerAutoSave();
     }
   }
 
-  /* 키보드 입력 핸들러: PC/모바일 구분 적용 */
   function handleChatKeyDown(e) {
-    // 한글 등 IME 조합 중 중복 실행 방지
     if (e.isComposing || e.keyCode === 229) return;
-
-    // 모바일 환경: Enter 기본 줄바꿈 동작, 전송 버튼 이용
     if (isMobile) return;
 
-    // PC 환경: Enter는 전송, Shift+Enter는 줄바꿈
     if (e.key === 'Enter') {
       if (!e.shiftKey) {
         e.preventDefault();
@@ -1427,15 +1427,20 @@
     event.target.value = '';
   }
 
-  /* AI 응답 예시 (마크다운 적용 구조) */
+  /* 로컬 테스트용 로직 (이전 대화 기억 반영) */
   function generateMockResponse(prompt, lang) {
     const safePrompt = prompt || "";
     const isMinimal = safePrompt.includes("최소개입") || safePrompt.includes("최소 개입");
     const isProactive = safePrompt.includes("주도적") || safePrompt.includes("자동 생성");
     const cleanPrompt = safePrompt.length > 50 ? safePrompt.substring(0, 50) + "..." : safePrompt;
 
+    let historyContextText = "";
+    if (chatHistory.length > 2) {
+      historyContextText = `\n\n*(이전 누적된 세계관 대화 맥락 ${Math.floor(chatHistory.length / 2)}건을 지속 반영하고 있습니다.)*`;
+    }
+
     if (isMinimal) {
-      return `### 최소개입 연관 소재 및 상황 제안
+      return `### 최소개입 연관 소재 및 상황 제안${historyContextText}
 
 제공해주신 세계관 요소를 반영하여 단어 키워드와 3가지 상황을 구성했습니다.
 
@@ -1450,7 +1455,7 @@
     }
 
     if (isProactive) {
-      return `### 적극적 세계관 확장 및 플롯 제안
+      return `### 적극적 세계관 확장 및 플롯 제안${historyContextText}
 
 제시해주신 키워드와 설정을 바탕으로 확장된 세계관 구상을 제안해 드립니다.
 
@@ -1468,7 +1473,7 @@
 * 확정된 인물 간 관계 구도는 우측 **관계도 & 스토리 캔버스**에 시각화해 두는 것을 권장합니다.`;
     }
 
-    return `작성해 주신 세계관 설정을 기반으로 정리한 구성안입니다.
+    return `작성해 주신 세계관 설정을 기반으로 정리한 구성안입니다.${historyContextText}
 
 ---
 
@@ -1505,8 +1510,17 @@
       showToast("입력문이 너무 길어 상위 4000자까지 축소되어 처리됩니다.");
     }
 
+    // 화면에 사용자 메시지 표시
     appendChatMessage(userName, rawPrompt, "user");
     
+    // AI 메모리(대화 맥락)에 사용자 메시지 추가
+    chatHistory.push({ role: "user", content: rawPrompt });
+
+    // 토큰 관리를 위해 최근 10개 대화(5쌍)만 유지
+    if (chatHistory.length > 10) {
+      chatHistory = chatHistory.slice(chatHistory.length - 10);
+    }
+
     promptInput.value = "";
     triggerAutoSave();
 
@@ -1522,7 +1536,7 @@
     loadingDiv.id = tempLoadingId;
     loadingDiv.innerHTML = `
       <span class="chat-sender">AI Helper</span>
-      <div class="chat-bubble">AI가 아이디어를 구상 중입니다...</div>
+      <div class="chat-bubble">AI가 이전 세계관 맥락을 기억하며 정리 중입니다...</div>
     `;
     chatContainer.appendChild(loadingDiv);
     chatContainer.scrollTop = chatContainer.scrollHeight;
@@ -1544,14 +1558,12 @@ Format output strictly like this:
 `;
     }
 
-    const fullUserPrompt = `[System Instruction]
+    const systemPrompt = `[System Instruction]
 You are a friendly Worldbuilding Assistant AI.
 Answer strictly in target language: ${targetLanguage}.
 Do NOT use any emojis or emoticons. Use clean Markdown only.
-${minimalRuleInstruction}
-
-[User Request]
-${rawPrompt}`;
+Always remember and build upon the previous worldbuilding details mentioned in conversation history.
+${minimalRuleInstruction}`;
 
     const controller = new AbortController();
     const timeoutId = setTimeout(() => controller.abort(), 60000);
@@ -1560,11 +1572,16 @@ ${rawPrompt}`;
       let resultMarkdown = "";
 
       try {
+        // 서버 요청 시 대화 맥락(chatHistory)을 함께 전달
         const response = await fetch('/generate', {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           signal: controller.signal,
-          body: JSON.stringify({ prompt: fullUserPrompt })
+          body: JSON.stringify({ 
+            prompt: rawPrompt,
+            systemInstruction: systemPrompt,
+            history: chatHistory
+          })
         });
 
         clearTimeout(timeoutId);
@@ -1586,6 +1603,9 @@ ${rawPrompt}`;
 
       rawMarkdownResult = cleanOutputText(resultMarkdown);
 
+      // AI 메모리에 AI 응답 저장
+      chatHistory.push({ role: "assistant", content: rawMarkdownResult });
+
       const loadingEl = document.getElementById(tempLoadingId);
       if (loadingEl) loadingEl.remove();
 
@@ -1604,6 +1624,7 @@ ${rawPrompt}`;
         const dict = i18n[targetLanguage] || i18n["한국어"];
         submitBtn.innerText = dict.btnSend;
       }
+      triggerAutoSave();
     }
   }
 </script>
