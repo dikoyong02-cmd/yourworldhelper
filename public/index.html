@@ -296,7 +296,7 @@
       <ol>
         <li id="ui-notice-1"><strong>세계관 창작 도우미 v2.1 업데이트</strong> - 자유로운 채팅형 세계관 창작 지원 및 맥락 기억(Memory) 기능</li>
         <li id="ui-notice-2">마크다운 전용 출력 모드 적용 (이모티콘 미사용)</li>
-        <li id="ui-notice-3">저장 방식 개선(브라우저를 닫아도 안전하게 보관) 및 실제 AI 응답 연동</li>
+        <li id="ui-notice-3">저장 방식 개선(브라우저 LocalStorage 자동 연동) 및 실제 AI 응답 연동</li>
       </ol>
     </div>
   </div>
@@ -583,23 +583,38 @@
   const ctx = canvas ? canvas.getContext('2d') : null;
   let canvasSnapshot = null;
 
-  // 영구 저장소 헬퍼
+  // 브라우저 localStorage 연동 및 샌드박스 스토리지 예외 처리
   async function storageGet(key) {
     try {
-      const res = await window.storage.get(key, false);
-      return res ? res.value : null;
+      if (window.storage && typeof window.storage.get === 'function') {
+        const res = await window.storage.get(key, false);
+        if (res && res.value !== undefined) return res.value;
+      }
+      return localStorage.getItem(key);
     } catch (e) {
-      return null;
+      try {
+        return localStorage.getItem(key);
+      } catch (err) {
+        return null;
+      }
     }
   }
 
   async function storageSet(key, value) {
     try {
-      await window.storage.set(key, value, false);
+      if (window.storage && typeof window.storage.set === 'function') {
+        await window.storage.set(key, value, false);
+      }
+      localStorage.setItem(key, value);
       return true;
     } catch (e) {
-      console.warn("저장 실패:", key, e);
-      return false;
+      try {
+        localStorage.setItem(key, value);
+        return true;
+      } catch (err) {
+        console.warn("저장 실패:", key, err);
+        return false;
+      }
     }
   }
 
@@ -637,7 +652,7 @@ Feel free to pick a genre or paste in your existing worldbuilding setup!
 > **Tip. Conversation Tone**
 > Specify your preferred speaking style (e.g., formal, friendly, dry) and I will adapt to it.`;
 
-  const WELCOME_NOTICE_JA = `こんにちは。あなたの創作活動をサポートする世界観アイデアヘル퍼です。
+  const WELCOME_NOTICE_JA = `こんにちは。あなたの創作活動をサポートする世界観アイデアヘルパーです。
 
 ジャンルを選ぶか、すでにある世界観の設定文を自由に貼り付けてください！
 
@@ -1171,6 +1186,7 @@ Feel free to pick a genre or paste in your existing worldbuilding setup!
     }
   }
 
+  // 테마 저장 및 적용
   async function changeTheme(themeName) {
     if (themeName === 'classic-win') {
       document.body.removeAttribute('data-theme');
@@ -1218,6 +1234,7 @@ Feel free to pick a genre or paste in your existing worldbuilding setup!
     }
   }
 
+  // 프로필 이름 저장 및 불러오기
   async function saveUserProfile() {
     const username = document.getElementById('usernameInput')?.value || "";
     await storageSet('user_profile_name', username);
@@ -1241,6 +1258,7 @@ Feel free to pick a genre or paste in your existing worldbuilding setup!
     }
   }
 
+  // 프로필 사진 파일 저장
   function loadProfileImageFromFile(event) {
     const file = event.target.files[0];
     if (file) {
@@ -1935,3 +1953,4 @@ Feel free to pick a genre or paste in your existing worldbuilding setup!
 
 </body>
 </html>
+
