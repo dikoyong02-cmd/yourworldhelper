@@ -4,6 +4,13 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Your World Helper - Retro Edition</title>
+  <link rel="manifest" href="/manifest.webmanifest">
+  <meta name="theme-color" content="#008080">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-title" content="World Helper">
+  <link rel="apple-touch-icon" href="/icon-180.png">
+  <link rel="icon" type="image/png" href="/icon-192.png">
   <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/dompurify@3/dist/purify.min.js"></script>
   <style>
@@ -306,6 +313,7 @@
   <header>
     <h1>YOUR WORLD HELPER (v2.1)</h1>
     <div class="theme-selector-box">
+      <button type="button" class="small-btn" id="installBtn" style="display:none;" onclick="installApp()">앱 설치</button>
       <label for="themeSelect" id="ui-label-theme">COLOR THEME:</label>
       <select id="themeSelect" onchange="changeTheme(this.value)">
         <option value="classic-win" selected>Classic Windows 98</option>
@@ -2016,6 +2024,30 @@ Feel free to pick a genre or paste in your existing worldbuilding setup!
       }
       await triggerAutoSave();
     }
+  }
+
+  // PWA: 서비스 워커 등록 및 설치 버튼
+  let deferredInstallPrompt = null;
+  window.addEventListener('beforeinstallprompt', (e) => {
+    e.preventDefault();
+    deferredInstallPrompt = e;
+    const btn = document.getElementById('installBtn');
+    if (btn) btn.style.display = 'inline-flex';
+  });
+  window.addEventListener('appinstalled', () => {
+    deferredInstallPrompt = null;
+    const btn = document.getElementById('installBtn');
+    if (btn) btn.style.display = 'none';
+  });
+  async function installApp() {
+    if (!deferredInstallPrompt) return;
+    deferredInstallPrompt.prompt();
+    await deferredInstallPrompt.userChoice;
+    deferredInstallPrompt = null;
+    document.getElementById('installBtn').style.display = 'none';
+  }
+  if ('serviceWorker' in navigator && /^https?:$/.test(location.protocol)) {
+    window.addEventListener('load', () => navigator.serviceWorker.register('/sw.js').catch(() => {}));
   }
 </script>
 
